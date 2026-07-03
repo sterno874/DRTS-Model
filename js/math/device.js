@@ -73,10 +73,10 @@ function sExpWrapper(t, tau) {
   return sExp(t, tau);
 }
 
-/** Simple risk-adjusted EV: sum of (peakSales × multiple × P(success)). */
+/** Simple risk-adjusted EV: sum of (peakSales × multiple × P(success)). Price in $K. */
 export function riskAdjustedEV(indications) {
   return indications.reduce((sum, ind) => {
-    const peak = ind.patients * ind.penetration * ind.price * ind.years;
+    const peak = (ind.patients * ind.penetration * ind.years * ind.price) / 1000;
     return sum + peak * ind.multiple * ind.pSuccess;
   }, 0);
 }

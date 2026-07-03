@@ -23,7 +23,11 @@ export const MUTATION_TARGETS = [
     id: "ev-multiply",
     file: "js/math/valuation.js",
     description: "Drop peak sales multiplication",
-    apply: (src) => src.replace("return patients * penetration * price * years;", "return patients + penetration;")
+    apply: (src) =>
+      src.replace(
+        "return (patients * penetration * years * price) / 1000;",
+        "return patients + penetration;"
+      )
   },
   {
     id: "restart-responders",

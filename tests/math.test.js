@@ -35,7 +35,7 @@ test("riskAdjustedEV sums indications", () => {
   const ev = riskAdjustedEV([
     { patients: 1000, penetration: 0.1, price: 10, years: 5, multiple: 4, pSuccess: 0.5 }
   ]);
-  assert.equal(ev, 1000 * 0.1 * 10 * 5 * 4 * 0.5);
+  assert.equal(ev, (1000 * 0.1 * 10 * 5 * 4 * 0.5) / 1000);
 });
 
 test("evPerShare includes cash", () => {

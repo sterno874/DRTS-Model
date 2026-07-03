@@ -29,9 +29,13 @@ export const COMPARABLES = [
 
 /**
  * Peak annual revenue for one indication ($M).
+ * @param {number} patients — eligible patients per year (absolute count)
+ * @param {number} penetration — share treated (decimal, e.g. 0.15)
+ * @param {number} price — procedure price in $K
+ * @param {number} years — avg years on therapy (treatment-duration intensity)
  */
 export function peakSalesM({ patients, penetration, price, years }) {
-  return patients * penetration * price * years;
+  return (patients * penetration * years * price) / 1000;
 }
 
 /**

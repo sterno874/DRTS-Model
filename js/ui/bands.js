@@ -76,7 +76,7 @@ export const VAL_BANDS = [
     min: 2000,
     max: 25000,
     sig: { b1: [8000, 18000], b2: [5000, 22000], b3: [2000, 25000] },
-    why: "US addressable recurrent/locally advanced cSCC pool (000s) — SEER-derived estimate."
+    why: "US addressable recurrent/locally advanced cSCC patients/yr — SEER-derived estimate (~12K default)."
   },
   {
     id: "vv_skinPen",
@@ -92,6 +92,7 @@ export const VAL_BANDS = [
     max: 150,
     sig: { b1: [65, 110], b2: [50, 130], b3: [30, 150] },
     anchor: 85,
+    imp: [130, 150],
     why: "Procedure price ($K) — intratumoral radiotherapy; no US list price yet."
   },
   {
@@ -106,7 +107,7 @@ export const VAL_BANDS = [
     min: 1000,
     max: 15000,
     sig: { b1: [5000, 12000], b2: [3000, 14000], b3: [1000, 15000] },
-    why: "US rGBM addressable pool — REGAIN feasibility only; low P(success) in model."
+    why: "US rGBM addressable patients/yr — REGAIN feasibility only; low P(success) in model."
   },
   {
     id: "vv_gbmPen",
@@ -136,7 +137,7 @@ export const VAL_BANDS = [
     min: 5000,
     max: 50000,
     sig: { b1: [20000, 42000], b2: [12000, 48000], b3: [5000, 50000] },
-    why: "Pancreatic addressable pool — IMPACT pilot only."
+    why: "Pancreatic addressable patients/yr — IMPACT pilot only."
   },
   {
     id: "vv_pancPen",
@@ -157,7 +158,7 @@ export const VAL_BANDS = [
     min: 3000,
     max: 30000,
     sig: { b1: [10000, 22000], b2: [6000, 28000], b3: [3000, 30000] },
-    why: "Prostate pool — Tolmar commercialization deal (60% net to Alpha Tau)."
+    why: "Prostate patients/yr — Tolmar commercialization deal (60% net to Alpha Tau)."
   },
   {
     id: "vv_prostatePen",
