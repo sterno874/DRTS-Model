@@ -191,7 +191,9 @@ export function buildShareHash(state) {
 }
 
 export function decodeShareHash(hash) {
-  if (!hash || !hash.startsWith("#s1=")) return null;
+  if (!hash) return null;
+  if (hash === "#") return structuredClone(DEFAULT_STATE);
+  if (!hash.startsWith("#s1=")) return null;
   const raw = hash.slice(4);
   if (!raw) return structuredClone(DEFAULT_STATE);
   try {

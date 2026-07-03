@@ -32,6 +32,16 @@ Example (bull ReSTART scenario):
 
 Append `?embed=1` to hide chrome for iframe embeds.
 
+## Deploy (Vercel)
+
+Zero-config static site — same layout as [SLS-Model](https://github.com/sterno874/SLS-Model). Import [sterno874/DRTS-Model](https://github.com/sterno874/DRTS-Model) at [vercel.com/new](https://vercel.com/new); Vercel serves `index.html` from the repo root automatically. Assign the domain `drts-model.vercel.app` in **Project → Settings → Domains**. No build step or `package.json` dependencies required for deploy (`vercel.json` sets `cleanUrls` only).
+
+Redeploy from CLI (optional):
+
+```bash
+vercel deploy --prod
+```
+
 ## File structure
 
 ```

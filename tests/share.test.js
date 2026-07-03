@@ -13,6 +13,14 @@ test("default share hash is empty payload", () => {
   assert.deepEqual(decodeShareHash(h), DEFAULT_STATE);
 });
 
+test("bare # hash loads default state", () => {
+  assert.deepEqual(decodeShareHash("#"), DEFAULT_STATE);
+});
+
+test("no hash returns null for init fallback", () => {
+  assert.equal(decodeShareHash(""), null);
+});
+
 test("tab change round-trips", () => {
   const s = structuredClone(DEFAULT_STATE);
   s.tab = "pipeline";
