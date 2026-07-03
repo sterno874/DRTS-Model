@@ -463,6 +463,9 @@
   body.embed-mode .wrap,.embed-mode .facts,.embed-mode .regal-analysis,.embed-mode .feat-panel,.embed-mode .cw-panel{padding-left:var(--space-sm);padding-right:var(--space-sm);margin-left:0;margin-right:0}
   .factgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--space-md);margin:var(--space-md) 0}
   .fact{padding:var(--space-md);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel);font-size:13px;line-height:1.5}
+  .pilot-panels{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-md);margin:var(--space-md) 0}
+  .pilot-card h2{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 var(--space-sm)}
+  .pilot-stat{font-size:13px;margin:var(--space-sm) 0;line-height:1.5}
   .outgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--space-md);margin:var(--space-md) 0}
   .outgrid .ok{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:700;letter-spacing:.04em}
   .outgrid .ov{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}

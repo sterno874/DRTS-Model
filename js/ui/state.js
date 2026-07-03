@@ -79,7 +79,8 @@ export const DEFAULT_STATE = {
     v_platform: 3,
     v_mult: 4,
     v_shares: 42,
-    v_cash: 77,
+    v_cash: 76.9,
+    v_burnQuarterly: 10.6,
     v_riskadj: true
   },
   ui: { explainLvl: "eli5", showHeaderStrip: true }

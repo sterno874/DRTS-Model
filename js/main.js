@@ -15,7 +15,8 @@ import {
   computePipelineSummary,
   COMMUNITY_DD
 } from "./math/pipeline.js";
-import { COMPARABLES } from "./math/valuation.js";
+import { COMPARABLES, computeRunwayMonths } from "./math/valuation.js";
+import { computeRegainPanel, computeImpactPanel, REGAIN_INTERIM, IMPACT_PILOT } from "./math/pilot.js";
 import {
   VALID_TABS,
   EXPLAIN_LEVELS,
@@ -71,6 +72,39 @@ const EXPL = {
 <p><span class="tag m">Model</span> MC uses Beta(α,β) with α = p·20, β = (1−p)·20 around assumed ORR; success = observed ORR ≥ threshold AND binomial beat of benchmark at α=0.05 one-sided heuristic. Not a replacement for SAP.</p>
 <p><span class="tag u">Limit</span> Does not model competing cemiplimab/pembrolizumab SoC drift, modular PMA clock-stops, or correlated platform approval across indications.</p>`
 };
+
+function fmtAsOf(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T12:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", year: "numeric", day: "numeric" });
+}
+
+function initFactsAsOf() {
+  document.querySelectorAll(".facts .fact[data-as-of]").forEach((el) => {
+    if (el.querySelector(".as-of")) return;
+    const sp = document.createElement("span");
+    sp.className = "as-of";
+    sp.textContent = "[as of " + fmtAsOf(el.dataset.asOf) + "]";
+    el.appendChild(sp);
+  });
+}
+
+function renderPilotPanels() {
+  const host = $("pilotPanels");
+  if (!host) return;
+  const regain = computeRegainPanel();
+  const impact = computeImpactPanel();
+  host.innerHTML =
+    `<div class="pilot-card card"><h2>REGAIN · GBM feasibility</h2>` +
+    `<div class="pilot-stat"><b>Local control</b> ${regain.ratePct.toFixed(0)}% posterior mean<br/>95% CI ${regain.ciLo.toFixed(0)}–${regain.ciHi.toFixed(0)}% · n=${regain.n} disclosed</div>` +
+    `<div class="pilot-stat"><b>Complete response (RANO)</b> ${regain.crRatePct.toFixed(0)}% posterior mean<br/>95% CI ${regain.crCiLo.toFixed(0)}–${regain.crCiHi.toFixed(0)}%</div>` +
+    `<p class="field-note">${regain.note} · <a href="${REGAIN_INTERIM.source}" target="_blank" rel="noopener">Primary source</a></p></div>` +
+    `<div class="pilot-card card"><h2>IMPACT · pancreatic pilot</h2>` +
+    `<div class="pilot-stat"><b>US pilot responses</b> not disclosed</div>` +
+    `<div class="pilot-stat"><b>Target enrollment</b> n=${impact.targetN}</div>` +
+    `<div class="pilot-stat"><b>Uniform prior band</b> ${impact.priorLo.toFixed(0)}–${impact.priorHi.toFixed(0)}% (no data yet)</div>` +
+    `<p class="field-note">${impact.note} · <a href="${IMPACT_PILOT.pooledSource}" target="_blank" rel="noopener">ASCO 2026 pooled pancreatic</a> is separate design.</p></div>`;
+}
 
 function toast(msg) {
   const t = $("toast");
@@ -212,6 +246,12 @@ function updateValUI() {
   if ($("vEv")) $("vEv").textContent = "$" + m.ev.toFixed(0) + "M";
   if ($("vPsh")) $("vPsh").textContent = "$" + m.perSh.toFixed(2);
   if ($("vPeak")) $("vPeak").textContent = "$" + m.totalPeak.toFixed(0) + "M/yr risk-adj";
+  const burn = state.val.v_burnQuarterly ?? 10.6;
+  const runway = computeRunwayMonths(state.val.v_cash, burn);
+  if ($("vRunway")) {
+    $("vRunway").textContent =
+      runway === Infinity ? "∞ mo" : runway.toFixed(1) + " mo (~" + (runway / 12).toFixed(1) + " yr)";
+  }
 
   const tbody = $("vContribBody");
   if (tbody) {
@@ -365,6 +405,8 @@ function init() {
   if (parseEmbedMode()) document.body.classList.add("embed-mode");
 
   renderStaticPanels();
+  renderPilotPanels();
+  initFactsAsOf();
 
   document.querySelectorAll(".tabbtn").forEach((b) => {
     b.onclick = () => {

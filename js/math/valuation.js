@@ -98,5 +98,21 @@ export function computeFullValuation(val) {
   return { ev, perSh, rows, platform, totalPeak, mult };
 }
 
+/**
+ * Cash runway (months) from cash balance and quarterly operating burn.
+ * @param {number} cashM — cash & equivalents ($M)
+ * @param {number} burnQuarterlyM — quarterly operating cash burn ($M, positive = outflow)
+ */
+export function computeRunwayMonths(cashM, burnQuarterlyM) {
+  if (burnQuarterlyM <= 0) return Infinity;
+  return (cashM / burnQuarterlyM) * 3;
+}
+
+/** FY2025 disclosed cash (~$76.9M) and implied quarterly burn from operating loss. */
+export const DEFAULT_CASH_M = 76.9;
+export const DEFAULT_BURN_QUARTERLY_M = 10.6;
+export const RUNWAY_SOURCE =
+  "https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update";
+
 /** Re-export for backward compatibility. */
 export { riskAdjustedEV, evPerShare };

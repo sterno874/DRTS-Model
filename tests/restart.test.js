@@ -9,6 +9,31 @@ import {
   DEFAULT_ORR_THRESHOLD_PCT
 } from "../js/math/restart.js";
 
+test("computeRestartMetrics golden base case n=88 ORR 55%", () => {
+  const m = computeRestartMetrics({
+    n: 88,
+    orrPct: 55,
+    benchOrrPct: 30,
+    dorMonths: 6,
+    dorBenchMonths: 6,
+    orrThresholdPct: 35,
+    pSuccess: 65
+  });
+  assert.equal(m.responders, 48);
+  assert.ok(Math.abs(m.wilson.lo - 0.44169880685506685) < 1e-9);
+  assert.ok(Math.abs(m.pBeatBench - 0.9999985862794732) < 1e-6);
+  assert.ok(Math.abs(m.pCombined - 0.869999183576396) < 1e-6);
+});
+
+test("mcRestartORR golden seed=42 sims=1500", () => {
+  const mc = mcRestartORR(
+    { n: 88, orrPct: 55, benchOrrPct: 30, orrThresholdPct: 35, sims: 1500, seed: 42 },
+    undefined
+  );
+  assert.ok(Math.abs(mc.pSuccess - 0.9553333333333334) < 1e-10);
+  assert.ok(Math.abs(mc.orrMedian - 54.54545454545454) < 1e-10);
+});
+
 test("computeRestartMetrics Wilson CI brackets observed ORR", () => {
   const m = computeRestartMetrics({ n: 88, orrPct: 55, benchOrrPct: 30, dorMonths: 6, pSuccess: 65 });
   assert.equal(m.responders, 48);

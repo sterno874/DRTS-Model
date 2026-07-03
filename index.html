@@ -10,6 +10,13 @@
 <meta property="og:description" content="Primary-sourced scenario explorer for Alpha Tau Medical pipeline and valuation."/>
 <meta property="og:url" content="https://drts-model.vercel.app/"/>
 <meta property="og:type" content="website"/>
+<meta property="og:image" content="https://drts-model.vercel.app/og-image.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Alpha DaRT Trial Explorer · DRTS Model"/>
+<meta name="twitter:description" content="Primary-sourced scenario explorer for Alpha Tau Medical pipeline and valuation."/>
+<meta name="twitter:image" content="https://drts-model.vercel.app/og-image.png"/>
 <link rel="stylesheet" href="css/main.css"/>
 </head>
 <body>
@@ -17,7 +24,7 @@
   <div class="hdr-top">
     <div class="hdr-title-block">
       <h1>Alpha Tau Medical ($DRTS) — Interactive Model</h1>
-      <div class="sub hdr-disclaimer">Primary-sourced models; adjustable sliders = undisclosed assumptions. <a href="#explain" class="hdr-link" onclick="document.querySelector('.tabbtn[data-tab=explain]').click();return false;">Explain tab</a> for methodology. Not investment advice. <span class="tag f">Phase 2</span></div>
+      <div class="sub hdr-disclaimer">Primary-sourced models; adjustable sliders = undisclosed assumptions. <a href="https://drts-model.vercel.app/" target="_blank" rel="noopener" class="hdr-link">Live</a> · <a href="https://github.com/sterno874/DRTS-Model" target="_blank" rel="noopener" class="hdr-link">GitHub</a> · <a href="#explain" class="hdr-link" onclick="document.querySelector('.tabbtn[data-tab=explain]').click();return false;">Explain tab</a> for methodology. Not investment advice. <span class="tag f">Phase 3</span></div>
     </div>
   </div>
   <div id="headerStrip" class="best-est-strip no-print embed-hide" aria-live="polite"></div>
@@ -58,10 +65,10 @@
   <div class="facts page-inner">
     <h2>Verified facts <span class="tag f">as of Jul 2026</span></h2>
     <div class="factgrid">
-      <div class="fact"><b>Trial</b> ReSTART · recurrent cSCC · single-arm pivotal<br/><a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a></div>
-      <div class="fact"><b>Enrollment</b> 88 patients — complete May 2026<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span></div>
-      <div class="fact"><b>Readout</b> Top-line ~end 2026 (company guidance)<br/><span class="tag u">forward-looking</span></div>
-      <div class="fact"><b>Regulatory</b> Modular PMA module 1 submitted Jan 2026 · Breakthrough Device<br/><span class="cite"><a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">Shareholder letter</a></span></div>
+      <div class="fact" data-as-of="2026-05-08"><b>Trial</b> ReSTART · recurrent cSCC · single-arm pivotal<br/><a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a></div>
+      <div class="fact" data-as-of="2026-05-08"><b>Enrollment</b> 88 patients — complete May 2026<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span></div>
+      <div class="fact" data-as-of="2026-03-09"><b>Readout</b> Top-line ~end 2026 (company guidance)<br/><span class="tag u">forward-looking</span> · <span class="cite"><a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">Shareholder letter</a></span></div>
+      <div class="fact" data-as-of="2026-01-15"><b>Regulatory</b> Modular PMA module 1 submitted Jan 2026 · Breakthrough Device<br/><span class="cite"><a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">Shareholder letter</a></span></div>
     </div>
   </div>
 
@@ -119,6 +126,9 @@
     <h2>Catalyst calendar <span class="tag m">model</span></h2>
     <div class="ctrl" style="max-width:320px"><label>Calendar year <span id="pcalendarYearVal">2026</span></label><input type="range" id="pcalendarYear" min="2026" max="2027" step="1" value="2026"/></div>
     <div id="pipeCalendar"></div>
+    <h2 class="mt-md">Pilot response panels <span class="tag m">read-only</span></h2>
+    <p class="field-note">Bayesian Beta(1,1) posterior intervals from disclosed counts only — not predictive models. REGAIN interim n=3 per <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>.</p>
+    <div class="pilot-panels" id="pilotPanels"></div>
   </div>
 </div>
 
@@ -158,7 +168,8 @@
           <small>Tolmar deal: 60% of net sales to Alpha Tau <span class="tag f">verified</span></small></div>
       </div>
       <div class="ctrl"><label>Shares (M ADS) <span id="vv_sharesVal">42</span></label><input type="range" id="vv_shares" min="20" max="80" step="1" value="42"/></div>
-      <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">77</span></label><input type="range" id="vv_cash" min="10" max="150" step="1" value="77"/></div>
+      <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">77</span></label><input type="range" id="vv_cash" min="10" max="150" step="0.1" value="76.9"/><small>FY2025 ~$76.9M — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
+      <div class="ctrl"><label>Quarterly burn ($M) <span id="vv_burnQuarterlyVal">10.6</span></label><input type="range" id="vv_burnQuarterly" min="4" max="20" step="0.1" value="10.6"/><small>Derived from FY2025 operating loss ~$42.3M ÷ 4</small></div>
       <div class="ctrl"><label>EV multiple <span id="vv_multVal">4</span></label><input type="range" id="vv_mult" min="2" max="8" step="0.5" value="4"/></div>
       <div class="ctrl"><label>Platform option ($M) <span id="vv_platformVal">3</span></label><input type="range" id="vv_platform" min="0" max="20" step="0.5" value="3"/></div>
       <input type="hidden" id="vv_skinYears" value="5"/><input type="hidden" id="vv_gbmYears" value="4"/><input type="hidden" id="vv_pancYears" value="6"/><input type="hidden" id="vv_prostateYears" value="5"/>
@@ -169,12 +180,14 @@
         <div><div class="ok">Risk-adj EV</div><div class="ov" id="vEv">—</div></div>
         <div><div class="ok">Implied $/sh</div><div class="ov" id="vPsh">—</div></div>
         <div><div class="ok">Risk-adj peak sales</div><div class="ov" id="vPeak" style="font-size:16px">—</div></div>
+        <div><div class="ok">Cash runway</div><div class="ov" id="vRunway" style="font-size:16px">—</div></div>
       </div>
       <h2 class="mt-md">EV contribution by indication</h2>
       <div class="table-wrap"><table class="valtbl"><thead><tr><th>Indication</th><th>Peak $M</th><th>P(s)</th><th>EV $M</th></tr></thead><tbody id="vContribBody"></tbody></table></div>
       <h2 class="mt-md">Comparables <span class="tag a">assumption</span></h2>
       <div class="table-wrap"><table class="valtbl"><thead><tr><th>Comp</th><th>Multiple</th><th>Note</th><th>Tag</th></tr></thead><tbody id="vCompBody"></tbody></table></div>
       <h2 class="mt-md">Community DD reality checks</h2>
+      <p class="field-note">Themes from <a href="https://www.reddit.com/r/DRTS_Stock/" target="_blank" rel="noopener">r/DRTS_Stock</a> and biotech retail forums cross-checked against IR, ClinicalTrials.gov, and SEC filings — not endorsements.</p>
       <div class="table-wrap"><table class="valtbl"><thead><tr><th>Theme</th><th>Verdict</th><th>Tag</th><th>Notes</th></tr></thead><tbody id="vDDBody"></tbody></table></div>
     </div>
   </div>

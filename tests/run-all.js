@@ -12,6 +12,8 @@ const files = [
   "presets.test.js",
   "ui-logic.test.js",
   "share.test.js",
+  "pilot.test.js",
+  "runway.test.js",
   "dom-smoke.test.js"
 ].map((f) => path.join(dir, f));
 const result = spawnSync(process.execPath, ["--test", ...files], { stdio: "inherit" });

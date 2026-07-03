@@ -218,5 +218,41 @@ export const COMMUNITY_DD = [
     verdict: "rejected",
     tag: "community",
     note: "Not supported by company timeline"
+  },
+  {
+    theme: "$15+ price targets on Reddit",
+    verdict: "rejected",
+    tag: "community",
+    note: "Retail PT posts — not company guidance; verify against your own model"
+  },
+  {
+    theme: "Abscopal effect proven for DaRT",
+    verdict: "rejected",
+    tag: "community",
+    note: "Case reports / preclinical only; combo IDE trials early"
+  },
+  {
+    theme: "Five US trials = fully derisked platform",
+    verdict: "partial",
+    tag: "community",
+    note: "Parallel IDEs verified; each indication has separate PMA path and data bar"
+  },
+  {
+    theme: "ReSTART ORR will match FIH 78.6% CR",
+    verdict: "rejected",
+    tag: "community",
+    note: "FIH n=28 lesions ≠ pivotal n=88 recurrent cSCC design"
+  },
+  {
+    theme: "ASCO pancreatic OS = IMPACT de-risked",
+    verdict: "partial",
+    tag: "community",
+    note: "Pooled FIH studies ≠ US IMPACT pilot n=40; OS not primary for feasibility"
+  },
+  {
+    theme: "M&A / radiopharm takeout imminent",
+    verdict: "partial",
+    tag: "community",
+    note: "Sector M&A active; no disclosed DRTS process — r/DRTS_Stock speculation"
   }
 ];

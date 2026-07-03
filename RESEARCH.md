@@ -101,13 +101,21 @@ Subreddits with activity: **r/DRTS_Stock**, **r/biotechplay**, **r/pennystocks**
 - Biology: decay chain SVG + modality comparison
 - Tests: 54 passing (`npm test`); mutation runner (`npm run test:mutation`)
 
-## Phase 3 (remaining)
+## Phase 3 status (shipped Jul 2026)
+
+- Golden-value tests for ReSTART ORR math; mutation kill rate 100%
+- Fact rows: `[as of …]` badges from `data-as-of` attributes
+- IMPACT/REGAIN read-only Bayesian pilot panels (REGAIN n=3 disclosed)
+- Valuation: cash runway slider (FY2025 ~$76.9M cash, ~$10.6M/qtr burn default)
+- og-image.png + Open Graph / Twitter meta tags
+- Community DD expanded (r/DRTS_Stock themes + verified/rejected tags)
+- Tests: 67 passing (`npm test`); mutation 100% (`npm run test:mutation`)
+
+## Phase 4 (deferred)
 
 - SAP-aligned success rules when public
 - KM-based DOR module
-- IMPACT/REGAIN Bayesian monitoring
-- Burn/dilution scenarios
-- Automated stale-data checks
+- Automated stale-data checks vs new PRs
 
 ---
 

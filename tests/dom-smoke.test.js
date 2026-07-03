@@ -64,10 +64,17 @@ test("main.js exports toggleMethod and decodeShareHash usage", () => {
   assert.match(js, /window\.toggleMethod/);
 });
 
+test("Phase 3 og-image and pilot panels present", () => {
+  assert.match(html, /og-image\.png/);
+  assert.match(html, /id="pilotPanels"/);
+  assert.match(html, /Phase 3/);
+  assert.match(html, /data-as-of=/);
+  assert.match(html, /vv_burnQuarterly/);
+});
+
 test("Phase 2 header strip and MC histogram present", () => {
   assert.match(html, /id="headerStrip"/);
   assert.match(html, /id="rMcHist"/);
-  assert.match(html, /Phase 2/);
 });
 
 test("five restart presets including stress", () => {
