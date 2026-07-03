@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Alpha DaRT Trial Explorer · DRTS Model</title>
+<meta name="description" content="Interactive DD tool for Alpha Tau Medical (DRTS) — ReSTART, IMPACT, REGAIN, valuation, and Alpha DaRT biology with primary-sourced facts."/>
+<link rel="canonical" href="https://drts-model.vercel.app/"/>
+<meta property="og:title" content="Alpha DaRT Trial Explorer · DRTS Model"/>
+<meta property="og:description" content="Primary-sourced scenario explorer for Alpha Tau Medical pipeline and valuation."/>
+<meta property="og:url" content="https://drts-model.vercel.app/"/>
+<meta property="og:type" content="website"/>
+<link rel="stylesheet" href="css/main.css"/>
+</head>
+<body>
+<header>
+  <div class="hdr-top">
+    <div class="hdr-title-block">
+      <h1>Alpha Tau Medical ($DRTS) — Interactive Model</h1>
+      <div class="sub hdr-disclaimer">Primary-sourced models; adjustable sliders = undisclosed assumptions. <a href="#explain" class="hdr-link" onclick="document.querySelector('.tabbtn[data-tab=explain]').click();return false;">Explain tab</a> for methodology. Not investment advice. <span class="tag u">Phase 1 shell</span></div>
+    </div>
+  </div>
+  <div class="hdr-tools-wrap no-print">
+    <div class="hdr-tools">
+      <button type="button" class="primary" id="btnShare">🔗 Copy share link</button>
+      <button type="button" id="btnPrint">🖨 Print report</button>
+    </div>
+  </div>
+  <div class="tabnav">
+    <button class="tabbtn active" data-tab="restart">1 · ReSTART (cSCC pivotal)</button>
+    <button class="tabbtn" data-tab="pipeline">2 · Pipeline &amp; catalysts</button>
+    <button class="tabbtn" data-tab="value">3 · Valuation</button>
+    <button class="tabbtn" data-tab="explain">4 · Explain (ELI5 → PhD)</button>
+    <button class="tabbtn" data-tab="biology">5 · The Biology</button>
+  </div>
+</header>
+
+<!-- ========== ReSTART ========== -->
+<div id="tab-restart" class="tabpage">
+  <div class="tab-intro-bar">
+    <details class="howworks howworks-inline">
+      <summary>How this works</summary>
+      <div class="howworks-body">
+        <p><span class="tag f">Fact</span> ReSTART (<a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>) is a pivotal single-arm study of intratumoral Alpha DaRT in recurrent cutaneous SCC. Primary endpoints: <b>ORR</b> (confirmed BOR) and <b>DOR at 6 months</b>. Enrollment completed with <b>88 patients</b> (May 2026 PR). Breakthrough Device designation; first modular PMA module submitted Jan 2026.</p>
+        <p><span class="tag m">Model</span> Phase 1 shell: binomial ORR vs historical benchmark — full SAP-aligned thresholds in Phase 2.</p>
+      </div>
+    </details>
+    <span class="tab-intro-sep">|</span>
+    <button type="button" class="methodlink" onclick="toggleMethod('m-restart')">Methodology</button>
+  </div>
+  <div class="methodpanel" id="m-restart" hidden>
+    <b>ReSTART tab (stub).</b> Wilson score CI for observed ORR; one-sided exact binomial tail vs benchmark p₀. Does not yet model DOR or modular PMA review timeline.
+  </div>
+
+  <div class="facts page-inner">
+    <h2>Verified facts <span class="tag f">as of Jul 2026</span></h2>
+    <div class="factgrid">
+      <div class="fact"><b>Trial</b> ReSTART · recurrent cSCC · single-arm pivotal<br/><a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a></div>
+      <div class="fact"><b>Enrollment</b> 88 patients — complete May 2026<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span></div>
+      <div class="fact"><b>Readout</b> Top-line ~end 2026 (company guidance)<br/><span class="tag u">forward-looking</span></div>
+      <div class="fact"><b>Regulatory</b> Modular PMA module 1 submitted Jan 2026<br/><span class="cite"><a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">Shareholder letter</a></span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>Scenario controls</h2>
+      <div class="presets">
+        <button type="button" class="p p-def" data-preset="base">Base case<span class="p-sub">ORR 55% vs 30% bench</span></button>
+        <button type="button" class="p" data-preset="bull">Bull<span class="p-sub">ORR 65%</span></button>
+        <button type="button" class="p" data-preset="bear">Bear<span class="p-sub">ORR 42%</span></button>
+      </div>
+      <div class="ctrl"><label>Enrolled n <span id="rnVal">88</span></label><input type="range" id="rn" min="40" max="100" step="1" value="88"/></div>
+      <div class="ctrl"><label>Assumed ORR % <span id="rorrPctVal">55</span></label><input type="range" id="rorrPct" min="20" max="85" step="1" value="55"/><small>Undisclosed — not trial result</small></div>
+      <div class="ctrl"><label>Historical benchmark ORR % <span id="rbenchOrrPctVal">30</span></label><input type="range" id="rbenchOrrPct" min="10" max="50" step="1" value="30"/></div>
+      <div class="ctrl"><label>DOR assumption (months) <span id="rdorMonthsVal">6</span></label><input type="range" id="rdorMonths" min="3" max="12" step="0.5" value="6"/></div>
+      <div class="ctrl"><label>P(PMA success) % <span id="rpSuccessVal">65</span></label><input type="range" id="rpSuccess" min="5" max="95" step="1" value="65"/><small>Subjective — Phase 2 links to ORR model</small></div>
+    </div>
+    <div class="card">
+      <h2>Model outputs <span class="tag m">stub</span></h2>
+      <div class="outgrid">
+        <div><div class="ok">Responders (assumed)</div><div class="ov" id="rResp">—</div></div>
+        <div><div class="ok">ORR 95% Wilson CI</div><div class="ov" id="rWilson">—</div></div>
+        <div><div class="ok">P(ORR &gt; benchmark)</div><div class="ov" id="rPbeat">—</div></div>
+        <div><div class="ok">P(PMA success) slider</div><div class="ov" id="rPsucc">—</div></div>
+      </div>
+      <p class="field-note">Prior FIH DaRT in SCC/H&amp;N: 78.6% CR in 28 lesions — <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">PubMed 31759075</a> (different design; not ReSTART).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Pipeline ========== -->
+<div id="tab-pipeline" class="tabpage" hidden>
+  <div class="tab-intro-bar">
+    <p class="sub" style="margin:0">Five concurrent US IDE trials + global studies. Facts locked; interactive calendar in Phase 2.</p>
+  </div>
+  <div class="facts page-inner">
+    <h2>Pipeline map</h2>
+    <div class="factgrid">
+      <div class="fact"><b>IMPACT</b> Pancreatic + chemo · pilot n≈40<br/><a href="https://clinicaltrials.gov/study/NCT06698458" target="_blank" rel="noopener">NCT06698458</a><br/>Recruit complete Q3 2026 · data late 2026 / early 2027</div>
+      <div class="fact"><b>REGAIN</b> Recurrent GBM · feasibility ≤10 pts<br/><a href="https://clinicaltrials.gov/study/NCT06910306" target="_blank" rel="noopener">NCT06910306</a><br/>Interim n=3: 100% local control, 67% CR — <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a></div>
+      <div class="fact"><b>Prostate pilot</b><br/><a href="https://clinicaltrials.gov/study/NCT07290998" target="_blank" rel="noopener">NCT07290998</a><br/>Tolmar US commercialization — <a href="https://alphatau.com/alpha-tau-and-tolmar-announce-strategic-collaboration-to-bring-alpha-dart-therapy-to-u-s-urological-cancer-patients/" target="_blank" rel="noopener">Jun 2026</a></div>
+      <div class="fact"><b>Japan</b> Marketing approval — recurrent H&amp;N (Feb 2026)<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></span></div>
+    </div>
+    <p class="field-note"><span class="tag u">Phase 2</span> Catalyst timeline MC, IMPACT Bayesian monitoring, REGAIN RANO response model.</p>
+  </div>
+</div>
+
+<!-- ========== Valuation ========== -->
+<div id="tab-value" class="tabpage" hidden>
+  <div class="wrap">
+    <div class="card">
+      <h2>Valuation controls</h2>
+      <div class="presets">
+        <button type="button" class="p p-def" data-val-preset="base">Base</button>
+        <button type="button" class="p" data-val-preset="bull">Bull</button>
+        <button type="button" class="p" data-val-preset="bear">Bear</button>
+      </div>
+      <label><input type="checkbox" id="v_riskadj" checked/> Risk-adjust by P(success)</label>
+      <div class="ctrl"><label>Skin eligible pool (000s) <span id="vv_skinPtsVal">12000</span></label><input type="range" id="vv_skinPts" min="2000" max="25000" step="500" value="12000"/></div>
+      <div class="ctrl"><label>Skin penetration <span id="vv_skinPenVal">0.15</span></label><input type="range" id="vv_skinPen" min="0.02" max="0.4" step="0.01" value="0.15"/></div>
+      <div class="ctrl"><label>Skin price ($K/procedure) <span id="vv_skinPriceVal">85</span></label><input type="range" id="vv_skinPrice" min="30" max="150" step="5" value="85"/></div>
+      <div class="ctrl"><label>P(success) skin <span id="vv_skinPsVal">0.55</span></label><input type="range" id="vv_skinPs" min="0.05" max="0.95" step="0.05" value="0.55"/></div>
+      <div class="ctrl"><label>Shares (M ADS) <span id="vv_sharesVal">42</span></label><input type="range" id="vv_shares" min="20" max="80" step="1" value="42"/></div>
+      <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">77</span></label><input type="range" id="vv_cash" min="10" max="150" step="1" value="77"/></div>
+      <div class="ctrl"><label>EV multiple <span id="vv_multVal">4</span></label><input type="range" id="vv_mult" min="2" max="8" step="0.5" value="4"/></div>
+      <div class="ctrl"><label>Platform option ($M) <span id="vv_platformVal">3</span></label><input type="range" id="vv_platform" min="0" max="20" step="0.5" value="3"/></div>
+      <p class="field-note">Cash/shares from FY2025 PR — update each quarter. GBM/panc sliders in Phase 2.</p>
+    </div>
+    <div class="card">
+      <h2>Outputs</h2>
+      <div class="outgrid">
+        <div><div class="ok">Risk-adj EV</div><div class="ov" id="vEv">—</div></div>
+        <div><div class="ok">Implied $/sh</div><div class="ov" id="vPsh">—</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Explain ========== -->
+<div id="tab-explain" class="tabpage" hidden>
+  <div class="tab-intro-bar expl-intro">
+    <div class="expl-lvlnav">
+      <button type="button" class="lvlb active" data-lvl="eli5">ELI5</button>
+      <button type="button" class="lvlb" data-lvl="ms">Middle school</button>
+      <button type="button" class="lvlb" data-lvl="hs">High school</button>
+      <button type="button" class="lvlb" data-lvl="col">College</button>
+      <button type="button" class="lvlb" data-lvl="pro">Professional</button>
+      <button type="button" class="lvlb" data-lvl="phd">PhD</button>
+    </div>
+  </div>
+  <div class="page-inner">
+    <div class="card" id="explbody"></div>
+    <p class="field-note">Sources: <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">Alpha DaRT technology</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">FIH SCC trial</a> · ClinicalTrials.gov NCT IDs in Pipeline tab.</p>
+  </div>
+</div>
+
+<!-- ========== Biology ========== -->
+<div id="tab-biology" class="tabpage" hidden>
+  <div class="page-inner">
+    <div class="card">
+      <h2>Alpha DaRT mechanism <span class="tag f">primary sources</span></h2>
+      <figure class="bio-fig">
+        <svg class="bio-svg" viewBox="0 0 520 200" role="img" aria-label="Alpha DaRT mechanism diagram placeholder">
+          <rect x="10" y="10" width="500" height="180" rx="8" fill="#f8fafc" stroke="#dde2e8"/>
+          <text x="260" y="40" text-anchor="middle" font-size="14" fill="#141b26">Ra-224 seed → diffusing α-emitters → tumor kill</text>
+          <circle cx="120" cy="110" r="28" fill="#2f6fed" opacity="0.85"/>
+          <text x="120" y="115" text-anchor="middle" fill="#fff" font-size="11">Seed</text>
+          <circle cx="220" cy="95" r="8" fill="#d64545"/>
+          <circle cx="250" cy="120" r="8" fill="#d64545"/>
+          <circle cx="280" cy="100" r="8" fill="#d64545"/>
+          <text x="380" y="100" font-size="12" fill="#5b6472">~mm dose cloud</text>
+          <text x="380" y="120" font-size="11" fill="#5b6472">Hypoxia-independent</text>
+        </svg>
+        <figcaption class="bio-figcaption">Phase 1 placeholder — Phase 2 adds decay chain diagram with citations.</figcaption>
+      </figure>
+      <ul class="prose-sm">
+        <li><span class="tag f">Fact</span> Ra-224 (t½ 3.7 d) seeds release short-lived daughters that diffuse in tumor — <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">PubMed 31759075</a></li>
+        <li><span class="tag f">Fact</span> Alpha particles: high LET, ~50–100 μm range — spares distant tissue — <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">company</a></li>
+        <li><span class="tag f">Fact</span> Preclinical: multiple solid tumor histologies responsive — <a href="https://pubmed.ncbi.nlm.nih.gov/18059026/" target="_blank" rel="noopener">Keisari 2007</a></li>
+        <li><span class="tag u">Early</span> Anti-tumor immunity / abscopal — preclinical + case reports; combo trials planned</li>
+      </ul>
+    </div>
+  </div>
+</div><!-- /tab-biology -->
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<nav id="bottomNav" class="bottom-nav no-print embed-hide" aria-label="Tab navigation">
+  <button type="button" data-tab="restart" class="active" aria-current="page"><span class="bn-ico">📊</span>ReSTART</button>
+  <button type="button" data-tab="pipeline"><span class="bn-ico">🧪</span>Pipeline</button>
+  <button type="button" data-tab="value"><span class="bn-ico">💰</span>Value</button>
+  <button type="button" data-tab="explain"><span class="bn-ico">📖</span>Explain</button>
+  <button type="button" data-tab="biology"><span class="bn-ico">🧬</span>Biology</button>
+</nav>
+
+<footer class="embed-hide">
+  <div class="footer-inner">
+    <span class="footer-copy">© 2026 sterno874 and contributors · <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL-3.0</a></span>
+    <span class="footer-links"><a href="https://drts-model.vercel.app" target="_blank" rel="noopener">Live</a> · <a href="https://github.com/sterno874/DRTS-Model" target="_blank" rel="noopener">Source</a></span>
+    <span class="footer-note">Educational/analytical only — not investment, legal, medical, or financial advice.</span>
+  </div>
+</footer>
+
+<script type="module" src="js/main.js"></script>
+<script>
+  (function(){
+    var h=location.hostname;
+    if(h==="drts-model.vercel.app"||h.endsWith(".vercel.app")){
+      window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};
+      var s=document.createElement("script");
+      s.defer=true;s.src="/_vercel/insights/script.js";
+      document.head.appendChild(s);
+    }
+  })();
+</script>
+</body>
+</html>
