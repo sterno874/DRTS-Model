@@ -91,3 +91,22 @@ test("valuation has community DD table", () => {
 test("pipeline catalyst calendar", () => {
   assert.match(html, /id="pipeCalendar"/);
 });
+
+test("prior bands on ReSTART and valuation sliders", () => {
+  assert.match(html, /id="band-rorrPct"/);
+  assert.match(html, /id="band-rbenchOrrPct"/);
+  assert.match(html, /id="band-vv_skinPts"/);
+  assert.match(html, /class="bandkey"/);
+  assert.match(html, /class="source-line"/);
+});
+
+test("references and limitations sections", () => {
+  assert.match(html, /References · ReSTART/);
+  assert.match(html, /References · Valuation/);
+  assert.match(html, /regal-limitations/);
+  assert.match(html, /id="refs-restart"/);
+});
+
+test("valuation how-it-works panel", () => {
+  assert.match(html, /id="m-value"/);
+});

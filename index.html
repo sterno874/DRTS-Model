@@ -75,6 +75,7 @@
   <div class="wrap">
     <div class="card">
       <h2>Scenario controls</h2>
+      <p class="bandkey"><span class="swatch" style="background:rgba(47,111,237,.5)"></span><b>Blue</b> = prior plausibility (1σ dark → 3σ light) · <span class="swatch" style="background:repeating-linear-gradient(45deg,rgba(214,69,69,.4),rgba(214,69,69,.4) 2px,transparent 2px,transparent 4px)"></span><b>Red hatch</b> = hard to defend · <b>◆</b> = reported anchor</p>
       <div class="presets">
         <button type="button" class="p p-def" data-preset="base">Base case<span class="p-sub">ORR 55% vs 30% bench</span></button>
         <button type="button" class="p" data-preset="bull">Bull<span class="p-sub">ORR 65%</span></button>
@@ -82,15 +83,15 @@
         <button type="button" class="p p-best" data-preset="best">Best available guess<span class="p-sub">FIH-adjacent stress</span></button>
         <button type="button" class="p" data-preset="stress">Stress<span class="p-sub">At 35% threshold</span></button>
       </div>
-      <div class="ctrl"><label>Enrolled n <span id="rnVal">88</span></label><input type="range" id="rn" min="40" max="100" step="1" value="88"/></div>
-      <div class="ctrl"><label>Assumed ORR % <span id="rorrPctVal">55</span></label><input type="range" id="rorrPct" min="20" max="85" step="1" value="55"/><small>Undisclosed — not trial result</small></div>
-      <div class="ctrl"><label>Historical benchmark ORR % <span id="rbenchOrrPctVal">30</span></label><input type="range" id="rbenchOrrPct" min="10" max="50" step="1" value="30"/><small>Literature floor ~26–40%; cemiplimab ~47% metastatic</small></div>
-      <div class="ctrl"><label>ORR success threshold % <span id="rorrThresholdPctVal">35</span></label><input type="range" id="rorrThresholdPct" min="20" max="60" step="1" value="35"/><small>Until public SAP — adjustable</small></div>
-      <div class="ctrl"><label>DOR assumption (months) <span id="rdorMonthsVal">6</span></label><input type="range" id="rdorMonths" min="3" max="12" step="0.5" value="6"/></div>
-      <div class="ctrl"><label>DOR benchmark (months) <span id="rdorBenchMonthsVal">6</span></label><input type="range" id="rdorBenchMonths" min="3" max="12" step="0.5" value="6"/></div>
-      <div class="ctrl"><label>Top-line month <span id="rreadoutMonthVal">12</span></label><input type="range" id="rreadoutMonth" min="9" max="12" step="1" value="12"/></div>
-      <div class="ctrl"><label>P(PMA success) prior % <span id="rpSuccessVal">65</span></label><input type="range" id="rpSuccess" min="5" max="95" step="1" value="65"/><small>Blended with ORR/DOR structural score</small></div>
-      <div class="ctrl"><label>PMA modules submitted <span id="rpmaModulesDoneVal">1</span> / <span id="rpmaModulesTotalVal">3</span></label><input type="range" id="rpmaModulesDone" min="0" max="3" step="1" value="1"/><input type="range" id="rpmaModulesTotal" min="1" max="4" step="1" value="3"/></div>
+      <div class="ctrl"><label>Enrolled n <span id="rnVal">88</span></label><input type="range" id="rn" min="40" max="100" step="1" value="88"/><div class="bands" id="band-rn"></div><small class="source-line"><span class="tag f">Verified</span> 88 patients — enrollment complete May 2026. <span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span> · <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a></small></div>
+      <div class="ctrl"><label>Assumed ORR % <span id="rorrPctVal">55</span></label><input type="range" id="rorrPct" min="20" max="85" step="1" value="55"/><div class="bands" id="band-rorrPct"></div><small class="source-line"><span class="tag u">Assumption</span> Undisclosed — not ReSTART result. FIH DaRT SCC/H&amp;N 78.6% CR (28 lesions, different design) — <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">Arazi et al.</a> · Cemiplimab metastatic ORR 47% is PD-1 comp, not direct anchor — <a href="https://pubmed.ncbi.nlm.nih.gov/29863979/" target="_blank" rel="noopener">Migden 2018</a></small></div>
+      <div class="ctrl"><label>Historical benchmark ORR % <span id="rbenchOrrPctVal">30</span></label><input type="range" id="rbenchOrrPct" min="10" max="50" step="1" value="30"/><div class="bands" id="band-rbenchOrrPct"></div><small class="source-line"><span class="tag f">Verified</span> Literature floor ~26–40% recurrent cSCC systemic therapy. ◆ 47% = cemiplimab metastatic pivotal. <a href="https://pubmed.ncbi.nlm.nih.gov/29863979/" target="_blank" rel="noopener">Migden 2018</a> · Pembrolizumab LA cSCC 34% — <a href="https://pubmed.ncbi.nlm.nih.gov/32997973/" target="_blank" rel="noopener">Gross 2020</a></small></div>
+      <div class="ctrl"><label>ORR success threshold % <span id="rorrThresholdPctVal">35</span></label><input type="range" id="rorrThresholdPct" min="20" max="60" step="1" value="35"/><div class="bands" id="band-rorrThresholdPct"></div><small class="source-line"><span class="tag u">Assumption</span> Default 35% until public SAP filed. ◆ marks model default. Primary endpoints on <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">ClinicalTrials.gov</a>.</small></div>
+      <div class="ctrl"><label>DOR assumption (months) <span id="rdorMonthsVal">6</span></label><input type="range" id="rdorMonths" min="3" max="12" step="0.5" value="6"/><div class="bands" id="band-rdorMonths"></div><small class="source-line"><span class="tag u">Assumption</span> Pass/fail vs 6-month co-primary — not Kaplan–Meier DOR in this educational stub. <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a></small></div>
+      <div class="ctrl"><label>DOR benchmark (months) <span id="rdorBenchMonthsVal">6</span></label><input type="range" id="rdorBenchMonths" min="3" max="12" step="0.5" value="6"/><div class="bands" id="band-rdorBenchMonths"></div><small class="source-line"><span class="tag f">Verified</span> ◆ 6 mo = ReSTART DOR co-primary per protocol. <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a></small></div>
+      <div class="ctrl"><label>Top-line month <span id="rreadoutMonthVal">12</span></label><input type="range" id="rreadoutMonth" min="9" max="12" step="1" value="12"/><small class="source-line"><span class="tag u">Forward-looking</span> Company guidance ~end 2026. <span class="cite"><a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">Shareholder letter</a></span></small></div>
+      <div class="ctrl"><label>P(PMA success) prior % <span id="rpSuccessVal">65</span></label><input type="range" id="rpSuccess" min="5" max="95" step="1" value="65"/><div class="bands" id="band-rpSuccess"></div><small class="source-line"><span class="tag m">Model</span> Subjective prior blended 45% with structural ORR/DOR score. Breakthrough Device + modular PMA module 1 submitted Jan 2026 — <a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">Shareholder letter</a></small></div>
+      <div class="ctrl"><label>PMA modules submitted <span id="rpmaModulesDoneVal">1</span> / <span id="rpmaModulesTotalVal">3</span></label><input type="range" id="rpmaModulesDone" min="0" max="3" step="1" value="1"/><input type="range" id="rpmaModulesTotal" min="1" max="4" step="1" value="3"/><small class="source-line"><span class="tag f">Verified</span> Module 1 submitted Jan 2026. Modular PMA timeline heuristic only — not FDA clock. <a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">FDA modular PMA</a></small></div>
     </div>
     <div class="card">
       <h2>Model outputs</h2>
@@ -111,6 +112,20 @@
       <input type="hidden" id="rmcSims" value="1500"/>
       <input type="hidden" id="rreadoutYear" value="2026"/>
     </div>
+  </div>
+  <div class="regal-limitations page-inner">
+    <b>Limitations:</b> Single-arm ORR inference vs historical p₀ — not a randomized HR. DOR is pass/fail, not time-to-event. PMA timeline is heuristic. Does not model FDA advisory panel, Cemiplimab SoC erosion, or modular review clock-stops.
+  </div>
+  <div class="facts page-inner">
+    <h2>References · ReSTART</h2>
+    <ol class="ref-list" id="refs-restart">
+      <li><a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">ClinicalTrials.gov NCT05323253</a> — ReSTART protocol (ORR + DOR co-primary)</li>
+      <li><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Alpha Tau Q1 2026 PR</a> — n=88 enrollment complete</li>
+      <li><a href="https://pubmed.ncbi.nlm.nih.gov/29863979/" target="_blank" rel="noopener">Migden et al. 2018</a> — cemiplimab metastatic cSCC ORR 47%</li>
+      <li><a href="https://pubmed.ncbi.nlm.nih.gov/32997973/" target="_blank" rel="noopener">Gross et al. 2020</a> — pembrolizumab locally advanced cSCC</li>
+      <li><a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">Arazi et al. FIH DaRT</a> — 78.6% CR SCC/H&amp;N (different design)</li>
+      <li><a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">FDA modular PMA program</a></li>
+    </ol>
   </div>
 </div>
 
@@ -134,9 +149,24 @@
 
 <!-- ========== Valuation ========== -->
 <div id="tab-value" class="tabpage" hidden>
+  <div class="tab-intro-bar">
+    <details class="howworks howworks-inline">
+      <summary>How this works</summary>
+      <div class="howworks-body">
+        <p><span class="tag m">Model</span> EV = Σ (peak sales × EV multiple × P(success|indication)) + platform option. Peak sales = eligible pool × penetration × price × years on therapy. Risk-adjust toggle multiplies each indication by its P(success) slider.</p>
+        <p><span class="tag f">Fact</span> Cash ~$76.9M and ~42M ADS from FY2025. Tolmar prostate deal: Alpha Tau receives 60% of net sales as supplier — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>.</p>
+      </div>
+    </details>
+    <span class="tab-intro-sep">|</span>
+    <button type="button" class="methodlink" onclick="toggleMethod('m-value')">Methodology</button>
+  </div>
+  <div class="methodpanel" id="m-value" hidden>
+    <b>Valuation model.</b> Per-indication peak = pts × pen × price × years. EV contribution = peak × mult × P(s). Implied $/sh = (EV + cash − debt stub) / shares. Runway = cash / quarterly burn. Not a DCF — educational sum-of-parts only.
+  </div>
   <div class="wrap">
     <div class="card">
       <h2>Valuation controls</h2>
+      <p class="bandkey"><span class="swatch" style="background:rgba(47,111,237,.5)"></span><b>Blue</b> = defensible prior band · <span class="swatch" style="background:repeating-linear-gradient(45deg,rgba(214,69,69,.4),rgba(214,69,69,.4) 2px,transparent 2px,transparent 4px)"></span><b>Red</b> = aggressive · <b>◆</b> = filing anchor</p>
       <div class="presets">
         <button type="button" class="p p-def" data-val-preset="base">Base</button>
         <button type="button" class="p" data-val-preset="bull">Bull</button>
@@ -144,34 +174,36 @@
       </div>
       <label class="inline-check"><input type="checkbox" id="v_riskadj" checked/> Risk-adjust by P(success)</label>
       <div class="ctrl-group"><h3>Skin cSCC (ReSTART)</h3>
-        <div class="ctrl"><label>Eligible pool (000s) <span id="vv_skinPtsVal">12000</span></label><input type="range" id="vv_skinPts" min="2000" max="25000" step="500" value="12000"/></div>
-        <div class="ctrl"><label>Penetration <span id="vv_skinPenVal">0.15</span></label><input type="range" id="vv_skinPen" min="0.02" max="0.4" step="0.01" value="0.15"/></div>
-        <div class="ctrl"><label>Price ($K/procedure) <span id="vv_skinPriceVal">85</span></label><input type="range" id="vv_skinPrice" min="30" max="150" step="5" value="85"/></div>
-        <div class="ctrl"><label>P(success) <span id="vv_skinPsVal">0.55</span></label><input type="range" id="vv_skinPs" min="0.05" max="0.95" step="0.05" value="0.55"/></div>
+        <div class="ctrl"><label>Eligible pool (000s) <span id="vv_skinPtsVal">12000</span></label><input type="range" id="vv_skinPts" min="2000" max="25000" step="500" value="12000"/><div class="bands" id="band-vv_skinPts"></div><small class="source-line"><span class="tag a">Estimate</span> US recurrent/locally advanced cSCC addressable. <a href="https://seer.cancer.gov/statfacts/html/skin.html" target="_blank" rel="noopener">SEER skin cancer</a></small></div>
+        <div class="ctrl"><label>Penetration <span id="vv_skinPenVal">0.15</span></label><input type="range" id="vv_skinPen" min="0.02" max="0.4" step="0.01" value="0.15"/><div class="bands" id="band-vv_skinPen"></div><small class="source-line"><span class="tag a">Assumption</span> Intratumoral device share vs PD-1 SoC (cemiplimab/pembrolizumab).</small></div>
+        <div class="ctrl"><label>Price ($K/procedure) <span id="vv_skinPriceVal">85</span></label><input type="range" id="vv_skinPrice" min="30" max="150" step="5" value="85"/><div class="bands" id="band-vv_skinPrice"></div><small class="source-line"><span class="tag a">Assumption</span> No US list price — procedure-based device economics.</small></div>
+        <div class="ctrl"><label>P(success) <span id="vv_skinPsVal">0.55</span></label><input type="range" id="vv_skinPs" min="0.05" max="0.95" step="0.05" value="0.55"/><div class="bands" id="band-vv_skinPs"></div><small class="source-line"><span class="tag m">Model</span> Should track ReSTART tab P(PMA). <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a></small></div>
       </div>
       <div class="ctrl-group"><h3>GBM · Panc · Prostate</h3>
-        <div class="ctrl"><label>GBM pool (000s) <span id="vv_gbmPtsVal">8000</span></label><input type="range" id="vv_gbmPts" min="1000" max="15000" step="500" value="8000"/></div>
+        <div class="ctrl"><label>GBM pool (000s) <span id="vv_gbmPtsVal">8000</span></label><input type="range" id="vv_gbmPts" min="1000" max="15000" step="500" value="8000"/><div class="bands" id="band-vv_gbmPts"></div><small class="source-line"><span class="tag a">Estimate</span> rGBM US incidence — <a href="https://seer.cancer.gov/statfacts/html/brain.html" target="_blank" rel="noopener">SEER brain</a></small></div>
         <div class="ctrl"><label>GBM pen / price / P(s) <span id="vv_gbmPenVal">0.08</span> · <span id="vv_gbmPriceVal">95</span> · <span id="vv_gbmPsVal">0.25</span></label>
-          <input type="range" id="vv_gbmPen" min="0.01" max="0.2" step="0.01" value="0.08"/>
-          <input type="range" id="vv_gbmPrice" min="40" max="150" step="5" value="95"/>
-          <input type="range" id="vv_gbmPs" min="0.05" max="0.6" step="0.05" value="0.25"/></div>
-        <div class="ctrl"><label>Panc pool (000s) <span id="vv_pancPtsVal">35000</span></label><input type="range" id="vv_pancPts" min="5000" max="50000" step="1000" value="35000"/></div>
+          <input type="range" id="vv_gbmPen" min="0.01" max="0.2" step="0.01" value="0.08"/><div class="bands" id="band-vv_gbmPen"></div>
+          <input type="range" id="vv_gbmPrice" min="40" max="150" step="5" value="95"/><div class="bands" id="band-vv_gbmPrice"></div>
+          <input type="range" id="vv_gbmPs" min="0.05" max="0.6" step="0.05" value="0.25"/><div class="bands" id="band-vv_gbmPs"></div>
+          <small class="source-line"><span class="tag u">Early</span> REGAIN n=3 interim — local control only. <span class="cite"><a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a></span></small></div>
+        <div class="ctrl"><label>Panc pool (000s) <span id="vv_pancPtsVal">35000</span></label><input type="range" id="vv_pancPts" min="5000" max="50000" step="1000" value="35000"/><div class="bands" id="band-vv_pancPts"></div><small class="source-line"><span class="tag a">Estimate</span> <a href="https://seer.cancer.gov/statfacts/html/pancreas.html" target="_blank" rel="noopener">SEER pancreas</a></small></div>
         <div class="ctrl"><label>Panc pen / P(s) <span id="vv_pancPenVal">0.05</span> · <span id="vv_pancPsVal">0.15</span></label>
-          <input type="range" id="vv_pancPen" min="0.01" max="0.15" step="0.01" value="0.05"/>
+          <input type="range" id="vv_pancPen" min="0.01" max="0.15" step="0.01" value="0.05"/><div class="bands" id="band-vv_pancPen"></div>
           <input type="range" id="vv_pancPrice" min="40" max="150" step="5" value="90"/>
-          <input type="range" id="vv_pancPs" min="0.05" max="0.5" step="0.05" value="0.15"/></div>
-        <div class="ctrl"><label>Prostate pool (000s) <span id="vv_prostatePtsVal">15000</span></label><input type="range" id="vv_prostatePts" min="3000" max="30000" step="500" value="15000"/></div>
+          <input type="range" id="vv_pancPs" min="0.05" max="0.5" step="0.05" value="0.15"/><div class="bands" id="band-vv_pancPs"></div>
+          <small class="source-line"><span class="tag u">Early</span> IMPACT US n=40 — no response counts disclosed. Pooled ASCO pancreatic is separate.</small></div>
+        <div class="ctrl"><label>Prostate pool (000s) <span id="vv_prostatePtsVal">15000</span></label><input type="range" id="vv_prostatePts" min="3000" max="30000" step="500" value="15000"/><div class="bands" id="band-vv_prostatePts"></div><small class="source-line"><span class="tag a">Estimate</span> <a href="https://seer.cancer.gov/statfacts/html/prost.html" target="_blank" rel="noopener">SEER prostate</a></small></div>
         <div class="ctrl"><label>Prostate pen / price / P(s) <span id="vv_prostatePenVal">0.06</span> · <span id="vv_prostatePriceVal">80</span> · <span id="vv_prostatePsVal">0.20</span></label>
-          <input type="range" id="vv_prostatePen" min="0.01" max="0.2" step="0.01" value="0.06"/>
-          <input type="range" id="vv_prostatePrice" min="30" max="120" step="5" value="80"/>
-          <input type="range" id="vv_prostatePs" min="0.05" max="0.5" step="0.05" value="0.20"/>
-          <small>Tolmar deal: 60% of net sales to Alpha Tau <span class="tag f">verified</span></small></div>
+          <input type="range" id="vv_prostatePen" min="0.01" max="0.2" step="0.01" value="0.06"/><div class="bands" id="band-vv_prostatePen"></div>
+          <input type="range" id="vv_prostatePrice" min="30" max="120" step="5" value="80"/><div class="bands" id="band-vv_prostatePrice"></div>
+          <input type="range" id="vv_prostatePs" min="0.05" max="0.5" step="0.05" value="0.20"/><div class="bands" id="band-vv_prostatePs"></div>
+          <small class="source-line"><span class="tag f">Verified</span> Tolmar deal: 60% of net sales to Alpha Tau. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
       </div>
-      <div class="ctrl"><label>Shares (M ADS) <span id="vv_sharesVal">42</span></label><input type="range" id="vv_shares" min="20" max="80" step="1" value="42"/></div>
-      <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">77</span></label><input type="range" id="vv_cash" min="10" max="150" step="0.1" value="76.9"/><small>FY2025 ~$76.9M — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
-      <div class="ctrl"><label>Quarterly burn ($M) <span id="vv_burnQuarterlyVal">10.6</span></label><input type="range" id="vv_burnQuarterly" min="4" max="20" step="0.1" value="10.6"/><small>Derived from FY2025 operating loss ~$42.3M ÷ 4</small></div>
-      <div class="ctrl"><label>EV multiple <span id="vv_multVal">4</span></label><input type="range" id="vv_mult" min="2" max="8" step="0.5" value="4"/></div>
-      <div class="ctrl"><label>Platform option ($M) <span id="vv_platformVal">3</span></label><input type="range" id="vv_platform" min="0" max="20" step="0.5" value="3"/></div>
+      <div class="ctrl"><label>Shares (M ADS) <span id="vv_sharesVal">42</span></label><input type="range" id="vv_shares" min="20" max="80" step="1" value="42"/><div class="bands" id="band-vv_shares"></div><small class="source-line"><span class="tag f">Verified</span> ◆ ~42M FD ADS FY2025. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
+      <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">77</span></label><input type="range" id="vv_cash" min="10" max="150" step="0.1" value="76.9"/><div class="bands" id="band-vv_cash"></div><small class="source-line"><span class="tag f">Verified</span> ◆ FY2025 ~$76.9M cash. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
+      <div class="ctrl"><label>Quarterly burn ($M) <span id="vv_burnQuarterlyVal">10.6</span></label><input type="range" id="vv_burnQuarterly" min="4" max="20" step="0.1" value="10.6"/><div class="bands" id="band-vv_burnQuarterly"></div><small class="source-line"><span class="tag m">Derived</span> ◆ FY2025 operating loss ~$42.3M ÷ 4 quarters.</small></div>
+      <div class="ctrl"><label>EV multiple <span id="vv_multVal">4</span></label><input type="range" id="vv_mult" min="2" max="8" step="0.5" value="4"/><div class="bands" id="band-vv_mult"></div><small class="source-line"><span class="tag a">Convention</span> Device/oncology M&amp;A ~3–6× peak sales (see comparables table).</small></div>
+      <div class="ctrl"><label>Platform option ($M) <span id="vv_platformVal">3</span></label><input type="range" id="vv_platform" min="0" max="20" step="0.5" value="3"/><div class="bands" id="band-vv_platform"></div><small class="source-line"><span class="tag a">Assumption</span> Alpha DaRT platform across indications — Japan approval Feb 2026 for some H&amp;N. <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">Technology page</a></small></div>
       <input type="hidden" id="vv_skinYears" value="5"/><input type="hidden" id="vv_gbmYears" value="4"/><input type="hidden" id="vv_pancYears" value="6"/><input type="hidden" id="vv_prostateYears" value="5"/>
     </div>
     <div class="card">
@@ -190,6 +222,19 @@
       <p class="field-note">Themes from <a href="https://www.reddit.com/r/DRTS_Stock/" target="_blank" rel="noopener">r/DRTS_Stock</a> and biotech retail forums cross-checked against IR, ClinicalTrials.gov, and SEC filings — not endorsements.</p>
       <div class="table-wrap"><table class="valtbl"><thead><tr><th>Theme</th><th>Verdict</th><th>Tag</th><th>Notes</th></tr></thead><tbody id="vDDBody"></tbody></table></div>
     </div>
+  </div>
+  <div class="regal-limitations page-inner">
+    <b>Limitations:</b> Sum-of-parts only — no DCF, no probability-weighted NPV by year, no debt beyond cash stub. P(success) sliders are independent per indication unless you manually sync with ReSTART. Comparables are illustrative, not a trading comp set.
+  </div>
+  <div class="facts page-inner">
+    <h2>References · Valuation</h2>
+    <ol class="ref-list">
+      <li><a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Alpha Tau FY2025 PR</a> — cash, shares, Tolmar economics</li>
+      <li><a href="https://seer.cancer.gov/statfacts/html/skin.html" target="_blank" rel="noopener">SEER skin cancer statistics</a></li>
+      <li><a href="https://seer.cancer.gov/statfacts/html/brain.html" target="_blank" rel="noopener">SEER brain (GBM) statistics</a></li>
+      <li><a href="https://seer.cancer.gov/statfacts/html/pancreas.html" target="_blank" rel="noopener">SEER pancreatic cancer statistics</a></li>
+      <li><a href="https://seer.cancer.gov/statfacts/html/prost.html" target="_blank" rel="noopener">SEER prostate cancer statistics</a></li>
+    </ol>
   </div>
 </div>
 

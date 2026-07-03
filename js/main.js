@@ -30,6 +30,7 @@ import {
   computeHeaderStrip,
   paramsFromPreset
 } from "./ui/state.js";
+import { buildBands, renderBands } from "./ui/bands.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -40,37 +41,43 @@ let restoringState = false;
 
 const EXPL = {
   eli5: `<h3>What is Alpha Tau (DRTS)?</h3>
-<p><span class="tag f">Fact</span> <b>Alpha Tau Medical ($DRTS)</b> makes a cancer treatment called <b>Alpha DaRT</b>. Doctors place tiny radioactive seeds <em>inside</em> a tumor. The seeds release <b>alpha particles</b> — very strong radiation that travels only a few cell widths, so it kills tumor cells nearby without blasting the whole body.</p>
-<p><span class="tag m">Model</span> This app lets you move sliders to explore <em>what-if</em> scenarios. Sliders are guesses — not secret trial results. Facts come from ClinicalTrials.gov and company press releases.</p>
-<p><span class="tag c">Community</span> Reddit posts about DRTS often hype GBM "100% control" — remember that was only <b>3 patients</b> so far.</p>`,
+<p><span class="tag f">Fact</span> <b>Alpha Tau Medical ($DRTS)</b> makes <b>Alpha DaRT</b> — a cancer treatment where doctors place tiny radioactive seeds <em>inside</em> a tumor. The seeds release <b>alpha particles</b>: very strong radiation that only travels a few cell widths, killing nearby tumor cells while sparing healthy tissue farther away (<a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">company technology page</a>).</p>
+<p><span class="tag f">Fact</span> Their main US approval push is <b>ReSTART</b> for recurrent skin cancer (cSCC) — <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>. <b>88 patients</b> enrolled, complete May 2026 (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a>).</p>
+<p><span class="tag m">Model</span> Blue strips on sliders show <em>plausible guess ranges</em> from literature — not secret trial data. Move sliders to ask "what if ORR is X%?" Facts come from ClinicalTrials.gov, PubMed, and IR.</p>
+<p><span class="tag c">Community</span> Reddit posts about DRTS often hype GBM "100% control" — that was only <b>3 patients</b> in REGAIN so far (<a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>). Local control ≠ living longer.</p>`,
 
   ms: `<h3>Trials &amp; endpoints</h3>
-<p><span class="tag f">Fact</span> <b>ReSTART</b> (<a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>) treats recurrent skin cancer (cSCC). Everyone gets DaRT; success is measured by <b>ORR</b> (tumor shrinkage) and <b>DOR</b> (how long response lasts — 6 months matters).</p>
-<p><span class="tag f">Fact</span> <b>IMPACT</b> (pancreas) and <b>REGAIN</b> (brain GBM) are smaller pilot studies — they test safety and feasibility first, not approval by themselves.</p>
-<p><span class="tag f">Fact</span> This is a <b>medical device</b> path (PMA to FDA), not a pill approval (NDA). Japan approved DaRT for some head &amp; neck cancers in Feb 2026.</p>`,
+<p><span class="tag f">Fact</span> <b>ReSTART</b> (<a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>) is a single-arm pivotal study in recurrent cutaneous SCC. Everyone receives intratumoral DaRT. Co-primary endpoints: <b>ORR</b> (confirmed tumor shrinkage per RECIST 1.1) and <b>DOR at 6 months</b> (how long responses last).</p>
+<p><span class="tag f">Fact</span> <b>IMPACT</b> (pancreatic, US pilot ~40 pts) and <b>REGAIN</b> (recurrent GBM, feasibility n≤10) are earlier IDE studies — safety/feasibility, not standalone approval paths. Five concurrent US trials per <a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">shareholder letter</a>.</p>
+<p><span class="tag f">Fact</span> Alpha DaRT follows a <b>device PMA</b> path (FDA), not a drug NDA. Breakthrough Device designation for recurrent cSCC; first modular PMA module submitted Jan 2026. Japan approved DaRT for selected head &amp; neck indications Feb 2026 (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>).</p>
+<p><span class="tag m">Model</span> ReSTART success is judged vs <b>historical ORR benchmarks</b> (~26–40% systemic therapy range), not a randomized control arm. Cemiplimab metastatic cSCC ORR 47% is a PD-1 comparator — <a href="https://pubmed.ncbi.nlm.nih.gov/29863979/" target="_blank" rel="noopener">Migden 2018</a>.</p>`,
 
   hs: `<h3>Alpha vs beta/gamma radiation</h3>
-<p><span class="tag f">Fact</span> Alpha particles have high energy but travel ~50–100 μm — roughly one human cell diameter × hundreds. Beta/gamma (typical external beam RT) penetrate farther. DaRT uses <b>Radium-224</b> seeds; decay daughters diffuse ~mm-scale inside the tumor (<a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">PubMed 31759075</a>).</p>
-<p><span class="tag f">Fact</span> Alpha damage is less dependent on oxygen than photons — relevant for hypoxic solid tumors (<a href="https://pubmed.ncbi.nlm.nih.gov/18059026/" target="_blank" rel="noopener">Keisari 2007</a>).</p>
-<p><span class="tag m">Model</span> ReSTART compares ORR to historical benchmarks (~26–40% for systemic therapy in recurrent cSCC; cemiplimab ~47% in metastatic disease per <a href="https://pubmed.ncbi.nlm.nih.gov/29863979/" target="_blank" rel="noopener">Migden 2018</a>).</p>`,
+<p><span class="tag f">Fact</span> Alpha particles deliver high linear energy transfer (LET) but travel ~50–100 μm — roughly hundreds of cell diameters at most. External beam photons (beta/gamma) penetrate centimeters. DaRT seeds use <b>Radium-224</b> (t½ 3.7 d); decay daughters (Rn-220, Po-216) diffuse ~mm-scale inside the tumor (<a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">Arazi et al. FIH</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/18059026/" target="_blank" rel="noopener">Keisari 2007</a>).</p>
+<p><span class="tag f">Fact</span> High-LET alpha damage is less oxygen-dependent than low-LET photons — relevant for hypoxic solid tumors where external RT underperforms. Preclinical solid-tumor responsiveness documented in the Keisari/Kelson program.</p>
+<p><span class="tag f">Fact</span> FIH DaRT in SCC/H&amp;N reported 78.6% CR in 28 lesions with no grade ≥3 toxicity — <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">PubMed 31759075</a>. Different patient mix and endpoints vs ReSTART pivotal; do not equate CR with pivotal ORR.</p>
+<p><span class="tag m">Model</span> ReSTART ORR slider priors span ~45–65% (1σ) as undisclosed assumptions. Benchmark slider anchors cemiplimab 47% (◆) and literature floor 26–40%. Wilson 95% CI brackets binomial uncertainty at n=88.</p>`,
 
   col: `<h3>Single-arm ORR inference</h3>
-<p><span class="tag f">Fact</span> ReSTART primary endpoints: confirmed ORR (RECIST 1.1) + DOR at 6 months — <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>. Enrollment: 88 patients, complete May 2026.</p>
-<p><span class="tag m">Model</span> Wilson score 95% CI for binomial ORR; one-sided exact binomial tail P(X ≥ k | n, p₀) vs benchmark p₀. Monte Carlo draws true ORR ~ Beta prior centered on slider, simulates n=88 binomial outcomes.</p>
-<p><span class="tag m">Model</span> ORR success threshold default 35% (adjustable — public SAP not filed). DOR modeled as pass/fail vs 6-month gate. Combined P(PMA) blends structural ORR/DOR score with subjective slider.</p>
-<p><span class="tag u">Assumption</span> Modular PMA: module 1 submitted Jan 2026; review timeline heuristic only.</p>`,
+<p><span class="tag f">Fact</span> ReSTART co-primary endpoints: confirmed ORR (RECIST 1.1) + DOR at 6 months — <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>. Enrollment complete: n=88 (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">May 2026 PR</a>). Top-line ~end 2026 per company guidance.</p>
+<p><span class="tag m">Model</span> <b>Wilson score interval</b> for binomial ORR (better than Wald at extremes). One-sided exact binomial tail: P(X ≥ k | n, p₀) vs historical benchmark p₀. Historical p₀ default 30% — literature recurrent cSCC systemic therapy ~26–40%; pembrolizumab locally advanced 34% — <a href="https://pubmed.ncbi.nlm.nih.gov/32997973/" target="_blank" rel="noopener">Gross 2020</a>.</p>
+<p><span class="tag m">Model</span> Monte Carlo: true ORR ~ Beta(20p, 20(1−p)) centered on assumed slider; simulate n=88 binomial outcomes; success if ORR ≥ threshold (default 35%, SAP not public) AND beats benchmark. Seeded n=1500 for reproducibility.</p>
+<p><span class="tag m">Model</span> DOR modeled as pass/fail vs 6-month gate — not Kaplan–Meier. Combined P(PMA) = 55% structural ORR/DOR score + 45% subjective PMA prior slider. Modular PMA module 1 submitted Jan 2026 — timeline heuristic only (<a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">FDA modular PMA</a>).</p>
+<p><span class="tag u">Assumption</span> Blue prior bands on sliders encode literature-backed plausibility; red hatch = hard to defend without data.</p>`,
 
   pro: `<h3>Device PMA vs drug NDA</h3>
-<p><span class="tag f">Fact</span> Alpha DaRT is classified as a device; ReSTART supports a <b>modular PMA</b> (Breakthrough Device for recurrent cSCC). FDA review focuses on safety + effectiveness in the intended population — here, single-arm ORR/DOR vs historical performance, not randomized OS HR.</p>
-<p><span class="tag f">Fact</span> REGAIN holds Breakthrough Device for rGBM but remains feasibility (n≤10); interim n=3 showed 100% local control, 67% CR — <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>.</p>
-<p><span class="tag m">Model</span> Valuation: EV = Σ (peak sales × multiple × P(success|stage)) + platform option. Tolmar prostate deal: Alpha Tau receives 60% of net sales as supplier.</p>
-<p><span class="tag c">Community</span> Retail DD often conflates REGAIN local control with OS benefit — model treats GBM P(success) separately at low prior.</p>`,
+<p><span class="tag f">Fact</span> Alpha DaRT is a Class III device seeking <b>modular PMA</b> for recurrent cSCC (Breakthrough Device). FDA evaluates safety and effectiveness vs historical performance / natural history — not randomized OS hazard ratio like oncology drugs. Single-arm ORR + durability is standard for some device oncologic indications when randomized trials are infeasible.</p>
+<p><span class="tag f">Fact</span> REGAIN (rGBM) Breakthrough Device; feasibility enrollment n≤10. Interim n=3: 100% local disease control, 67% CR per RANO — <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>. Does not establish OS benefit or registrational success.</p>
+<p><span class="tag f">Fact</span> IMPACT pancreatic US pilot targets n=40 — no US response counts disclosed; pooled ASCO 2026 pancreatic OS data is a separate non-US design. Do not import into IMPACT posterior.</p>
+<p><span class="tag m">Model</span> Valuation: risk-adj EV = Σ (peak sales × EV multiple × P(success)) + platform option. Peak = eligible pool × penetration × price × years. Cash ~$76.9M, ~42M ADS FY2025. Tolmar prostate: Alpha Tau 60% of net sales as supplier — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>.</p>
+<p><span class="tag c">Community</span> r/DRTS_Stock themes cross-checked in Valuation DD table — REGAIN local control often overstated as GBM cure; model keeps GBM P(success) low by default.</p>`,
 
   phd: `<h3>Alpha dosimetry &amp; regulatory statistics</h3>
-<p><span class="tag f">Fact</span> Ra-224 (t½ 3.66 d) → Rn-220 → Po-216 → Pb-212 chain; effective dose cloud ~mm (Arazi et al., Phys Med Biol 2010; Keisari/Kelson preclinical program). Intratumoral seed placement requires uniform coverage — cold spots risk recurrence.</p>
-<p><span class="tag f">Fact</span> Single-arm pivotal acceptance requires compelling effect vs natural history / historical controls (FDA device precedent; indication-specific). Binomial exact test appropriate for ORR; DOR requires time-to-event analysis not fully replicated in this educational MC stub.</p>
-<p><span class="tag m">Model</span> MC uses Beta(α,β) with α = p·20, β = (1−p)·20 around assumed ORR; success = observed ORR ≥ threshold AND binomial beat of benchmark at α=0.05 one-sided heuristic. Not a replacement for SAP.</p>
-<p><span class="tag u">Limit</span> Does not model competing cemiplimab/pembrolizumab SoC drift, modular PMA clock-stops, or correlated platform approval across indications.</p>`
+<p><span class="tag f">Fact</span> Ra-224 decay chain: Rn-220 → Po-216 (α) → Pb-212 → Bi-212. Effective dose cloud ~mm from intratumoral seed placement; α track length ~50–100 μm. Uniform seed coverage required — cold spots risk local recurrence (<a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">Arazi</a>; Keisari preclinical).</p>
+<p><span class="tag f">Fact</span> Single-arm device pivotal acceptance: effect size vs historical controls / performance goals per FDA device precedent and indication-specific guidance. Binomial exact test for ORR; DOR requires time-to-event methods (KM, Brookmeyer-Crowley) not fully implemented here.</p>
+<p><span class="tag m">Model</span> MC: Beta(α,β) with α = p·20, β = (1−p)·20 — moderate prior strength. Success = observed ORR ≥ threshold AND one-sided binomial beat of p₀ at α=0.05 heuristic. Wilson CI used for display, not as primary test statistic.</p>
+<p><span class="tag m">Model</span> Prior bands: 1σ/2σ/3σ blue strips from literature (cemiplimab ORR 47%, FIH CR 78.6% marked implausible for pivotal ORR, DOR gate 6 mo anchored). Valuation bands: SEER epidemiology, FY2025 filing anchors for cash/shares/burn.</p>
+<p><span class="tag u">Limit</span> No competing-risk SoC drift (cemiplimab/pembrolizumab), modular PMA review clock-stops, correlated indication approvals, spatial dosimetry heterogeneity, or SAP-defined alpha-spending. Educational model only — not a substitute for regulatory submission statistics.</p>`
 };
 
 function fmtAsOf(iso) {
@@ -264,6 +271,10 @@ function updateValUI() {
   }
 }
 
+function updateBands() {
+  renderBands($, (id) => $(id)?.value);
+}
+
 function updateNow() {
   readSliders("r", Object.keys(state.restart), state.restart);
   readSliders("v", Object.keys(state.val), state.val);
@@ -274,6 +285,7 @@ function updateNow() {
   updatePipelineUI();
   updateValUI();
   updateHeaderStrip();
+  updateBands();
   if (!restoringState) updateHashQuiet();
 }
 
@@ -404,6 +416,7 @@ window.toggleMethod = (id) => {
 function init() {
   if (parseEmbedMode()) document.body.classList.add("embed-mode");
 
+  buildBands($);
   renderStaticPanels();
   renderPilotPanels();
   initFactsAsOf();
