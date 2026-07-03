@@ -15,7 +15,7 @@ export const PIPELINE_TRIALS = [
     enrollment: 88,
     status: "Enrollment complete May 2026",
     tag: "verified",
-    source: "https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update"
+    source: "https://www.sec.gov/Archives/edgar/data/1871321/000121390026053589/ea028978301ex99-1.htm"
   },
   {
     id: "impact",
@@ -27,7 +27,7 @@ export const PIPELINE_TRIALS = [
     enrollment: 40,
     status: "Recruitment complete Q3 2026 (est.)",
     tag: "verified",
-    source: "https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update"
+    source: "https://www.alphatau.com/single-post/alpha-tau-announces-fda-approval-of-ide-supplement-to-expand-alpha-dart-impact-trial-to-patients-wi"
   },
   {
     id: "regain",
@@ -98,7 +98,7 @@ export const CATALYSTS = [
     windowStart: "2026-07-01",
     windowEnd: "2026-09-30",
     tag: "verified",
-    source: "https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update"
+    source: "https://www.alphatau.com/single-post/alpha-tau-announces-fda-approval-of-ide-supplement-to-expand-alpha-dart-impact-trial-to-patients-wi"
   },
   {
     id: "restart_topline",
@@ -301,25 +301,25 @@ export const BEAR_CASE = [
     theme: "Pre-revenue / widening losses → dilution",
     verdict: "verified",
     tag: "verified",
-    note: "FY2025 net loss $42.6M; Q1 2026 $22.9M; F-3 shelf $300M + $100M ATM filed Apr 2026 — flexibility ≠ immediate dilution"
+    note: "FY2025 net loss $42.6M; Q1 2026 $22.9M; F-3 shelf $300M + $100M ATM filed Apr 2026 — SEC 20-F + F-3; flexibility ≠ immediate dilution"
   },
   {
     theme: "Single-arm PMA may fail FDA historical-control bar",
     verdict: "partial",
     tag: "community",
-    note: "ReSTART has no concurrent control; FDA device guidance flags historical-control bias; Breakthrough + modular PMA mitigate but do not eliminate"
+    note: "ReSTART has no concurrent control; FDA device guidance flags historical-control bias — Breakthrough + modular PMA mitigate but do not eliminate — https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices"
   },
   {
     theme: "ReSTART ORR below PD-1 benchmarks (cemiplimab 47%)",
     verdict: "partial",
     tag: "community",
-    note: "Device pivotal vs drug labels — different endpoints/populations; bear case if ORR ~35–40% with weak DOR"
+    note: "Device pivotal vs drug labels — cemiplimab 47%/49% LA (FDA 2018), pembrolizumab LA 50% (Merck 2021); bear case if ReSTART ORR ~35–40% with weak DOR"
   },
   {
     theme: "Manufacturing / Ra-224 supply scale-up risk",
     verdict: "partial",
     tag: "community",
-    note: "NH facility expansion + Tolmar $15M mfg investment; 20-F cites supply chain; no public failure disclosed"
+    note: "NH facility expansion + Tolmar $15M mfg; 20-F risk factors cite supply chain — https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321"
   },
   {
     theme: "Israel HQ / geopolitical overhang",
@@ -349,7 +349,7 @@ export const BEAR_CASE = [
     theme: "Warrant / SPAC overhang (DRTSW)",
     verdict: "partial",
     tag: "verified",
-    note: "Q1 2026 financial expense $9.6M from warrant remeasurement; legacy SPAC structure in 20-F"
+    note: "Q1 2026 financial expense $9.6M from warrant remeasurement; legacy SPAC structure — SEC 20-F FY2025"
   },
   {
     theme: "Insider selling into catalysts",

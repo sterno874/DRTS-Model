@@ -50,7 +50,7 @@ Parallel platform bets: **REGAIN** recurrent GBM feasibility (interim **n=3** on
 | **Prostate pilot** | Locally recurrent prostate | [NCT07290998](https://clinicaltrials.gov/study/NCT07290998) | Pilot single-arm | **n≈12** est.; not yet recruiting | Tolmar commercialization | verified |
 | **H&N + checkpoint** | Advanced H&N + pembrolizumab | IDE per shareholder letter | Combination | Early | partial — confirm NCT when posted |
 
-**FDA designations:** Breakthrough Device for recurrent cSCC (ReSTART) and recurrent GBM (REGAIN). REGAIN also in FDA **TAP** pilot (Oct 2024). **verified** via company PRs.
+**FDA designations:** Breakthrough Device for recurrent cSCC (ReSTART) and recurrent GBM (REGAIN, Oct 2021). REGAIN also in FDA **TAP** pilot (Oct 2024). **verified** via [Breakthrough Devices program](https://www.fda.gov/medical-devices/how-study-and-market-your-device/breakthrough-devices-program), [TAP PR](https://www.alphatau.com/single-post/alpha-tau-announces-acceptance-into-fda-s-total-product-life-cycle-advisory-program-to-accelerate-ma), company PRs.
 
 **Device vs drug:** All US trials are under **Investigational Device Exemption (IDE)**. Commercial US use requires **PMA** (Class III device), not NDA/BLA.
 
@@ -66,9 +66,10 @@ Parallel platform bets: **REGAIN** recurrent GBM feasibility (interim **n=3** on
 | Co-primary endpoints | ORR (confirmed BOR, RECIST 1.1) + **DOR at 6 months** | verified — CT.gov |
 | Enrollment | **88** (company PR); CT.gov est. 86 | verified |
 | Sites | 28 sites US/Israel/Canada | verified — CT.gov |
+| Secondary endpoints | PFS + OS at 1 yr; overall DOR; local control; QoL | verified — [SEC 6-K May 2026](https://www.sec.gov/Archives/edgar/data/1871321/000121390026053589/ea028978301ex99-1.htm) |
 | PMA | Modular PMA module 1 **Jan 2026**; full submission **toward year-end 2026** per shareholder letter | verified |
 | Top-line timing | **~end 2026** | verified — forward-looking |
-| Historical ORR bench | Systemic therapy ~26–40%; cemiplimab metastatic **47%**; pembrolizumab LA **~34%** | verified — PubMed |
+| Historical ORR bench | Systemic therapy ~26–40%; cemiplimab mCSCC **47%** / laCSCC **49%** (FDA); pembrolizumab r/m **~34%** / LA **50%** (KEYNOTE-629) | verified — [FDA cemiplimab](https://www.fda.gov/drugs/drug-approvals-and-databases/fda-approves-cemiplimab-rwlc-metastatic-or-locally-advanced-cutaneous-squamous-cell-carcinoma) · PubMed |
 
 **Community claims:**
 - "PMA any day now" → **rejected** (data maturation + modular submission timeline)
@@ -97,7 +98,7 @@ Parallel platform bets: **REGAIN** recurrent GBM feasibility (interim **n=3** on
 |------|--------|-----|
 | Design | Open-label; 2 cohorts (LA + metastatic); DaRT during first 4 chemo cycles | verified — CT.gov |
 | Primary endpoint | **Treatment-related SAE incidence** (not ORR/OS) | verified — CT.gov |
-| Target n | **40** (20 per cohort) | verified |
+| Target n | **40** (20 per cohort; expanded via IDE supplement Apr 2026) | verified — [IMPACT IDE supplement PR](https://www.alphatau.com/single-post/alpha-tau-announces-fda-approval-of-ide-supplement-to-expand-alpha-dart-impact-trial-to-patients-wi) |
 | US response data | **Not disclosed** | verified |
 
 **Pooled pancreatic (separate from IMPACT):** ASCO 2026 presentation of **3 pooled Phase I/II** EUS-guided studies — mOS **11.1–11.2 mo** as 2L vs historical ~4–6 mo metastatic / ~9 mo LA; G3 AEs **9%**; no treatment-related deaths — **verified** [Jun 1 2026 PR](https://alphatau.com/alpha-tau-announces-strong-overall-survival-results-from-alpha-dart-pancreatic-cancer-studies-presented-at-2026-asco-annual-meeting/) + [SEC 6-K](https://www.sec.gov/Archives/edgar/data/1871321/000121390026063182/ea029277001ex99-1.htm).
@@ -126,7 +127,7 @@ Parallel platform bets: **REGAIN** recurrent GBM feasibility (interim **n=3** on
 | First ex-Israel approval | Yes | verified |
 | PMS requirement | **66 patients**, **5 centers** | verified |
 | Revenue | **Not disclosed** in filings reviewed | partial |
-| Partner | HekaBio K.K. | verified |
+| Partner | HekaBio K.K. (DMAH) | verified — [HekaBio PR](https://www.heka.bio/post/hekabio-and-alpha-tau-medical-obtain-approval-in-japan-for-solid-tumor-treatment-alpha-dart) · [SEC 6-K Feb 2026](https://www.sec.gov/Archives/edgar/data/1871321/000121390026019635/ea027814401ex99-1_alpha.htm) |
 
 ---
 
@@ -141,7 +142,8 @@ Parallel platform bets: **REGAIN** recurrent GBM feasibility (interim **n=3** on
 | ATM facility | Up to **$100M** via H.C. Wainwright | verified |
 | Tolmar equity | **$20M** non-dilutive vs ATM if at deal price | verified |
 | Warrant remeasurement | Q1 2026 financial expense **$9.6M** (vs income prior yr) | verified — Q1 2026 PR |
-| Going concern | Standard clinical-stage going-concern language in 20-F | verified |
+| Going concern | Standard clinical-stage going-concern language in 20-F | verified — [SEC 20-F FY2025](https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321) |
+| Oramed offering (Apr 2025) | 14.1M shares @ $2.612; ~$36.7M net proceeds | verified — 20-F |
 
 **Bear:** Shelf/ATM creates **overhang** — capital flexibility verified; immediate dilution **not** verified unless ATM tapped.
 
@@ -266,7 +268,7 @@ No single Reddit power-user with multi-year verified track record identified —
 
 ---
 
-## Source bibliography (25 links)
+## Source bibliography (48 links)
 
 1. [ClinicalTrials.gov NCT05323253 — ReSTART](https://clinicaltrials.gov/study/NCT05323253)  
 2. [ClinicalTrials.gov NCT06698458 — IMPACT](https://clinicaltrials.gov/study/NCT06698458)  
@@ -293,7 +295,30 @@ No single Reddit power-user with multi-year verified track record identified —
 23. [Barclays initiation May 28, 2026](https://www.marketscreener.com/news/barclays-initiates-alpha-tau-medical-with-overweight-rating-15-price-target-ce7f5ddadb89f521)  
 24. [Merlintrader DRTS hub](https://www.merlintrader.com/alpha-tau-stock-hub/)  
 25. [r/DRTS_Stock](https://www.reddit.com/r/DRTS_Stock/)  
+26. [SEC 20-F FY2025 (filed Mar 9, 2026)](https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321)  
+27. [SEC 6-K ReSTART enrollment May 2026](https://www.sec.gov/Archives/edgar/data/1871321/000121390026053589/ea028978301ex99-1.htm)  
+28. [SEC 6-K modular PMA module 1 Jan 2026](https://www.sec.gov/Archives/edgar/data/1871321/000121390026000777/ea027162402ex99-1_alpha.htm)  
+29. [SEC 6-K shareholder letter Jan 2026](https://www.sec.gov/Archives/edgar/data/1871321/000121390026025176/ea028036001ex99-1.htm)  
+30. [SEC 6-K Japan Shonin Feb 2026](https://www.sec.gov/Archives/edgar/data/1871321/000121390026019635/ea027814401ex99-1_alpha.htm)  
+31. [SEC 6-K ReSTART IDE approval Jun 2022](https://www.sec.gov/Archives/edgar/data/1871321/000110465922069189/tm2217984d1_ex99-1.htm)  
+32. [FDA cemiplimab cSCC approval (ORR 47%/49% LA)](https://www.fda.gov/drugs/drug-approvals-and-databases/fda-approves-cemiplimab-rwlc-metastatic-or-locally-advanced-cutaneous-squamous-cell-carcinoma)  
+33. [Merck KEYTRUDA LA cSCC label expansion (ORR 50%)](https://www.merck.com/news/fda-approves-expanded-indication-for-mercks-keytruda-pembrolizumab-in-locally-advanced-cutaneous-squamous-cell-carcinoma-cscc/)  
+34. [FDA Breakthrough Devices program](https://www.fda.gov/medical-devices/how-study-and-market-your-device/breakthrough-devices-program)  
+35. [FDA TAP pilot program](https://www.fda.gov/medical-devices/total-product-life-cycle-advisory-program-tap)  
+36. [FDA pivotal device design guidance](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices)  
+37. [TAP acceptance PR (Oct 21, 2024)](https://www.alphatau.com/single-post/alpha-tau-announces-acceptance-into-fda-s-total-product-life-cycle-advisory-program-to-accelerate-ma)  
+38. [IMPACT IDE supplement PR (Apr 23, 2026)](https://www.alphatau.com/single-post/alpha-tau-announces-fda-approval-of-ide-supplement-to-expand-alpha-dart-impact-trial-to-patients-wi)  
+39. [REGAIN IDE approval PR (Apr 2, 2025)](https://www.alphatau.com/single-post/alpha-tau-receives-fda-approval-to-initiate-a-trial-for-patients-with-recurrent-glioblastoma)  
+40. [HekaBio Japan Shonin partner PR](https://www.heka.bio/post/hekabio-and-alpha-tau-medical-obtain-approval-in-japan-for-solid-tumor-treatment-alpha-dart)  
+41. [PubMed 20463379 — Arazi 2010 alpha dosimetry](https://pubmed.ncbi.nlm.nih.gov/20463379/)  
+42. [PubMed 26388465 — Kelson & Keisari 2015 DaRT review](https://pubmed.ncbi.nlm.nih.gov/26388465/)  
+43. [PubMed 39398444 — EUS-guided pancreatic DaRT preliminary](https://pubmed.ncbi.nlm.nih.gov/39398444/)  
+44. [PubMed 36237307 — DaRT + TMZ/BEV GBM xenografts](https://pubmed.ncbi.nlm.nih.gov/36237307/)  
+45. [PubMed 39565227 — Alpha DaRT radiation safety best practices](https://pubmed.ncbi.nlm.nih.gov/39565227/)  
+46. [Google Patents US11969485B2 — controlled Ra-224 release](https://patents.google.com/patent/US11969485B2/en)  
+47. [Alpha DaRT technology page](https://alphatau.com/alpha-dart-technology/)  
+48. [IAEA alpha therapy review (Pub1616)](https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1616_web.pdf)  
 
 ---
 
-*Last updated: 3 Jul 2026 — Phase 4 DD expansion. Claims tagged in-app on Valuation (community + bear) and Pipeline (threads) tabs.*
+*Last updated: 3 Jul 2026 — Phase 5 primary-source expansion (+17 SEC/FDA/PubMed/patent links). Claims tagged in-app on Valuation (community + bear) and Pipeline (threads) tabs.*

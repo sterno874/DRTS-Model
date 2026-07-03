@@ -13,15 +13,33 @@ export const CSCC_BENCHMARKS = [
     orrPct: 47,
     rangeLo: 42,
     rangeHi: 52,
-    source: "https://pubmed.ncbi.nlm.nih.gov/29863979/",
+    source: "https://www.fda.gov/drugs/drug-approvals-and-databases/fda-approves-cemiplimab-rwlc-metastatic-or-locally-advanced-cutaneous-squamous-cell-carcinoma",
+    tag: "verified"
+  },
+  {
+    id: "cemiplimab_la",
+    label: "Cemiplimab (locally advanced cSCC, FDA label)",
+    orrPct: 49,
+    rangeLo: 31,
+    rangeHi: 67,
+    source: "https://www.fda.gov/drugs/drug-approvals-and-databases/fda-approves-cemiplimab-rwlc-metastatic-or-locally-advanced-cutaneous-squamous-cell-carcinoma",
     tag: "verified"
   },
   {
     id: "pembrolizumab_la",
-    label: "Pembrolizumab (locally advanced cSCC)",
+    label: "Pembrolizumab (locally advanced cSCC, KEYNOTE-629)",
+    orrPct: 50,
+    rangeLo: 36,
+    rangeHi: 64,
+    source: "https://www.merck.com/news/fda-approves-expanded-indication-for-mercks-keytruda-pembrolizumab-in-locally-advanced-cutaneous-squamous-cell-carcinoma-cscc/",
+    tag: "verified"
+  },
+  {
+    id: "pembrolizumab_rm",
+    label: "Pembrolizumab (recurrent/met cSCC, initial KEYNOTE-629)",
     orrPct: 34,
-    rangeLo: 26,
-    rangeHi: 40,
+    rangeLo: 25,
+    rangeHi: 44,
     source: "https://pubmed.ncbi.nlm.nih.gov/32997973/",
     tag: "verified"
   },
