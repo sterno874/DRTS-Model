@@ -6,7 +6,9 @@ import {
   catalystsInYear,
   sortCatalysts,
   computePipelineSummary,
-  COMMUNITY_DD
+  COMMUNITY_DD,
+  BEAR_CASE,
+  COMMUNITY_THREADS
 } from "../js/math/pipeline.js";
 
 test("PIPELINE_TRIALS includes ReSTART IMPACT REGAIN", () => {
@@ -40,8 +42,14 @@ test("computePipelineSummary warns on REGAIN interim", () => {
 });
 
 test("COMMUNITY_DD flags rejected PMA-before-readout claim", () => {
-  const row = COMMUNITY_DD.find((r) => r.theme.includes("before ReSTART"));
+  const row = COMMUNITY_DD.find((r) => r.theme.includes("before ReSTART") || r.theme.includes("approval before"));
   assert.equal(row.verdict, "rejected");
+});
+
+test("BEAR_CASE and COMMUNITY_THREADS non-empty", () => {
+  assert.ok(BEAR_CASE.length >= 5);
+  assert.ok(COMMUNITY_THREADS.length >= 5);
+  assert.ok(BEAR_CASE.every((r) => r.verdict && r.theme));
 });
 
 test("all catalysts have source URLs", () => {

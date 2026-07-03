@@ -104,9 +104,16 @@ test("five restart presets including stress", () => {
   assert.ok(presets.includes("best"));
 });
 
-test("valuation has community DD table", () => {
+test("valuation has community DD and bear case tables", () => {
   assert.match(html, /id="vDDBody"/);
+  assert.match(html, /id="vBearBody"/);
   assert.match(html, /Community DD/);
+  assert.match(html, /Bear case/);
+});
+
+test("pipeline has community threads table", () => {
+  assert.match(html, /id="pipeThreadsBody"/);
+  assert.match(html, /id="pipeRestartDDBody"/);
 });
 
 test("pipeline catalyst calendar", () => {
