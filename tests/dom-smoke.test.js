@@ -40,8 +40,29 @@ test("six explain levels", () => {
 
 test("biology tab has SVG placeholder", () => {
   assert.match(html, /id="tab-biology"/);
-  assert.match(html, /class="bio-svg"/);
   assert.match(html, /pubmed\.ncbi\.nlm\.nih\.gov\/31759075/);
+});
+
+test("biology tab has five alpha simulation modules", () => {
+  const simIds = [
+    "alpha-sim-penetration",
+    "alpha-sim-bragg",
+    "alpha-sim-decay",
+    "alpha-sim-hypoxia",
+    "alpha-sim-seeds"
+  ];
+  for (const id of simIds) {
+    assert.match(html, new RegExp(`id="${id}"`));
+    assert.match(html, new RegExp(`id="${id}"[\\s\\S]*?<svg`));
+  }
+  assert.match(html, /alpha-sims\.css/);
+  assert.match(html, /Educational schematic/);
+});
+
+test("explain levels link to biology simulations", () => {
+  assert.match(js, /alpha-sim-penetration/);
+  assert.match(js, /alpha-sim-bragg/);
+  assert.match(js, /initAlphaSims/);
 });
 
 test("ReSTART cites NCT05323253", () => {
