@@ -63,3 +63,24 @@ test("main.js exports toggleMethod and decodeShareHash usage", () => {
   assert.match(js, /decodeShareHash/);
   assert.match(js, /window\.toggleMethod/);
 });
+
+test("Phase 2 header strip and MC histogram present", () => {
+  assert.match(html, /id="headerStrip"/);
+  assert.match(html, /id="rMcHist"/);
+  assert.match(html, /Phase 2/);
+});
+
+test("five restart presets including stress", () => {
+  const presets = matchAll(/data-preset="([^"]+)"/g, html).map((m) => m[1]);
+  assert.ok(presets.includes("stress"));
+  assert.ok(presets.includes("best"));
+});
+
+test("valuation has community DD table", () => {
+  assert.match(html, /id="vDDBody"/);
+  assert.match(html, /Community DD/);
+});
+
+test("pipeline catalyst calendar", () => {
+  assert.match(html, /id="pipeCalendar"/);
+});

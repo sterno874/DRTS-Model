@@ -477,6 +477,13 @@
     body.embed-mode header .tabnav{display:none}
   }
   @media print{.bottom-nav{display:none!important}}
+  .catalyst-list{display:flex;flex-direction:column;gap:var(--space-md);margin:var(--space-md) 0}
+  .catalyst-item{padding:var(--space-md);border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel);font-size:13px;line-height:1.5}
+  .cat-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-sm);margin-bottom:var(--space-xs)}
+  .cat-meta,.cat-window,.cat-note{font-size:12px;color:var(--muted)}
+  .cat-window{font-variant-numeric:tabular-nums;margin-top:var(--space-xs)}
+  .dor-pass{color:var(--good)!important}
+  .dor-fail{color:var(--bad)!important}
   /* ===== The Biology tab ===== */
   .bio-content{padding:var(--space-md) var(--page-pad) var(--space-2xl);max-width:var(--content-max);margin:0 auto;width:100%}
   .bio-section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:var(--panel-pad);box-shadow:var(--shadow);margin-bottom:var(--section-gap)}

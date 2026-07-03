@@ -64,45 +64,51 @@
 
 ---
 
-## Reddit / retail DD themes
+## Reddit / retail DD themes (extended Jul 2026)
 
-Subreddits with activity (Buzztickr / web mentions, Jul 2026): **r/DRTS_Stock**, **r/biotechplay**, **r/pennystocks**, **r/TheRaceTo10Million**, **r/stocks**. Direct Reddit API fetch blocked during research; themes below cross-checked against IR/SEC/ClinicalTrials.gov.
+Subreddits with activity: **r/DRTS_Stock**, **r/biotechplay**, **r/pennystocks**, **r/TheRaceTo10Million**, **r/stocks**. Themes cross-checked against IR/SEC/ClinicalTrials.gov; surfaced in-app on Valuation tab with `verified` / `partial` / `rejected` tags.
 
-| Theme | Typical claim | Verdict | Notes |
-|-------|---------------|---------|-------|
-| "REGAIN 100% local control = GBM cure" | Interim n=3 → platform validation | ⚠️ partial | Local control ≠ OS; feasibility trial, not pivotal |
-| "ReSTART enrollment done → PMA imminent" | 88 pts enrolled May 2026 | ✅ verified enrollment | Top-line still ~end 2026; modular PMA in progress |
-| "Japan approval = revenue now" | First ex-Israel approval | ⚠️ partial | Approval received; commercial ramp / reimbursement ⚠️ unverified timing |
-| "Pancreatic = huge TAM / de-risked" | IMPACT + pooled pancreatic data bullish | ⚠️ partial | Pilot n=40; pooled FIH ≠ randomized Phase 3 |
-| "Tolmar deal validates prostate" | Strategic commercial partner | ✅ verified deal terms (60% supply price) | Clinical data for US prostate pilot still early |
-| "Five US trials = derisked platform" | Parallel IDE program | ✅ verified trial count | Each indication has separate regulatory path (device PMA vs pilot) |
-| "Cash runway to all readouts" | ~$77M cash | ✅ verified FY2025 | Burn rate / dilution risk ❌ not dismissed — company unprofitable |
-| "Alpha radiation = no oxygen needed" | Mechanism works in hypoxic tumors | ✅ verified preclinical / company | Clinical advantage vs photon RT ⚠️ indication-specific |
+| Theme | Typical claim | Verdict | Tag | Notes |
+|-------|---------------|---------|-----|-------|
+| "REGAIN 100% local control = GBM cure" | Interim n=3 → platform validation | partial | community | Local control ≠ OS; feasibility trial |
+| "ReSTART enrollment done → PMA imminent" | 88 pts enrolled May 2026 | partial | verified enrollment | Top-line ~end 2026; modular PMA in progress |
+| "Japan approval = revenue now" | First ex-Israel approval | partial | community | Approval verified; commercial ramp timing unverified |
+| "Pancreatic = huge TAM / de-risked" | IMPACT + pooled pancreatic data | partial | community | Pilot n=40; pooled FIH ≠ Phase 3 |
+| "Tolmar deal validates prostate" | Strategic commercial partner | verified | verified | 60% supply economics in PR |
+| "Five US trials = derisked platform" | Parallel IDE program | verified | verified | Separate regulatory path per indication |
+| "Cash runway to all readouts" | ~$77M cash | verified | verified | Burn/dilution risk not dismissed |
+| "Alpha radiation = no oxygen needed" | Hypoxic tumor mechanism | verified | verified | Preclinical + company; clinical advantage indication-specific |
+| "Imminent PMA before ReSTART top-line" | Approval any day | rejected | community | Not supported by company timeline |
+| "$15+ price targets" | Anonymous PT posts | rejected | community | Analyst/retail opinion, not guidance |
+| "Abscopal effect proven for DaRT" | Immune synergy de-risks pipeline | rejected | community | Case reports only; combo trials early |
 
-**Rejected / unverified without primary source:**
-- Specific price targets from anonymous Reddit (e.g. "$15 PT") — analyst opinion, not company guidance.
-- Claims of **imminent FDA PMA approval** before ReSTART top-line — ❌ not supported by company timeline.
-- **Abscopal / immunotherapy synergy** as proven for DaRT — one case report in literature; combination trials early.
+### cSCC ORR benchmark references (ReSTART model)
 
----
-
-## Proposed model tab structure (Phase 2)
-
-1. **ReSTART** — Single-arm ORR/DOR vs historical benchmark; modular PMA timeline; MC on response rate vs FDA threshold (TBD from precedent / SAP).
-2. **Pipeline** — IMPACT (pilot safety/feasibility), REGAIN (GBM interim → expanded enrollment), Japan H&N, prostate/Tolmar; catalyst calendar.
-3. **Valuation** — Indication-level peak revenue (skin, GBM, pancreatic, prostate), device ASP, risk-adjusted by trial stage; platform optionality.
-4. **Explain** — ELI5 → professional: alpha vs beta/gamma, device vs drug regulatory path, single-arm pivotal logic.
-5. **Biology** — Ra-224 decay chain, diffusion range, hypoxia independence, immune activation (preclinical).
+| Source | ORR | Use in model |
+|--------|-----|--------------|
+| Cemiplimab metastatic cSCC pivotal ([PubMed 29863979](https://pubmed.ncbi.nlm.nih.gov/29863979/)) | ~47% | Upper bound reference |
+| Pembrolizumab locally advanced cSCC ([PubMed 32997973](https://pubmed.ncbi.nlm.nih.gov/32997973/)) | ~34% (26–40% range) | Mid benchmark |
+| Historical systemic therapy / literature floor | ~26–40% | Default benchmark slider 30% |
 
 ---
 
-## Key references (locked for app)
+## Phase 2 status (shipped)
 
-- ClinicalTrials.gov: NCT05323253, NCT06698458, NCT06910306, NCT07290998, NCT03015883 (FIH)
-- PubMed: [31759075](https://pubmed.ncbi.nlm.nih.gov/31759075/) (FIH SCC/H&N), [18059026](https://pubmed.ncbi.nlm.nih.gov/18059026/) (preclinical)
-- SEC: [Alpha Tau 20-F](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001873723) (CIK approximate — verify)
-- IR: https://www.alphatau.com/
+- ReSTART: binomial + MC, DOR gate, PMA heuristic, 5 presets, benchmark table
+- Pipeline: catalyst calendar, trial fact panels
+- Valuation: 4 indications + Tolmar 60%, comparables, community DD table
+- Explain: 6 levels with sourced claims
+- Biology: decay chain SVG + modality comparison
+- Tests: 54 passing (`npm test`); mutation runner (`npm run test:mutation`)
+
+## Phase 3 (remaining)
+
+- SAP-aligned success rules when public
+- KM-based DOR module
+- IMPACT/REGAIN Bayesian monitoring
+- Burn/dilution scenarios
+- Automated stale-data checks
 
 ---
 
-*This file is temporary research scaffolding. Phase 2 should migrate citations into tab References panels and delete stale entries.*
+*Phase 2 migrated citations into tab panels; this file remains the research audit trail.*

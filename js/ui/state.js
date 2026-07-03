@@ -1,4 +1,5 @@
-import { riskAdjustedEV, evPerShare } from "../math/device.js";
+import { computeFullValuation } from "../math/valuation.js";
+import { computeRestartMetrics } from "../math/restart.js";
 
 export const VALID_TABS = ["restart", "pipeline", "value", "explain", "biology"];
 export const EXPLAIN_LEVELS = ["eli5", "ms", "hs", "col", "pro", "phd"];
@@ -28,7 +29,7 @@ export function b64urlDecode(str) {
 }
 
 export const DEFAULT_STATE = {
-  v: 1,
+  v: 2,
   tab: "restart",
   activeRestartPreset: "base",
   activeValPreset: "base",
@@ -38,14 +39,21 @@ export const DEFAULT_STATE = {
     orrPct: 55,
     benchOrrPct: 30,
     dorMonths: 6,
-    pSuccess: 65
+    dorBenchMonths: 6,
+    orrThresholdPct: 35,
+    pSuccess: 65,
+    readoutMonth: 12,
+    readoutYear: 2026,
+    pmaModulesDone: 1,
+    pmaModulesTotal: 3,
+    mcSims: 1500
   },
   pipeline: {
     impactEnroll: 40,
-    impactReadoutQ: 4,
     regainN: 10,
     regainLdcPct: 100,
-    japanApproved: 1
+    japanApproved: 1,
+    calendarYear: 2026
   },
   val: {
     v_skinPts: 12000,
@@ -63,29 +71,89 @@ export const DEFAULT_STATE = {
     v_pancPrice: 90,
     v_pancYears: 6,
     v_pancPs: 0.15,
+    v_prostatePts: 15000,
+    v_prostatePen: 0.06,
+    v_prostatePrice: 80,
+    v_prostateYears: 5,
+    v_prostatePs: 0.2,
     v_platform: 3,
     v_mult: 4,
     v_shares: 42,
     v_cash: 77,
     v_riskadj: true
   },
-  ui: { explainLvl: "eli5" }
+  ui: { explainLvl: "eli5", showHeaderStrip: true }
 };
 
+/** ReSTART scenario presets — stress tests, not predictions. */
 export const SHARE_PRESETS = {
-  base: { orrPct: 55, benchOrrPct: 30, pSuccess: 65 },
-  bull: { orrPct: 65, benchOrrPct: 28, pSuccess: 80 },
-  bear: { orrPct: 42, benchOrrPct: 32, pSuccess: 35 }
+  base: {
+    orrPct: 55,
+    benchOrrPct: 30,
+    dorMonths: 6,
+    pSuccess: 65,
+    label: "Base — ORR 55% vs 30% bench"
+  },
+  bull: {
+    orrPct: 65,
+    benchOrrPct: 28,
+    dorMonths: 7,
+    pSuccess: 80,
+    label: "Bull — strong ORR + DOR"
+  },
+  bear: {
+    orrPct: 42,
+    benchOrrPct: 32,
+    dorMonths: 5,
+    pSuccess: 35,
+    label: "Bear — marginal vs bench"
+  },
+  best: {
+    orrPct: 60,
+    benchOrrPct: 30,
+    dorMonths: 8,
+    pSuccess: 75,
+    label: "Best available guess — FIH-adjacent ORR"
+  },
+  stress: {
+    orrPct: 35,
+    benchOrrPct: 30,
+    dorMonths: 4,
+    pSuccess: 20,
+    label: "Stress — at ORR threshold"
+  }
 };
 
 export const VAL_PRESETS = {
-  base: { v_skinPs: 0.55, v_gbmPs: 0.25, v_pancPs: 0.15, v_mult: 4 },
-  bull: { v_skinPs: 0.7, v_gbmPs: 0.4, v_pancPs: 0.25, v_mult: 5 },
-  bear: { v_skinPs: 0.35, v_gbmPs: 0.12, v_pancPs: 0.08, v_mult: 3 }
+  base: {
+    v_skinPs: 0.55,
+    v_gbmPs: 0.25,
+    v_pancPs: 0.15,
+    v_prostatePs: 0.2,
+    v_mult: 4,
+    v_platform: 3
+  },
+  bull: {
+    v_skinPs: 0.7,
+    v_gbmPs: 0.4,
+    v_pancPs: 0.25,
+    v_prostatePs: 0.35,
+    v_mult: 5,
+    v_platform: 6
+  },
+  bear: {
+    v_skinPs: 0.35,
+    v_gbmPs: 0.12,
+    v_pancPs: 0.08,
+    v_prostatePs: 0.1,
+    v_mult: 3,
+    v_platform: 0
+  }
 };
 
-const RESTART_KEYS = ["n", "orrPct", "benchOrrPct", "dorMonths", "pSuccess"];
+const RESTART_KEYS = Object.keys(DEFAULT_STATE.restart);
 const VAL_KEYS = Object.keys(DEFAULT_STATE.val);
+const PIPELINE_KEYS = Object.keys(DEFAULT_STATE.pipeline);
 
 function deltaEncode(state, baseline) {
   const d = {};
@@ -94,28 +162,32 @@ function deltaEncode(state, baseline) {
     const b = baseline[k];
     if (typeof v === "boolean") {
       if (v !== b) d[k] = v ? 1 : 0;
-    } else if (v !== b) d[k] = v;
+    } else if (v !== b && v !== undefined) d[k] = v;
   }
   return d;
 }
 
 export function buildShareHash(state) {
+  const { label: _lb, ...presetCore } = SHARE_PRESETS.base;
   const base = {
     ...DEFAULT_STATE.restart,
-    ...SHARE_PRESETS.base
+    ...presetCore
   };
   const payload = {
-    v: 1,
+    v: 2,
     r: deltaEncode(state.restart, base),
-    val: deltaEncode(state.val, DEFAULT_STATE.val)
+    val: deltaEncode(state.val, DEFAULT_STATE.val),
+    pipe: deltaEncode(state.pipeline, DEFAULT_STATE.pipeline)
   };
   if (state.tab !== DEFAULT_STATE.tab) payload.tab = state.tab;
   if (state.ui.explainLvl !== "eli5") payload.ui = { explainLvl: state.ui.explainLvl };
   if (!Object.keys(payload.r).length) delete payload.r;
   if (!Object.keys(payload.val).length) delete payload.val;
+  if (!Object.keys(payload.pipe).length) delete payload.pipe;
+  const version = payload.v;
   delete payload.v;
   if (!Object.keys(payload).length) return "#s1=";
-  return "#s1=" + b64urlEncode(JSON.stringify({ v: 1, ...payload }));
+  return "#s1=" + b64urlEncode(JSON.stringify({ v: version, ...payload }));
 }
 
 export function decodeShareHash(hash) {
@@ -128,6 +200,7 @@ export function decodeShareHash(hash) {
     if (p.tab) s.tab = p.tab;
     if (p.r) Object.assign(s.restart, p.r);
     if (p.val) Object.assign(s.val, p.val);
+    if (p.pipe) Object.assign(s.pipeline, p.pipe);
     if (p.ui) Object.assign(s.ui, p.ui);
     return s;
   } catch {
@@ -135,48 +208,44 @@ export function decodeShareHash(hash) {
   }
 }
 
-export function parseEmbedMode() {
-  if (typeof location === "undefined") return false;
-  return new URLSearchParams(location.search).get("embed") === "1";
+export function parseEmbedMode(search = "", hash = "") {
+  if (typeof location !== "undefined") {
+    search = location.search;
+    hash = location.hash;
+  }
+  const q = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  if (q.get("embed") === "1") return true;
+  if (hash) {
+    const s = decodeShareHash(hash);
+    if (s && s.embed) return true;
+  }
+  return false;
 }
 
 export function computeValuationMetrics(val) {
-  const inds = [
-    {
-      name: "skin",
-      patients: val.v_skinPts,
-      penetration: val.v_skinPen,
-      price: val.v_skinPrice,
-      years: val.v_skinYears,
-      multiple: val.v_mult,
-      pSuccess: val.v_riskadj ? val.v_skinPs : 1
-    },
-    {
-      name: "gbm",
-      patients: val.v_gbmPts,
-      penetration: val.v_gbmPen,
-      price: val.v_gbmPrice,
-      years: val.v_gbmYears,
-      multiple: val.v_mult,
-      pSuccess: val.v_riskadj ? val.v_gbmPs : 1
-    },
-    {
-      name: "panc",
-      patients: val.v_pancPts,
-      penetration: val.v_pancPen,
-      price: val.v_pancPrice,
-      years: val.v_pancYears,
-      multiple: val.v_mult,
-      pSuccess: val.v_riskadj ? val.v_pancPs : 1
-    }
-  ];
-  const ev = riskAdjustedEV(inds) + val.v_platform;
-  const perSh = evPerShare(ev, val.v_shares, val.v_cash);
-  return { ev, perSh, inds };
+  return computeFullValuation(val);
 }
 
 export function paramsFromPreset(name) {
   const q = SHARE_PRESETS[name];
   if (!q) return null;
-  return { ...DEFAULT_STATE.restart, ...q };
+  const { label, ...rest } = q;
+  return { ...DEFAULT_STATE.restart, ...rest };
 }
+
+/** Frozen header strip: ReSTART ORR scenario + implied $/sh. */
+export function computeHeaderStrip(state) {
+  const r = computeRestartMetrics(state.restart);
+  const v = computeFullValuation(state.val);
+  return {
+    preset: state.activeRestartPreset,
+    orrPct: state.restart.orrPct,
+    wilson: `${(r.wilson.lo * 100).toFixed(0)}–${(r.wilson.hi * 100).toFixed(0)}%`,
+    pBeat: (r.pBeatBench * 100).toFixed(0),
+    pPma: state.restart.pSuccess,
+    ev: v.ev.toFixed(0),
+    perSh: v.perSh.toFixed(2)
+  };
+}
+
+export { RESTART_KEYS, VAL_KEYS, PIPELINE_KEYS };

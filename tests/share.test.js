@@ -21,8 +21,17 @@ test("tab change round-trips", () => {
   assert.equal(d.tab, "pipeline");
 });
 
-test("VALID_TABS has five entries", () => {
-  assert.equal(VALID_TABS.length, 5);
-  assert.ok(VALID_TABS.includes("restart"));
-  assert.ok(VALID_TABS.includes("biology"));
+test("pipeline delta round-trips", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.pipeline.calendarYear = 2027;
+  const h = buildShareHash(s);
+  const d = decodeShareHash(h);
+  assert.equal(d.pipeline.calendarYear, 2027);
+});
+
+test("restart ORR delta round-trips", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.restart.orrPct = 62;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.restart.orrPct, 62);
 });
