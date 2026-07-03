@@ -79,7 +79,7 @@ export const DEFAULT_STATE = {
     v_platform: 3,
     v_mult: 4,
     v_shares: 42,
-    v_cash: 76.9,
+    v_cash: 80.2,
     v_burnQuarterly: 10.6,
     v_riskadj: true
   },
@@ -168,6 +168,38 @@ function deltaEncode(state, baseline) {
   return d;
 }
 
+/** Match slider values to nearest named preset for share-link restore UI. */
+export function inferActivePresets(state) {
+  const out = {
+    activeRestartPreset: state.activeRestartPreset || DEFAULT_STATE.activeRestartPreset,
+    activeValPreset: state.activeValPreset || DEFAULT_STATE.activeValPreset
+  };
+  let bestR = null;
+  let bestRScore = Infinity;
+  for (const [name, preset] of Object.entries(SHARE_PRESETS)) {
+    const score = Math.abs((preset.orrPct ?? 0) - state.restart.orrPct);
+    if (score < bestRScore) {
+      bestRScore = score;
+      bestR = name;
+    }
+  }
+  if (bestR && bestRScore <= 1) out.activeRestartPreset = bestR;
+
+  let bestV = null;
+  let bestVScore = Infinity;
+  for (const [name, preset] of Object.entries(VAL_PRESETS)) {
+    const score =
+      Math.abs((preset.v_skinPs ?? 0) - state.val.v_skinPs) +
+      Math.abs((preset.v_mult ?? 0) - state.val.v_mult);
+    if (score < bestVScore) {
+      bestVScore = score;
+      bestV = name;
+    }
+  }
+  if (bestV && bestVScore <= 0.06) out.activeValPreset = bestV;
+  return out;
+}
+
 export function buildShareHash(state) {
   const { label: _lb, ...presetCore } = SHARE_PRESETS.base;
   const base = {
@@ -181,6 +213,12 @@ export function buildShareHash(state) {
     pipe: deltaEncode(state.pipeline, DEFAULT_STATE.pipeline)
   };
   if (state.tab !== DEFAULT_STATE.tab) payload.tab = state.tab;
+  if (state.activeRestartPreset && state.activeRestartPreset !== DEFAULT_STATE.activeRestartPreset) {
+    payload.rp = state.activeRestartPreset;
+  }
+  if (state.activeValPreset && state.activeValPreset !== DEFAULT_STATE.activeValPreset) {
+    payload.vp = state.activeValPreset;
+  }
   if (state.ui.explainLvl !== "eli5") payload.ui = { explainLvl: state.ui.explainLvl };
   if (!Object.keys(payload.r).length) delete payload.r;
   if (!Object.keys(payload.val).length) delete payload.val;
@@ -201,10 +239,17 @@ export function decodeShareHash(hash) {
     const p = JSON.parse(b64urlDecode(raw));
     const s = structuredClone(DEFAULT_STATE);
     if (p.tab) s.tab = p.tab;
+    if (p.rp) s.activeRestartPreset = p.rp;
+    if (p.vp) s.activeValPreset = p.vp;
     if (p.r) Object.assign(s.restart, p.r);
     if (p.val) Object.assign(s.val, p.val);
     if (p.pipe) Object.assign(s.pipeline, p.pipe);
     if (p.ui) Object.assign(s.ui, p.ui);
+    if (!p.rp || !p.vp) {
+      const inferred = inferActivePresets(s);
+      if (!p.rp) s.activeRestartPreset = inferred.activeRestartPreset;
+      if (!p.vp) s.activeValPreset = inferred.activeValPreset;
+    }
     return s;
   } catch {
     return null;

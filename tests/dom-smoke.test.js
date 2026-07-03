@@ -135,6 +135,16 @@ test("references and limitations sections", () => {
   assert.match(html, /id="refs-restart"/);
 });
 
+test("pipeline has bear case table", () => {
+  assert.match(html, /id="pipeBearBody"/);
+  assert.match(html, /Bear case/);
+});
+
+test("MC histogram has axis labels", () => {
+  assert.match(html, /id="rMcAxis"/);
+  assert.match(html, /mc-hist-wrap/);
+});
+
 test("valuation how-it-works panel", () => {
   assert.match(html, /id="m-value"/);
 });

@@ -4,7 +4,8 @@ import {
   buildShareHash,
   decodeShareHash,
   DEFAULT_STATE,
-  VALID_TABS
+  VALID_TABS,
+  inferActivePresets
 } from "../js/ui/state.js";
 
 test("default share hash is empty payload", () => {
@@ -42,4 +43,26 @@ test("restart ORR delta round-trips", () => {
   s.restart.orrPct = 62;
   const d = decodeShareHash(buildShareHash(s));
   assert.equal(d.restart.orrPct, 62);
+});
+
+test("restart preset marker round-trips", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.activeRestartPreset = "bull";
+  s.restart.orrPct = 65;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.activeRestartPreset, "bull");
+});
+
+test("valuation preset marker round-trips", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.activeValPreset = "bear";
+  s.val.v_mult = 3;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.activeValPreset, "bear");
+});
+
+test("inferActivePresets matches bull ORR", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.restart.orrPct = 65;
+  assert.equal(inferActivePresets(s).activeRestartPreset, "bull");
 });

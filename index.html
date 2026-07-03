@@ -112,7 +112,10 @@
         <div><div class="ok">PMA ETA (heuristic)</div><div class="ov" id="rPmaEta" style="font-size:14px">—</div></div>
       </div>
       <p class="chart-sub">Monte Carlo ORR distribution (seeded, n=<span id="rmcSimsVal">1500</span> — slider hidden, fixed for perf)</p>
-      <div class="mc-hist-bars" id="rMcHist" role="img" aria-label="MC ORR histogram"></div>
+      <div class="mc-hist-wrap">
+        <div class="mc-hist-bars" id="rMcHist" role="img" aria-label="MC ORR histogram"></div>
+        <div class="mc-hist-axis" id="rMcAxis" aria-hidden="true"></div>
+      </div>
       <p class="mc-hist-caption" id="rMcCaption"></p>
       <p class="field-note">Prior FIH DaRT in SCC/H&amp;N: 78.6% CR in 28 lesions — <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">PubMed 31759075</a> (different design; not ReSTART).</p>
       <input type="hidden" id="rmcSims" value="1500"/>
@@ -138,7 +141,13 @@
 <!-- ========== Pipeline ========== -->
 <div id="tab-pipeline" class="tabpage" hidden>
   <div class="tab-intro-bar">
-    <p class="sub" style="margin:0">Five concurrent US IDE trials + global milestones. Catalyst calendar from company guidance + ClinicalTrials.gov — no invented readout numbers.</p>
+    <details class="howworks howworks-inline">
+      <summary>How this works</summary>
+      <div class="howworks-body">
+        <p><span class="tag f">Fact</span> Five concurrent US IDE trials plus Japan approval and Tolmar urology deal — catalyst windows from company guidance and ClinicalTrials.gov only. No invented readout numbers.</p>
+        <p><span class="tag u">Early</span> REGAIN interim is <b>n=3 feasibility</b> only — local disease control ≠ OS. IMPACT primary endpoint is SAE rate, not ORR.</p>
+      </div>
+    </details>
   </div>
   <div class="facts page-inner">
     <h2>Pipeline map</h2>
@@ -150,6 +159,9 @@
     <h2 class="mt-md">Pilot response panels <span class="tag m">read-only</span></h2>
     <p class="field-note">Bayesian Beta(1,1) posterior intervals from disclosed counts only — not predictive models. REGAIN interim n=3 per <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>.</p>
     <div class="pilot-panels" id="pilotPanels"></div>
+    <h2 class="mt-md">Bear case <span class="tag c">honest</span></h2>
+    <p class="field-note">Skeptic / filing risks cross-checked in <a href="https://github.com/sterno874/DRTS-Model/blob/main/RESEARCH.md" target="_blank" rel="noopener">RESEARCH.md</a> — not a recommendation to short.</p>
+    <div class="table-wrap"><table class="valtbl"><thead><tr><th>Risk</th><th>Verdict</th><th>Tag</th><th>Notes</th></tr></thead><tbody id="pipeBearBody"></tbody></table></div>
     <h2 class="mt-md">Community threads <span class="tag c">reference</span></h2>
     <p class="field-note">High-signal discussion hubs — sentiment only; verify every claim against primary sources in <a href="https://github.com/sterno874/DRTS-Model/blob/main/RESEARCH.md" target="_blank" rel="noopener">RESEARCH.md</a>.</p>
     <div class="table-wrap"><table class="valtbl"><thead><tr><th>Source</th><th>Author</th><th>Notes</th></tr></thead><tbody id="pipeThreadsBody"></tbody></table></div>
@@ -163,7 +175,7 @@
       <summary>How this works</summary>
       <div class="howworks-body">
         <p><span class="tag m">Model</span> EV = Σ (peak sales × EV multiple × P(success|indication)) + platform option. Peak sales = eligible pool × penetration × price × years on therapy. Risk-adjust toggle multiplies each indication by its P(success) slider.</p>
-        <p><span class="tag f">Fact</span> Cash ~$76.9M and ~42M ADS from FY2025. Tolmar prostate deal: Alpha Tau receives 60% of net sales as supplier — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>.</p>
+        <p><span class="tag f">Fact</span> Cash ~$80.2M (Mar 31 2026) and ~42M ADS from FY2025 filings. Tolmar prostate deal: Alpha Tau receives 60% of net sales as supplier — <a href="https://alphatau.com/alpha-tau-and-tolmar-announce-strategic-collaboration-to-bring-alpha-dart-therapy-to-u-s-urological-cancer-patients/" target="_blank" rel="noopener">Jun 2026 PR</a> · <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>.</p>
       </div>
     </details>
     <span class="tab-intro-sep">|</span>
@@ -209,7 +221,7 @@
           <small class="source-line"><span class="tag f">Verified</span> Tolmar deal: 60% of net sales to Alpha Tau. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
       </div>
       <div class="ctrl"><label>Shares (M ADS) <span id="vv_sharesVal">42</span></label><input type="range" id="vv_shares" min="20" max="80" step="1" value="42"/><div class="bands" id="band-vv_shares"></div><small class="source-line"><span class="tag f">Verified</span> ◆ ~42M FD ADS FY2025. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
-      <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">77</span></label><input type="range" id="vv_cash" min="10" max="150" step="0.1" value="76.9"/><div class="bands" id="band-vv_cash"></div><small class="source-line"><span class="tag f">Verified</span> ◆ FY2025 ~$76.9M cash. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
+      <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">80.2</span></label><input type="range" id="vv_cash" min="10" max="150" step="0.1" value="80.2"/><div class="bands" id="band-vv_cash"></div><small class="source-line"><span class="tag f">Verified</span> Q1 2026 ~$80.2M · ◆ FY2025 ~$76.9M filing anchor. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a> · <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
       <div class="ctrl"><label>Quarterly burn ($M) <span id="vv_burnQuarterlyVal">10.6</span></label><input type="range" id="vv_burnQuarterly" min="4" max="20" step="0.1" value="10.6"/><div class="bands" id="band-vv_burnQuarterly"></div><small class="source-line"><span class="tag m">Derived</span> ◆ FY2025 operating loss ~$42.3M ÷ 4 quarters.</small></div>
       <div class="ctrl"><label>EV multiple <span id="vv_multVal">4</span></label><input type="range" id="vv_mult" min="2" max="8" step="0.5" value="4"/><div class="bands" id="band-vv_mult"></div><small class="source-line"><span class="tag a">Convention</span> Device/oncology M&amp;A ~3–6× peak sales (see comparables table).</small></div>
       <div class="ctrl"><label>Platform option ($M) <span id="vv_platformVal">3</span></label><input type="range" id="vv_platform" min="0" max="20" step="0.5" value="3"/><div class="bands" id="band-vv_platform"></div><small class="source-line"><span class="tag a">Assumption</span> Alpha DaRT platform across indications — Japan approval Feb 2026 for some H&amp;N. <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">Technology page</a></small></div>

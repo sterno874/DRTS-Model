@@ -194,7 +194,7 @@ export const VAL_BANDS = [
     max: 150,
     sig: { b1: [65, 90], b2: [45, 110], b3: [10, 150] },
     anchor: 76.9,
-    why: "Cash ($M) — FY2025 ~$76.9M per year-end PR."
+    why: "Cash ($M) — ◆ FY2025 ~$76.9M filing anchor; default slider uses Q1 2026 ~$80.2M."
   },
   {
     id: "vv_burnQuarterly",

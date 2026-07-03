@@ -30,7 +30,8 @@ import {
   parseEmbedMode,
   computeValuationMetrics,
   computeHeaderStrip,
-  paramsFromPreset
+  paramsFromPreset,
+  inferActivePresets
 } from "./ui/state.js";
 import { buildBands, renderBands } from "./ui/bands.js";
 import { initAlphaSims } from "./ui/alpha-sims.js";
@@ -41,19 +42,32 @@ let state = structuredClone(DEFAULT_STATE);
 let activeTab = "restart";
 let curLvl = "eli5";
 let restoringState = false;
+let updateRaf = null;
+let lastMcResult = null;
+const tabsDirty = { restart: true, pipeline: true, value: true, explain: true, biology: true };
+
+function debounce(fn, ms) {
+  let t;
+  return function (...args) {
+    clearTimeout(t);
+    t = setTimeout(() => fn.apply(this, args), ms);
+  };
+}
 
 const EXPL = {
   eli5: `<h3>What is Alpha Tau (DRTS)?</h3>
 <p><span class="tag f">Fact</span> <b>Alpha Tau Medical ($DRTS)</b> makes <b>Alpha DaRT</b> — a cancer treatment where doctors place tiny radioactive seeds <em>inside</em> a tumor. The seeds release <b>alpha particles</b>: very strong radiation that only travels a few cell widths, killing nearby tumor cells while sparing healthy tissue farther away (<a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">company technology page</a>).</p>
 <p><span class="tag f">Fact</span> Their main US approval push is <b>ReSTART</b> for recurrent skin cancer (cSCC) — <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>. <b>88 patients</b> enrolled, complete May 2026 (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a>).</p>
 <p><span class="tag m">Model</span> Blue strips on sliders show <em>plausible guess ranges</em> from literature — not secret trial data. Move sliders to ask "what if ORR is X%?" Facts come from ClinicalTrials.gov, PubMed, and IR.</p>
-<p><span class="tag c">Community</span> Reddit posts about DRTS often hype GBM "100% control" — that was only <b>3 patients</b> in REGAIN so far (<a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>). Local control ≠ living longer.</p>`,
+<p><span class="tag c">Community</span> Reddit posts about DRTS often hype GBM "100% control" — that was only <b>3 patients</b> in REGAIN so far (<a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>). Local control ≠ living longer. The model tags REGAIN as <b>feasibility n≤10</b> everywhere — not a registrational GBM program yet.</p>
+<p><span class="tag f">Fact</span> Liquidity was ~$80.2M at Mar 31 2026 per the Q1 PR — runway depends on burn (~$10.6M/qtr derived from FY2025) and any Tolmar inflows. Sliders on other tabs let you stress-test ORR and valuation without changing disclosed trial facts.</p>`,
 
   ms: `<h3>Trials &amp; endpoints</h3>
 <p><span class="tag f">Fact</span> <b>ReSTART</b> (<a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>) is a single-arm pivotal study in recurrent cutaneous SCC. Everyone receives intratumoral DaRT. Co-primary endpoints: <b>ORR</b> (confirmed tumor shrinkage per RECIST 1.1) and <b>DOR at 6 months</b> (how long responses last).</p>
 <p><span class="tag f">Fact</span> <b>IMPACT</b> (pancreatic, US pilot ~40 pts) and <b>REGAIN</b> (recurrent GBM, feasibility n≤10) are earlier IDE studies — safety/feasibility, not standalone approval paths. Five concurrent US trials per <a href="https://alphatau.com/alpha-tau-issues-letter-to-shareholders-five-concurrent-trials-in-the-u-s-with-multiple-significant-value-driving-milestones-ahead/" target="_blank" rel="noopener">shareholder letter</a>.</p>
 <p><span class="tag f">Fact</span> Alpha DaRT follows a <b>device PMA</b> path (FDA), not a drug NDA. Breakthrough Device designation for recurrent cSCC; first modular PMA module submitted Jan 2026. Japan approved DaRT for selected head &amp; neck indications Feb 2026 (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>).</p>
 <p><span class="tag m">Model</span> ReSTART success is judged vs <b>historical ORR benchmarks</b> (~26–40% systemic therapy range), not a randomized control arm. Cemiplimab metastatic cSCC ORR 47% is a PD-1 comparator — <a href="https://pubmed.ncbi.nlm.nih.gov/29863979/" target="_blank" rel="noopener">Migden 2018</a>.</p>
+<p><span class="tag f">Fact</span> Tolmar US urology deal (Jun 2026): $20M equity, $15M manufacturing, up to $161.5M milestones; Alpha Tau receives <b>60% of net sales</b> as supplier — <a href="https://alphatau.com/alpha-tau-and-tolmar-announce-strategic-collaboration-to-bring-alpha-dart-therapy-to-u-s-urological-cancer-patients/" target="_blank" rel="noopener">collaboration PR</a>.</p>
 <p>→ See <a href="#alpha-sim-decay" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">how Ra-224 decays</a> on the Biology tab.</p>`,
 
   hs: `<h3>Alpha vs beta/gamma radiation</h3>
@@ -61,6 +75,7 @@ const EXPL = {
 <p><span class="tag f">Fact</span> High-LET alpha damage is less oxygen-dependent than low-LET photons — relevant for hypoxic solid tumors where external RT underperforms. Preclinical solid-tumor responsiveness documented in the Keisari/Kelson program.</p>
 <p><span class="tag f">Fact</span> FIH DaRT in SCC/H&amp;N reported 78.6% CR in 28 lesions with no grade ≥3 toxicity — <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">PubMed 31759075</a>. Different patient mix and endpoints vs ReSTART pivotal; do not equate CR with pivotal ORR.</p>
 <p><span class="tag m">Model</span> ReSTART ORR slider priors span ~45–65% (1σ) as undisclosed assumptions. Benchmark slider anchors cemiplimab 47% (◆) and literature floor 26–40%. Wilson 95% CI brackets binomial uncertainty at n=88.</p>
+<p><span class="tag u">Assumption</span> Blue prior bands on sliders encode literature-backed plausibility; red hatch = hard to defend without data. Monte Carlo uses a seeded Beta prior (n=1500) so repeated visits get the same histogram.</p>
 <p>→ Try the interactive <a href="#alpha-sim-penetration" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">penetration depth sim</a> and <a href="#alpha-sim-hypoxia" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">hypoxia comparison</a> on the Biology tab.</p>`,
 
   col: `<h3>Single-arm ORR inference</h3>
@@ -68,14 +83,15 @@ const EXPL = {
 <p><span class="tag m">Model</span> <b>Wilson score interval</b> for binomial ORR (better than Wald at extremes). One-sided exact binomial tail: P(X ≥ k | n, p₀) vs historical benchmark p₀. Historical p₀ default 30% — literature recurrent cSCC systemic therapy ~26–40%; pembrolizumab locally advanced 34% — <a href="https://pubmed.ncbi.nlm.nih.gov/32997973/" target="_blank" rel="noopener">Gross 2020</a>.</p>
 <p><span class="tag m">Model</span> Monte Carlo: true ORR ~ Beta(20p, 20(1−p)) centered on assumed slider; simulate n=88 binomial outcomes; success if ORR ≥ threshold (default 35%, SAP not public) AND beats benchmark. Seeded n=1500 for reproducibility.</p>
 <p><span class="tag m">Model</span> DOR modeled as pass/fail vs 6-month gate — not Kaplan–Meier. Combined P(PMA) = 55% structural ORR/DOR score + 45% subjective PMA prior slider. Modular PMA module 1 submitted Jan 2026 — timeline heuristic only (<a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">FDA modular PMA</a>).</p>
-<p><span class="tag u">Assumption</span> Blue prior bands on sliders encode literature-backed plausibility; red hatch = hard to defend without data.</p>
+<p><span class="tag u">Assumption</span> Blue prior bands on sliders encode literature-backed plausibility; red hatch = hard to defend without data. Share links encode slider deltas plus preset markers (<code>rp</code>/<code>vp</code>) so bull/bear scenarios restore correctly across tabs.</p>
 <p>→ Biology tab: <a href="#alpha-sim-decay" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">Ra-224 decay chain</a> · <a href="#alpha-sim-seeds" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">seed placement</a> for how local α dose is delivered.</p>`,
 
   pro: `<h3>Device PMA vs drug NDA</h3>
 <p><span class="tag f">Fact</span> Alpha DaRT is a Class III device seeking <b>modular PMA</b> for recurrent cSCC (Breakthrough Device). FDA evaluates safety and effectiveness vs historical performance / natural history — not randomized OS hazard ratio like oncology drugs. Single-arm ORR + durability is standard for some device oncologic indications when randomized trials are infeasible.</p>
 <p><span class="tag f">Fact</span> REGAIN (rGBM) Breakthrough Device; feasibility enrollment n≤10. Interim n=3: 100% local disease control, 67% CR per RANO — <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>. Does not establish OS benefit or registrational success.</p>
 <p><span class="tag f">Fact</span> IMPACT pancreatic US pilot targets n=40 — no US response counts disclosed; pooled ASCO 2026 pancreatic OS data is a separate non-US design. Do not import into IMPACT posterior.</p>
-<p><span class="tag m">Model</span> Valuation: risk-adj EV = Σ (peak sales × EV multiple × P(success)) + platform option. Peak = eligible pool × penetration × price × years. Cash ~$76.9M, ~42M ADS FY2025. Tolmar prostate: Alpha Tau 60% of net sales as supplier — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>.</p>
+<p><span class="tag m">Model</span> Valuation: risk-adj EV = Σ (peak sales × EV multiple × P(success)) + platform option. Peak = eligible pool × penetration × price × years. Cash default ~$80.2M (Q1 2026); ◆ FY2025 filing ~$76.9M; ~42M ADS. Tolmar prostate: Alpha Tau 60% of net sales as supplier — <a href="https://alphatau.com/alpha-tau-and-tolmar-announce-strategic-collaboration-to-bring-alpha-dart-therapy-to-u-s-urological-cancer-patients/" target="_blank" rel="noopener">Jun 2026 PR</a> · <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>.</p>
+<p><span class="tag f">Fact</span> F-3 shelf up to $300M + $100M ATM (Apr 2026) adds dilution flexibility — not the same as imminent issuance (<a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm" target="_blank" rel="noopener">SEC F-3</a>).</p>
 <p><span class="tag c">Community</span> r/DRTS_Stock themes cross-checked in Valuation DD table — REGAIN local control often overstated as GBM cure; model keeps GBM P(success) low by default.</p>
 <p><span class="tag f">Fact</span> <b>Range &amp; LET.</b> CSDA α range in soft tissue scales with initial energy: R ≈ 42 μm at 5.5 MeV, ~56 μm at 6.8 MeV (Po-216 in Ra-224 chain), up to ~68 μm at 7.7 MeV (<a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi 2010</a>; ICRU stopping-power tables). LET peaks near track end — dense ionization yields complex DNA damage with reduced oxygen enhancement ratio vs photons (<a href="https://pubmed.ncbi.nlm.nih.gov/26388465/" target="_blank" rel="noopener">Kelson &amp; Keisari 2015</a>). <span class="tag m">Schematic</span> — not patient-specific dosimetry.</p>
 <p>→ <a href="#alpha-sim-penetration" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">Sim A: penetration</a> · <a href="#alpha-sim-bragg" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">Sim B: LET</a> on Biology tab.</p>`,
@@ -87,6 +103,7 @@ const EXPL = {
 <p><span class="tag m">Model</span> MC: Beta(α,β) with α = p·20, β = (1−p)·20 — moderate prior strength. Success = observed ORR ≥ threshold AND one-sided binomial beat of p₀ at α=0.05 heuristic. Wilson CI used for display, not as primary test statistic.</p>
 <p><span class="tag m">Model</span> Prior bands: 1σ/2σ/3σ blue strips from literature (cemiplimab ORR 47%, FIH CR 78.6% marked implausible for pivotal ORR, DOR gate 6 mo anchored). Valuation bands: SEER epidemiology, FY2025 filing anchors for cash/shares/burn.</p>
 <p><span class="tag u">Limit</span> No competing-risk SoC drift (cemiplimab/pembrolizumab), modular PMA review clock-stops, correlated indication approvals, spatial dosimetry heterogeneity, or SAP-defined alpha-spending. Educational model only — not a substitute for regulatory submission statistics.</p>
+<p><span class="tag f">Fact</span> Japan Shonin (Feb 2026) is the first ex-Israel approval but PMS n=66 and reimbursement timing remain forward-looking — see Pipeline catalyst calendar.</p>
 <p>→ All five Biology simulations: <a href="#tab-biology" onclick="document.querySelector('.tabbtn[data-tab=biology]').click();return true;">open Biology tab</a> (penetration, Bragg/LET, decay, hypoxia, seeds).</p>`
 };
 
@@ -175,21 +192,47 @@ function renderMcHistogram(mc) {
   const host = $("rMcHist");
   if (!host || !mc) return;
   const max = Math.max(...mc.histogram, 1);
+  const bins = mc.histogram.length;
   host.innerHTML = mc.histogram
     .map((c, i) => {
-      const lo = (i / mc.histogram.length) * 100;
-      const hi = ((i + 1) / mc.histogram.length) * 100;
+      const lo = (i / bins) * 100;
+      const hi = ((i + 1) / bins) * 100;
       const h = Math.round((c / max) * 100);
       return `<div title="ORR ${lo.toFixed(0)}–${hi.toFixed(0)}%: ${c} sims" style="flex:1;height:${Math.max(2, h)}%;background:var(--accent);opacity:.75;border-radius:2px 2px 0 0"></div>`;
     })
     .join("");
+  const axis = $("rMcAxis");
+  if (axis) {
+    axis.innerHTML = [0, 25, 50, 75, 100]
+      .map((t) => `<div>${t}%</div>`)
+      .join("");
+  }
   const cap = $("rMcCaption");
   if (cap) {
     cap.textContent = `MC n=${mc.sims}: P(success) ${(mc.pSuccess * 100).toFixed(1)}% · median ORR ${mc.orrMedian.toFixed(1)}% (95% ${mc.orrLo.toFixed(0)}–${mc.orrHi.toFixed(0)}%)`;
   }
 }
 
-function updateRestartUI() {
+function runMcSimulation() {
+  const r = state.restart;
+  lastMcResult = mcRestartORR(
+    {
+      n: r.n,
+      orrPct: r.orrPct,
+      benchOrrPct: r.benchOrrPct,
+      orrThresholdPct: r.orrThresholdPct,
+      sims: r.mcSims,
+      seed: 42
+    },
+    undefined
+  );
+  renderMcHistogram(lastMcResult);
+  if ($("rMcPsucc")) $("rMcPsucc").textContent = (lastMcResult.pSuccess * 100).toFixed(1) + "%";
+}
+
+const scheduleMcUpdate = debounce(runMcSimulation, 120);
+
+function updateRestartUI(includeMc = true) {
   const r = state.restart;
   const m = computeRestartMetrics(r);
   if ($("rResp")) $("rResp").textContent = m.responders + " / " + m.n;
@@ -211,19 +254,10 @@ function updateRestartUI() {
       "~" + pmaTimelineMonths(r.pmaModulesDone, r.pmaModulesTotal) + " mo post top-line (heuristic)";
   }
 
-  const mc = mcRestartORR(
-    {
-      n: r.n,
-      orrPct: r.orrPct,
-      benchOrrPct: r.benchOrrPct,
-      orrThresholdPct: r.orrThresholdPct,
-      sims: r.mcSims,
-      seed: 42
-    },
-    undefined
-  );
-  renderMcHistogram(mc);
-  if ($("rMcPsucc")) $("rMcPsucc").textContent = (mc.pSuccess * 100).toFixed(1) + "%";
+  if (!includeMc) return;
+  if (activeTab === "restart") {
+    scheduleMcUpdate();
+  }
 }
 
 function renderCatalystCalendar() {
@@ -285,18 +319,33 @@ function updateBands() {
   renderBands($, (id) => $(id)?.value);
 }
 
-function updateNow() {
+function updateNow(forceAll = false) {
   readSliders("r", Object.keys(state.restart), state.restart);
   readSliders("v", Object.keys(state.val), state.val);
   readSliders("p", Object.keys(state.pipeline), state.pipeline);
   const riskEl = $("v_riskadj");
   if (riskEl) state.val.v_riskadj = riskEl.checked;
-  updateRestartUI();
-  updatePipelineUI();
-  updateValUI();
+  updateRestartUI(forceAll || activeTab === "restart");
+  if (forceAll || activeTab === "pipeline" || tabsDirty.pipeline) updatePipelineUI();
+  if (forceAll || activeTab === "value" || tabsDirty.value) updateValUI();
   updateHeaderStrip();
   updateBands();
+  tabsDirty.restart = activeTab !== "restart";
+  tabsDirty.pipeline = activeTab !== "pipeline";
+  tabsDirty.value = activeTab !== "value";
   if (!restoringState) updateHashQuiet();
+}
+
+function scheduleUpdate() {
+  if (restoringState) {
+    updateNow(true);
+    return;
+  }
+  if (updateRaf) return;
+  updateRaf = requestAnimationFrame(() => {
+    updateRaf = null;
+    updateNow(false);
+  });
 }
 
 function updateHashQuiet() {
@@ -312,12 +361,9 @@ function applyState(s) {
   writeSliders("p", state.pipeline);
   if ($("v_riskadj")) $("v_riskadj").checked = state.val.v_riskadj;
   curLvl = state.ui.explainLvl || "eli5";
-  updateRestartUI();
-  updatePipelineUI();
-  updateValUI();
-  updateHeaderStrip();
+  updateNow(true);
   showLevel(curLvl);
-  if (s.tab) switchTab(s.tab);
+  if (s.tab) switchTab(s.tab, true);
   document.querySelectorAll("[data-preset]").forEach((b) => {
     b.classList.toggle("p-def", b.dataset.preset === state.activeRestartPreset);
   });
@@ -336,7 +382,7 @@ function applyRestartPreset(name) {
   document.querySelectorAll("[data-preset]").forEach((b) => {
     b.classList.toggle("p-def", b.dataset.preset === name);
   });
-  updateNow();
+  updateNow(true);
 }
 
 function applyValPreset(name) {
@@ -348,10 +394,10 @@ function applyValPreset(name) {
   document.querySelectorAll("[data-val-preset]").forEach((b) => {
     b.classList.toggle("p-def", b.dataset.valPreset === name);
   });
-  updateNow();
+  updateNow(true);
 }
 
-function switchTab(t) {
+function switchTab(t, fromRestore = false) {
   if (!VALID_TABS.includes(t)) return;
   activeTab = t;
   document.querySelectorAll(".tabbtn").forEach((x) => {
@@ -369,9 +415,14 @@ function switchTab(t) {
     if (el) el.hidden = id !== t;
   });
   if (t === "biology") initAlphaSims();
+  if (t === "restart" && (tabsDirty.restart || !lastMcResult)) runMcSimulation();
+  if (t === "pipeline" && tabsDirty.pipeline) updatePipelineUI();
+  if (t === "value" && tabsDirty.value) updateValUI();
+  if (t === "explain" && tabsDirty.explain) showLevel(curLvl);
+  tabsDirty[t] = false;
   if (!restoringState) {
     state.tab = t;
-    updateHashQuiet();
+    if (!fromRestore) updateHashQuiet();
   }
 }
 
@@ -405,7 +456,7 @@ function renderStaticPanels() {
   if (cmp) {
     cmp.innerHTML = COMPARABLES.map(
       (c) =>
-        `<tr><td>${c.name}</td><td>${c.evMultiple}</td><td>${c.note}</td><td><span class="tag ${c.tag === "verified" ? "f" : "a"}">${c.tag}</span></td></tr>`
+        `<tr><td>${c.name}${c.source ? ` · <a href="${c.source}" target="_blank" rel="noopener">source</a>` : ""}</td><td>${c.evMultiple}</td><td>${c.note}</td><td><span class="tag ${c.tag === "verified" ? "f" : "a"}">${c.tag}</span></td></tr>`
     ).join("");
   }
 
@@ -420,6 +471,9 @@ function renderStaticPanels() {
 
   const bear = $("vBearBody");
   if (bear) bear.innerHTML = BEAR_CASE.map(ddRowHtml).join("");
+
+  const pipeBear = $("pipeBearBody");
+  if (pipeBear) pipeBear.innerHTML = BEAR_CASE.map(ddRowHtml).join("");
 
   const restartThemes = [
     "ReSTART",
@@ -484,16 +538,16 @@ function init() {
 
   ["r", "v", "p"].forEach((prefix) => {
     document.querySelectorAll(`[id^="${prefix}"]`).forEach((el) => {
-      if (el.type === "range" || el.type === "number") el.addEventListener("input", updateNow);
+      if (el.type === "range" || el.type === "number") el.addEventListener("input", scheduleUpdate);
     });
   });
   const risk = $("v_riskadj");
-  if (risk) risk.addEventListener("change", updateNow);
+  if (risk) risk.addEventListener("change", scheduleUpdate);
 
   const btnShare = $("btnShare");
   if (btnShare) {
     btnShare.onclick = async () => {
-      updateNow();
+      updateNow(true);
       const url = location.origin + location.pathname + buildShareHash(state);
       try {
         await navigator.clipboard.writeText(url);
@@ -510,8 +564,9 @@ function init() {
   if (decoded) applyState(decoded);
   else {
     applyRestartPreset("base");
-    switchTab("restart");
+    switchTab("restart", true);
     showLevel("eli5");
+    runMcSimulation();
   }
   initAlphaSims();
 }
