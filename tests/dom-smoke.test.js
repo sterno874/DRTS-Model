@@ -53,8 +53,19 @@ test("biology tab has five alpha simulation modules", () => {
   ];
   for (const id of simIds) {
     assert.match(html, new RegExp(`id="${id}"`));
+  }
+  // SVG-backed sims (A, B, D, E); Sim C is a step-through chain, not a clock/timeline
+  for (const id of ["alpha-sim-penetration", "alpha-sim-bragg", "alpha-sim-hypoxia", "alpha-sim-seeds"]) {
     assert.match(html, new RegExp(`id="${id}"[\\s\\S]*?<svg`));
   }
+  assert.match(html, /id="simC-progress"/);
+  assert.match(html, /id="simC-detail"/);
+  assert.match(html, /id="simC-prev"/);
+  assert.match(html, /id="simC-next"/);
+  assert.match(html, /Step through chain/);
+  assert.match(html, /sequence of isotopes, not a clock/);
+  assert.doesNotMatch(html, /Ra-224 decay chain timeline/);
+  assert.doesNotMatch(html, /Play decay/);
   assert.match(html, /alpha-sims\.css/);
   assert.match(html, /Educational schematic/);
 });

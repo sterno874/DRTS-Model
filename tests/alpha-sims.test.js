@@ -39,4 +39,12 @@ test("CSDA table and decay chain have expected entries", () => {
   assert.equal(CSDA_ALPHA_WATER.length, 4);
   assert.equal(DECAY_CHAIN[0].iso, "Ra-224");
   assert.ok(DECAY_CHAIN.some((n) => n.iso.includes("Po-216")));
+  assert.equal(DECAY_CHAIN.length, 7);
+  assert.equal(DECAY_CHAIN[DECAY_CHAIN.length - 1].iso, "Pb-208");
+  for (const node of DECAY_CHAIN) {
+    assert.ok(node.mode, `${node.iso} has decay mode`);
+    assert.ok(node.clinical, `${node.iso} has clinical note`);
+    assert.ok(node.distance, `${node.iso} has distance note`);
+    assert.ok(node.hl, `${node.iso} has half-life`);
+  }
 });

@@ -23,15 +23,64 @@ export const MODALITY_RANGES_UM = {
   gamma: 120000
 };
 
-/** Ra-224 decay chain half-lives — NNDC / IAEA — tag f */
+/** Ra-224 decay chain — NNDC / IAEA half-lives — tag f */
 export const DECAY_CHAIN = [
-  { iso: "Ra-224", hl: "3.66 d", hlSec: 3.66 * 86400, alpha: false, note: "Parent in seed" },
-  { iso: "Rn-220", hl: "55.6 s", hlSec: 55.6, alpha: false, note: "Gas; stays near seed" },
-  { iso: "Po-216", hl: "145 ms", hlSec: 0.145, alpha: true, note: "Primary α emitter" },
-  { iso: "Pb-212", hl: "10.6 h", hlSec: 10.6 * 3600, alpha: false, note: "" },
-  { iso: "Bi-212", hl: "60.6 min", hlSec: 60.6 * 60, alpha: false, note: "Branches" },
-  { iso: "Po-212 / Tl-208", hl: "299 ns / 3.1 min", hlSec: 3.1 * 60, alpha: true, note: "Further α" },
-  { iso: "Pb-208", hl: "stable", hlSec: Infinity, alpha: false, note: "End product" }
+  {
+    iso: "Ra-224",
+    hl: "3.66 d",
+    hlSec: 3.66 * 86400,
+    mode: "α",
+    clinical: "Parent fixed in the seed; continuously feeds the daughter chain over days of treatment.",
+    distance: "Stays in the seed — source of the local α dose cloud."
+  },
+  {
+    iso: "Rn-220",
+    hl: "55.6 s",
+    hlSec: 55.6,
+    mode: "α",
+    clinical: "Rn-220 decays in ~1 minute — daughters stay near the seed.",
+    distance: "Short-lived α daughters stay near the seed (seconds)."
+  },
+  {
+    iso: "Po-216",
+    hl: "145 ms",
+    hlSec: 0.145,
+    mode: "α",
+    clinical: "Primary short-lived α emitter (Eα ≈ 6.8 MeV); energy deposited within tens of μm of where it forms.",
+    distance: "Near seed — milliseconds leave no time to diffuse far."
+  },
+  {
+    iso: "Pb-212",
+    hl: "10.6 h",
+    hlSec: 10.6 * 3600,
+    mode: "β⁻",
+    clinical: "Longer half-life lets Pb-212 diffuse before decaying — the main extender of the dose cloud.",
+    distance: "Extends dose cloud ~mm from the seed (Arazi 2010)."
+  },
+  {
+    iso: "Bi-212",
+    hl: "60.6 min",
+    hlSec: 60.6 * 60,
+    mode: "α / β⁻",
+    clinical: "Branches to Po-212 (α) or Tl-208 (β⁻); continues local high-LET damage where Pb-212 arrived.",
+    distance: "Near where Pb-212 diffused — still within the ~mm cloud."
+  },
+  {
+    iso: "Po-212 / Tl-208",
+    hl: "299 ns / 3.1 min",
+    hlSec: 3.1 * 60,
+    mode: "α / β⁻",
+    clinical: "Final α (Po-212, ns) or β (Tl-208, minutes) steps before stable lead.",
+    distance: "Local to Bi-212 location — short-lived α stays put."
+  },
+  {
+    iso: "Pb-208",
+    hl: "stable",
+    hlSec: Infinity,
+    mode: "—",
+    clinical: "Stable end product of the chain — no further radiation.",
+    distance: "No dose contribution."
+  }
 ];
 
 /**
@@ -237,64 +286,99 @@ function initBragg(root) {
   update();
 }
 
-/** Sim C — Ra-224 decay chain timeline */
+/** Sim C — Ra-224 decay chain step-through (sequence of isotopes, not a clock) */
 function initDecay(root) {
   const host = q(root, "#alpha-sim-decay");
   if (!host || host.dataset.init) return;
   host.dataset.init = "1";
 
-  const track = q(host, "#simC-track");
-  const cursor = q(host, "#simC-cursor");
-  const label = q(host, "#simC-step-label");
+  const progress = q(host, "#simC-progress");
+  const detailIso = q(host, "#simC-detail-iso");
+  const detailHl = q(host, "#simC-detail-hl");
+  const detailMode = q(host, "#simC-detail-mode");
+  const detailClinical = q(host, "#simC-detail-clinical");
+  const detailDistance = q(host, "#simC-detail-distance");
+  const prevBtn = q(host, "#simC-prev");
+  const nextBtn = q(host, "#simC-next");
   const playBtn = q(host, "#simC-play");
+  const n = DECAY_CHAIN.length;
+  const stepPauseMs = prefersReducedMotion() ? 400 : 1600;
 
-  const maxLog = Math.log10(DECAY_CHAIN[0].hlSec);
   let step = 0;
-  let animId = 0;
+  let timerId = 0;
   let playing = false;
 
+  function stopPlay() {
+    playing = false;
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = 0;
+    }
+    if (playBtn) playBtn.textContent = "Step through chain";
+  }
+
   function renderStep(idx) {
-    step = idx % DECAY_CHAIN.length;
+    step = ((idx % n) + n) % n;
     const node = DECAY_CHAIN[step];
     qa(host, ".simC-node").forEach((el, i) => {
-      el.classList.toggle("simC-active", i === step);
+      const active = i === step;
+      el.classList.toggle("simC-active", active);
       el.classList.toggle("simC-done", i < step);
+      el.setAttribute("aria-current", active ? "step" : "false");
     });
-    if (label) label.textContent = `${node.iso} · t½ ${node.hl}${node.note ? " · " + node.note : ""}`;
-    const logFrac = node.hlSec === Infinity ? 1 : Math.log10(Math.max(node.hlSec, 0.001)) / maxLog;
-    if (cursor) cursor.style.left = `${8 + logFrac * 84}%`;
+    if (progress) progress.textContent = `Step ${step + 1} of ${n}: ${node.iso}`;
+    if (detailIso) detailIso.textContent = node.iso;
+    if (detailHl) detailHl.textContent = node.hl === "stable" ? "Stable (NNDC)" : `t½ ${node.hl} (NNDC)`;
+    if (detailMode) detailMode.textContent = node.mode;
+    if (detailClinical) detailClinical.textContent = node.clinical;
+    if (detailDistance) detailDistance.textContent = node.distance;
+    if (prevBtn) prevBtn.disabled = step === 0;
+    if (nextBtn) nextBtn.disabled = step === n - 1;
   }
 
-  function animate() {
-    if (!playing || prefersReducedMotion()) return;
-    const now = performance.now();
-    if (!animate._last || now - animate._last > 1800) {
-      animate._last = now;
-      renderStep(step + 1);
-    }
-    animId = requestAnimationFrame(animate);
+  function goTo(idx, fromPlay) {
+    if (!fromPlay) stopPlay();
+    renderStep(idx);
+    if (fromPlay && step === n - 1) stopPlay();
   }
 
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      if (step > 0) goTo(step - 1);
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      if (step < n - 1) goTo(step + 1);
+    });
+  }
   if (playBtn) {
     playBtn.addEventListener("click", () => {
-      playing = !playing;
-      playBtn.textContent = playing ? "Pause" : "Play decay";
-      if (playing) animate();
-      else cancelAnimationFrame(animId);
+      if (playing) {
+        stopPlay();
+        renderStep(step);
+        return;
+      }
+      playing = true;
+      playBtn.textContent = "Pause";
+      if (step >= n - 1) renderStep(0);
+      timerId = setInterval(() => {
+        if (step >= n - 1) {
+          stopPlay();
+          renderStep(step);
+          return;
+        }
+        goTo(step + 1, true);
+      }, stepPauseMs);
     });
   }
 
   qa(host, ".simC-node").forEach((el, i) => {
-    el.addEventListener("click", () => {
-      playing = false;
-      if (playBtn) playBtn.textContent = "Play decay";
-      cancelAnimationFrame(animId);
-      renderStep(i);
-    });
+    el.addEventListener("click", () => goTo(i));
   });
 
   renderStep(0);
-  host._cleanup = () => cancelAnimationFrame(animId);
+  host._cleanup = () => stopPlay();
 }
 
 /** Sim D — hypoxia independence */

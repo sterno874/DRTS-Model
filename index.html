@@ -369,25 +369,43 @@
         <p class="alpha-sim-cite"><b>Sources:</b> ICRU Report 37 (LET definitions) · <a href="https://pubmed.ncbi.nlm.nih.gov/26388465/" target="_blank" rel="noopener">Kelson &amp; Keisari 2015 review</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">Arazi FIH DaRT</a></p>
       </article>
 
-      <!-- Sim C: Decay chain -->
+      <!-- Sim C: Decay chain (step-through sequence, not a clock) -->
       <article class="alpha-sim" id="alpha-sim-decay">
-        <h3><span class="sim-kicker">Sim C</span> Ra-224 decay chain timeline</h3>
-        <p class="sim-lead"><span class="tag f">Fact</span> Short-lived α-emitting daughters (Rn-220, Po-216) decay near the seed; longer Pb-212/Bi-212 extend the dose cloud ~mm. Half-lives from NNDC.</p>
+        <h3><span class="sim-kicker">Sim C</span> Ra-224 decay chain</h3>
+        <p class="sim-lead"><span class="tag f">Fact</span> Click each daughter or step through the chain. Half-lives span milliseconds to days — this is a sequence of isotopes, not a clock. Half-lives from NNDC.</p>
         <div class="alpha-sim-body">
           <div class="alpha-sim-viz alpha-sim-viz--chain">
-            <div class="simC-chain" id="simC-track">
-              <button type="button" class="simC-node" data-step="0"><b>Ra-224</b>t½ 3.66 d</button>
-              <button type="button" class="simC-node" data-step="1"><b>Rn-220</b>t½ 55.6 s</button>
-              <button type="button" class="simC-node" data-step="2"><b>Po-216</b>t½ 145 ms · α</button>
-              <button type="button" class="simC-node" data-step="3"><b>Pb-212</b>t½ 10.6 h</button>
-              <button type="button" class="simC-node" data-step="4"><b>Bi-212</b>t½ 60.6 min</button>
-              <button type="button" class="simC-node" data-step="5"><b>Po-212 / Tl-208</b>α / β</button>
-              <button type="button" class="simC-node" data-step="6"><b>Pb-208</b>stable</button>
+            <p class="simC-progress" id="simC-progress" aria-live="polite">Step 1 of 7: Ra-224</p>
+            <div class="simC-chain" id="simC-track" role="list">
+              <button type="button" class="simC-node" data-step="0" role="listitem" aria-current="step"><b>Ra-224</b><span class="simC-node-meta">t½ 3.66 d · α</span></button>
+              <span class="simC-arrow" aria-hidden="true">→</span>
+              <button type="button" class="simC-node" data-step="1" role="listitem"><b>Rn-220</b><span class="simC-node-meta">t½ 55.6 s · α</span></button>
+              <span class="simC-arrow" aria-hidden="true">→</span>
+              <button type="button" class="simC-node" data-step="2" role="listitem"><b>Po-216</b><span class="simC-node-meta">t½ 145 ms · α</span></button>
+              <span class="simC-arrow" aria-hidden="true">→</span>
+              <button type="button" class="simC-node" data-step="3" role="listitem"><b>Pb-212</b><span class="simC-node-meta">t½ 10.6 h · β⁻</span></button>
+              <span class="simC-arrow" aria-hidden="true">→</span>
+              <button type="button" class="simC-node" data-step="4" role="listitem"><b>Bi-212</b><span class="simC-node-meta">t½ 60.6 min · α/β⁻</span></button>
+              <span class="simC-arrow" aria-hidden="true">→</span>
+              <button type="button" class="simC-node" data-step="5" role="listitem"><b>Po-212 / Tl-208</b><span class="simC-node-meta">α / β⁻</span></button>
+              <span class="simC-arrow" aria-hidden="true">→</span>
+              <button type="button" class="simC-node" data-step="6" role="listitem"><b>Pb-208</b><span class="simC-node-meta">stable</span></button>
             </div>
-            <div class="simC-timeline"><div class="simC-cursor" id="simC-cursor"></div></div>
-            <p class="alpha-sim-note simC-step-note" id="simC-step-label">Ra-224 · t½ 3.66 d · Parent in seed</p>
+            <div class="simC-detail" id="simC-detail">
+              <div class="simC-detail-head">
+                <strong id="simC-detail-iso">Ra-224</strong>
+                <span class="simC-detail-hl" id="simC-detail-hl">t½ 3.66 d (NNDC)</span>
+              </div>
+              <p class="simC-detail-mode-row"><span class="simC-detail-label">Decay mode</span> <span id="simC-detail-mode">α</span></p>
+              <p class="simC-detail-clinical" id="simC-detail-clinical">Parent fixed in the seed; continuously feeds the daughter chain over days of treatment.</p>
+              <p class="simC-detail-distance" id="simC-detail-distance">Stays in the seed — source of the local α dose cloud.</p>
+            </div>
           </div>
-          <div class="alpha-sim-controls"><button type="button" class="p" id="simC-play">Play decay</button></div>
+          <div class="alpha-sim-controls simC-controls">
+            <button type="button" class="p" id="simC-prev" disabled>Prev</button>
+            <button type="button" class="p" id="simC-next">Next</button>
+            <button type="button" class="p p-def" id="simC-play">Step through chain</button>
+          </div>
         </div>
         <p class="alpha-sim-cite"><b>Sources:</b> NNDC decay data · <a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi 2010 dosimetry</a> · <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">Alpha Tau technology</a></p>
       </article>
