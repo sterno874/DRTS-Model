@@ -497,6 +497,7 @@
   .bio-section h2 .bio-kicker{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);background:#eef3fe;border-radius:6px;padding:2px 8px;line-height:1.4}
   .bio-section h3{font-size:14px;margin:var(--space-lg) 0 var(--space-xs)}
   .bio-section p{font-size:13.5px;line-height:1.65;margin:0 0 var(--space-md);max-width:80ch}
+  .bio-section .alpha-sim p.sim-lead{max-width:72ch}
   .bio-section p:last-child{margin-bottom:0}
   .bio-section ul{font-size:13.5px;line-height:1.6;margin:0 0 var(--space-md);padding-left:var(--space-lg)}
   .bio-section li{margin:var(--space-xs) 0}

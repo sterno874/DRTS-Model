@@ -318,20 +318,23 @@
         <h3><span class="sim-kicker">Sim A</span> Penetration depth in tissue</h3>
         <p class="sim-lead"><span class="tag f">Fact</span> α particles from Ra-224 daughters travel ~40–70 μm in water/tissue (CSDA); β and γ/X-ray penetrate mm–cm. <span class="tag m">Model</span> Log-scale bars + animated tracks from a seed — slider varies α energy (MeV).</p>
         <div class="alpha-sim-body">
-          <svg viewBox="0 0 640 280" role="img" aria-label="Alpha penetration depth comparison">
-            <text x="320" y="18" text-anchor="middle" class="as-label" font-size="12">Range comparison (log scale)</text>
+          <div class="alpha-sim-viz">
+          <svg class="alpha-sim-svg" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Alpha penetration depth comparison">
+            <text x="320" y="22" text-anchor="middle" class="as-label">Range comparison (log scale)</text>
             <g id="simA-bars"></g>
-            <rect x="20" y="95" width="600" height="90" rx="8" class="as-tissue" opacity=".35"/>
-            <text x="30" y="112" class="as-label-sm">Healthy tissue →</text>
-            <ellipse cx="120" cy="140" rx="95" ry="55" class="as-tumor"/>
-            <text x="120" y="136" text-anchor="middle" font-size="11" fill="#8f2020">Tumor cross-section</text>
-            <circle cx="120" cy="140" r="7" class="as-seed"/>
-            <text x="120" y="158" text-anchor="middle" font-size="9" fill="#1a4fb8">Ra-224 seed</text>
-            <circle id="simA-killzone" cx="120" cy="140" r="50" fill="#d64545" opacity=".12" stroke="#d64545" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="24" y1="102" x2="616" y2="102" class="as-divider"/>
+            <text x="32" y="122" class="as-label-sm">Tissue cross-section (schematic)</text>
+            <rect x="24" y="130" width="592" height="150" rx="8" class="as-tissue" opacity=".35"/>
+            <ellipse cx="240" cy="205" rx="72" ry="48" class="as-tumor"/>
+            <text x="240" y="201" text-anchor="middle" class="as-label-sm" fill="#8f2020">Tumor</text>
+            <circle cx="240" cy="205" r="7" class="as-seed"/>
+            <text x="240" y="223" text-anchor="middle" font-size="9" fill="#1a4fb8">Ra-224 seed</text>
+            <circle id="simA-killzone" cx="240" cy="205" r="40" fill="#d64545" opacity=".12" stroke="#d64545" stroke-width="1" stroke-dasharray="4 3"/>
             <g id="simA-particles"></g>
-            <text x="230" y="130" font-size="11" fill="#141b26">α track length ≈ <tspan id="simA-range-svg">55</tspan> μm</text>
-            <text x="230" y="168" font-size="10" fill="#5b6472">β/γ would traverse entire panel →</text>
+            <text x="400" y="192" class="as-label-sm">α track ≈ <tspan id="simA-range-svg" class="as-label">55</tspan> μm</text>
+            <text x="400" y="212" class="as-label-sm">β/γ traverse entire field →</text>
           </svg>
+          </div>
           <div class="alpha-sim-controls">
             <label>α energy (MeV) <span id="simA-energy-val">6.8</span>
               <input type="range" id="simA-energy" min="4" max="8" step="0.1" value="6.8"/>
@@ -348,18 +351,19 @@
         <h3><span class="sim-kicker">Sim B</span> Energy deposition along α track (LET)</h3>
         <p class="sim-lead"><span class="tag m">Pedagogical schematic</span> LET rises toward end of track (Bragg-like peak) — dense ionization causes complex DNA damage. Not a full Monte Carlo simulation.</p>
         <div class="alpha-sim-body">
-          <svg viewBox="0 0 600 220" role="img" aria-label="LET along alpha track">
-            <text x="300" y="18" text-anchor="middle" class="as-label">Relative LET vs distance along track</text>
-            <line x1="40" y1="200" x2="560" y2="200" stroke="#5b6472" stroke-width="1"/>
-            <text x="40" y="215" class="as-label-sm">Track entry</text>
-            <text x="520" y="215" class="as-label-sm">Range end</text>
+          <div class="alpha-sim-viz">
+          <svg class="alpha-sim-svg" viewBox="0 0 600 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="LET along alpha track">
+            <text x="300" y="22" text-anchor="middle" class="as-label">Relative LET vs distance along track</text>
+            <line x1="48" y1="200" x2="552" y2="200" class="as-axis"/>
+            <text x="48" y="218" class="as-label-sm">Track entry</text>
+            <text x="500" y="218" class="as-label-sm">Range end</text>
             <path id="simB-let-curve" fill="none" stroke="#d64545" stroke-width="2.5"/>
             <circle id="simB-scan-dot" cx="480" cy="80" r="6" fill="#2f6fed" stroke="#fff" stroke-width="2"/>
-            <text x="300" y="55" text-anchor="middle" font-size="11" fill="#5b6472">High LET ≈ <tspan id="simB-let-svg">180</tspan> keV/μm (schematic peak)</text>
           </svg>
+          </div>
           <div class="alpha-sim-controls">
             <label>Position along track % <input type="range" id="simB-position" min="0" max="100" step="1" value="88"/></label>
-            <span>LET ≈ <b id="simB-let-val">180</b> (relative units)</span>
+            <span class="alpha-sim-readout">LET ≈ <b id="simB-let-val">180</b> rel. units · peak ≈ <b id="simB-let-svg">180</b> keV/μm <span class="as-muted">(schematic)</span></span>
           </div>
         </div>
         <p class="alpha-sim-cite"><b>Sources:</b> ICRU Report 37 (LET definitions) · <a href="https://pubmed.ncbi.nlm.nih.gov/26388465/" target="_blank" rel="noopener">Kelson &amp; Keisari 2015 review</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">Arazi FIH DaRT</a></p>
@@ -369,18 +373,22 @@
       <article class="alpha-sim" id="alpha-sim-decay">
         <h3><span class="sim-kicker">Sim C</span> Ra-224 decay chain timeline</h3>
         <p class="sim-lead"><span class="tag f">Fact</span> Short-lived α-emitting daughters (Rn-220, Po-216) decay near the seed; longer Pb-212/Bi-212 extend the dose cloud ~mm. Half-lives from NNDC.</p>
-        <div class="simC-chain" id="simC-track">
-          <button type="button" class="simC-node" data-step="0"><b>Ra-224</b>t½ 3.66 d</button>
-          <button type="button" class="simC-node" data-step="1"><b>Rn-220</b>t½ 55.6 s</button>
-          <button type="button" class="simC-node" data-step="2"><b>Po-216</b>t½ 145 ms · α</button>
-          <button type="button" class="simC-node" data-step="3"><b>Pb-212</b>t½ 10.6 h</button>
-          <button type="button" class="simC-node" data-step="4"><b>Bi-212</b>t½ 60.6 min</button>
-          <button type="button" class="simC-node" data-step="5"><b>Po-212 / Tl-208</b>α / β</button>
-          <button type="button" class="simC-node" data-step="6"><b>Pb-208</b>stable</button>
+        <div class="alpha-sim-body">
+          <div class="alpha-sim-viz alpha-sim-viz--chain">
+            <div class="simC-chain" id="simC-track">
+              <button type="button" class="simC-node" data-step="0"><b>Ra-224</b>t½ 3.66 d</button>
+              <button type="button" class="simC-node" data-step="1"><b>Rn-220</b>t½ 55.6 s</button>
+              <button type="button" class="simC-node" data-step="2"><b>Po-216</b>t½ 145 ms · α</button>
+              <button type="button" class="simC-node" data-step="3"><b>Pb-212</b>t½ 10.6 h</button>
+              <button type="button" class="simC-node" data-step="4"><b>Bi-212</b>t½ 60.6 min</button>
+              <button type="button" class="simC-node" data-step="5"><b>Po-212 / Tl-208</b>α / β</button>
+              <button type="button" class="simC-node" data-step="6"><b>Pb-208</b>stable</button>
+            </div>
+            <div class="simC-timeline"><div class="simC-cursor" id="simC-cursor"></div></div>
+            <p class="alpha-sim-note simC-step-note" id="simC-step-label">Ra-224 · t½ 3.66 d · Parent in seed</p>
+          </div>
+          <div class="alpha-sim-controls"><button type="button" class="p" id="simC-play">Play decay</button></div>
         </div>
-        <div class="simC-timeline"><div class="simC-cursor" id="simC-cursor"></div></div>
-        <p class="alpha-sim-note" id="simC-step-label">Ra-224 · t½ 3.66 d · Parent in seed</p>
-        <div class="alpha-sim-controls"><button type="button" class="p" id="simC-play">Play decay</button></div>
         <p class="alpha-sim-cite"><b>Sources:</b> NNDC decay data · <a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi 2010 dosimetry</a> · <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">Alpha Tau technology</a></p>
       </article>
 
@@ -388,31 +396,37 @@
       <article class="alpha-sim" id="alpha-sim-hypoxia">
         <h3><span class="sim-kicker">Sim D</span> Hypoxia independence</h3>
         <p class="sim-lead"><span class="tag f">Fact</span> Hypoxic tumor cores resist low-LET photon RT (oxygen fixation effect). High-LET α causes direct DNA double-strand breaks with less O₂ dependence (<a href="https://pubmed.ncbi.nlm.nih.gov/18059026/" target="_blank" rel="noopener">Keisari 2007</a>).</p>
-        <div class="simD-grid">
-          <div class="simD-panel" data-mode="photon">
-            <h4>Photon / EBRT (low LET)</h4>
-            <svg viewBox="0 0 200 140" role="img" aria-label="Photon hypoxia schematic">
-              <ellipse cx="100" cy="70" rx="75" ry="50" fill="#fdeaea" stroke="#d64545"/>
-              <ellipse class="simD-core" cx="100" cy="70" rx="28" ry="22" fill="#5b6472"/>
-              <text x="100" y="68" text-anchor="middle" font-size="10" fill="#fff">Hypoxic core</text>
-              <line x1="0" y1="70" x2="200" y2="70" stroke="#2f6fed" stroke-width="2" opacity=".5" stroke-dasharray="6 4"/>
-            </svg>
-            <div class="simD-status simD-bad">Hypoxic core: resistant — poor kill</div>
+        <div class="alpha-sim-body">
+          <div class="simD-grid">
+            <div class="simD-panel" data-mode="photon">
+              <h4>Photon / EBRT (low LET)</h4>
+              <div class="alpha-sim-viz alpha-sim-viz--compact">
+                <svg class="alpha-sim-svg" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Photon hypoxia schematic">
+                  <ellipse cx="100" cy="75" rx="75" ry="50" fill="#fdeaea" stroke="#d64545"/>
+                  <ellipse class="simD-core" cx="100" cy="75" rx="28" ry="22" fill="#5b6472"/>
+                  <text x="100" y="73" text-anchor="middle" font-size="10" fill="#fff">Hypoxic core</text>
+                  <line x1="8" y1="75" x2="192" y2="75" stroke="#2f6fed" stroke-width="2" opacity=".5" stroke-dasharray="6 4"/>
+                </svg>
+              </div>
+              <div class="simD-status simD-bad">Hypoxic core: resistant — poor kill</div>
+            </div>
+            <div class="simD-panel" data-mode="alpha">
+              <h4>Alpha DaRT (high LET)</h4>
+              <div class="alpha-sim-viz alpha-sim-viz--compact">
+                <svg class="alpha-sim-svg" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Alpha hypoxia schematic">
+                  <ellipse cx="100" cy="75" rx="75" ry="50" fill="#fdeaea" stroke="#d64545"/>
+                  <ellipse class="simD-core" cx="100" cy="75" rx="28" ry="22" fill="#fdeaea"/>
+                  <circle cx="100" cy="75" r="6" class="as-seed"/>
+                  <line x1="100" y1="75" x2="130" y2="60" stroke="#d64545" stroke-width="1.5"/>
+                  <line x1="100" y1="75" x2="72" y2="93" stroke="#d64545" stroke-width="1.5"/>
+                  <line x1="100" y1="75" x2="108" y2="100" stroke="#d64545" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <div class="simD-status simD-good">Hypoxic core: α still kills (high LET)</div>
+            </div>
           </div>
-          <div class="simD-panel" data-mode="alpha">
-            <h4>Alpha DaRT (high LET)</h4>
-            <svg viewBox="0 0 200 140" role="img" aria-label="Alpha hypoxia schematic">
-              <ellipse cx="100" cy="70" rx="75" ry="50" fill="#fdeaea" stroke="#d64545"/>
-              <ellipse class="simD-core" cx="100" cy="70" rx="28" ry="22" fill="#fdeaea"/>
-              <circle cx="100" cy="70" r="6" class="as-seed"/>
-              <line x1="100" y1="70" x2="130" y2="55" stroke="#d64545" stroke-width="1.5"/>
-              <line x1="100" y1="70" x2="72" y2="88" stroke="#d64545" stroke-width="1.5"/>
-              <line x1="100" y1="70" x2="108" y2="95" stroke="#d64545" stroke-width="1.5"/>
-            </svg>
-            <div class="simD-status simD-good">Hypoxic core: α still kills (high LET)</div>
-          </div>
+          <div class="alpha-sim-controls"><button type="button" class="p" id="simD-toggle">Show hypoxic core</button></div>
         </div>
-        <div class="alpha-sim-controls"><button type="button" class="p" id="simD-toggle">Show hypoxic core</button></div>
         <p class="alpha-sim-cite"><b>Sources:</b> <a href="https://pubmed.ncbi.nlm.nih.gov/18059026/" target="_blank" rel="noopener">Keisari et al. 2007</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/26388465/" target="_blank" rel="noopener">Kelson &amp; Keisari 2015</a> · IAEA TRS 473 (radiobiology)</p>
       </article>
 
@@ -421,11 +435,13 @@
         <h3><span class="sim-kicker">Sim E</span> Intratumoral seed placement (ReSTART cSCC)</h3>
         <p class="sim-lead"><span class="tag f">Fact</span> ReSTART (<a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">NCT05323253</a>) implants multiple Ra-224 sources in recurrent cutaneous SCC. Overlapping α kill zones aim for uniform coverage — cold spots risk recurrence.</p>
         <div class="alpha-sim-body">
-          <svg viewBox="0 0 400 200" role="img" aria-label="Seed placement cross section">
+          <div class="alpha-sim-viz">
+          <svg class="alpha-sim-svg" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Seed placement cross section">
             <ellipse cx="200" cy="130" rx="85" ry="65" class="as-tumor"/>
-            <text x="200" y="125" text-anchor="middle" font-size="11" fill="#8f2020">cSCC tumor</text>
+            <text x="200" y="126" text-anchor="middle" class="as-label-sm" fill="#8f2020">cSCC tumor</text>
             <g id="simE-zones"></g>
           </svg>
+          </div>
           <div class="alpha-sim-controls">
             <label>Seed count <span id="simE-density-val">5</span>
               <input type="range" id="simE-density" min="1" max="9" step="1" value="5"/>

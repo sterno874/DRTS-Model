@@ -93,11 +93,11 @@ function initPenetration(root) {
   const killZone = q(svg, "#simA-killzone");
   const sparingLabel = q(host, "#simA-sparing");
 
-  const W = 640;
-  const H = 280;
-  const seedX = 120;
-  const seedY = 140;
-  const pxPerUm = 1.8;
+  const seedX = 240;
+  const seedY = 205;
+  /** Schematic px/μm for tissue panel — capped so kill zone stays inside tumor */
+  const pxPerUm = 0.75;
+  const killCapPx = 52;
 
   let animId = 0;
   let particles = [];
@@ -116,11 +116,11 @@ function initPenetration(root) {
       { key: "beta", label: "β", um: MODALITY_RANGES_UM.beta, color: "#d98a00" },
       { key: "gamma", label: "γ / X-ray", um: MODALITY_RANGES_UM.gamma, color: "#2f6fed" }
     ];
-    const barW = 480;
-    const x0 = 140;
+    const barW = 440;
+    const x0 = 108;
     bars.innerHTML = specs
       .map((s, i) => {
-        const y = 28 + i * 22;
+        const y = 32 + i * 22;
         const frac = logScaleFraction(s.um);
         const w = Math.max(4, frac * barW);
         const label =
@@ -137,7 +137,7 @@ function initPenetration(root) {
       .join("");
 
     if (killZone) {
-      const r = alphaUm * pxPerUm;
+      const r = Math.min(alphaUm * pxPerUm, killCapPx);
       killZone.setAttribute("r", String(r));
       killZone.setAttribute("cx", String(seedX));
       killZone.setAttribute("cy", String(seedY));
@@ -202,6 +202,7 @@ function initBragg(root) {
   const dot = q(host, "#simB-scan-dot");
   const slider = q(host, "#simB-position");
   const letVal = q(host, "#simB-let-val");
+  const letPeak = q(host, "#simB-let-svg");
 
   const pts = [];
   for (let i = 0; i <= 100; i++) {
@@ -217,16 +218,17 @@ function initBragg(root) {
   }
 
   if (path) {
-    const d = pts.map((p, i) => `${i ? "L" : "M"} ${40 + p.t * 520} ${200 - (p.letValue / maxLet) * 150}`).join(" ");
+    const d = pts.map((p, i) => `${i ? "L" : "M"} ${48 + p.t * 504} ${200 - (p.letValue / maxLet) * 155}`).join(" ");
     path.setAttribute("d", d);
   }
+  if (letPeak) letPeak.textContent = maxLet.toFixed(0);
 
   function update() {
     const t = slider ? parseFloat(slider.value) / 100 : 0.85;
     const letValue = letAt(t);
     if (dot) {
-      dot.setAttribute("cx", String(40 + t * 520));
-      dot.setAttribute("cy", String(200 - (letValue / maxLet) * 150));
+      dot.setAttribute("cx", String(48 + t * 504));
+      dot.setAttribute("cy", String(200 - (letValue / maxLet) * 155));
     }
     if (letVal) letVal.textContent = letValue.toFixed(0);
   }
@@ -370,7 +372,7 @@ function initSeeds(root) {
   function update() {
     const n = slider ? parseInt(slider.value, 10) : 5;
     if (valEl) valEl.textContent = String(n);
-    const killR = csdaRangeAlphaUm(6.8) * 1.6;
+    const killR = csdaRangeAlphaUm(6.8) * 1.25;
     const seeds = seedPositions(n);
 
     if (zonesG) {
