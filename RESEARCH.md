@@ -1,6 +1,6 @@
 # DRTS (Alpha Tau Medical) — Due Diligence Memo
 
-**As of:** 3 Jul 2026  
+**As of:** 4 Jul 2026  
 **Ticker:** **DRTS** / **DRTSW** — Alpha Tau Medical Ltd. (NASDAQ)  
 **CIK:** [0001871321](https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001871321)  
 **Disclaimer:** Educational research for the DRTS-Model app. Not investment, legal, or medical advice. Every material claim below is tagged **verified** / **partial** / **community** / **rejected** and linked where possible.
@@ -33,7 +33,10 @@ Parallel platform bets: **REGAIN** recurrent GBM feasibility (interim **n=3** on
 | Cash (Dec 31, 2025) | ~$76.9M | verified | [FY2025 PR](https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update) |
 | Cash (Mar 31, 2026) | ~$80.2M (incl. deposits/restricted) | verified | [Q1 2026 PR](https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update) |
 | Net loss FY2025 | $42.6M ($0.53/sh) | verified | FY2025 PR |
-| Net loss Q1 2026 | $22.9M ($0.26/sh) | verified | Q1 2026 PR |
+| Net loss Q1 2026 | $22.9M ($0.26/sh) | verified | [Q1 2026 PR](https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update) · [SEC 6-K Ex. 99.1](https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm) |
+| Financial expenses net Q1 2026 | $9.6M (primarily warrant liability remeasurement; non-cash) | verified | Q1 2026 PR / 6-K |
+| GAAP operating loss Q1 2026 | $13.3M (R&D $11.0M + marketing $0.2M + G&A $2.1M) | verified | [SEC 6-K Ex. 99.1](https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm) |
+| Cash burn (CFO) | ~$5–6M+/qtr historically (~$25M/yr), ramping with trials | company-reported interview | [CFO Rafi Levy interview](https://youtu.be/Jyryv-152hc) |
 | R&D Q1 2026 | $11.0M | verified | Q1 2026 PR |
 | Ordinary shares (Dec 31, 2025) | 88,009,737 per F-3 | verified | [SEC F-3](https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm) |
 | Product | Alpha DaRT — Ra-224 seeds; alpha daughters diffuse in tumor | verified | [PubMed 31759075](https://pubmed.ncbi.nlm.nih.gov/31759075/) |
@@ -136,16 +139,39 @@ Parallel platform bets: **REGAIN** recurrent GBM feasibility (interim **n=3** on
 | Item | Detail | Tag |
 |------|--------|-----|
 | Pre-revenue | No product sales FY2025 | verified — FY2025 PR |
-| Operating loss FY2025 | ~$42.3M → **~$10.6M/qtr** burn heuristic | verified |
-| Runway (cash/burn) | ~**7 quarters** at Mar 2026 liquidity before milestone/equity inflows | partial — model derived |
+| GAAP operating loss FY2025 | ~$42.3M (~$10.6M/qtr) — **OpEx, not cash burn** | verified — FY2025 PR |
+| GAAP operating loss Q1 2026 | **$13.3M** | verified — [SEC 6-K Ex. 99.1](https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm) |
+| Cash burn (CFO) | Historically ~**$5M/qtr**, creeping north of ~**$6M** as trials ramp; ~**$25M/year** | company-reported interview — [YouTube](https://youtu.be/Jyryv-152hc) |
+| Model default cash burn | **$6.5M/qtr** (runway input) | model — midpoint of CFO range |
+| Runway (cash ÷ cash burn) | ~**12 quarters** (~37 mo) at $80.2M / $6.5M before milestone/equity inflows | partial — model derived |
+| Cash used in operations Q1 | **Not disclosed** in Q1 PR / 6-K exhibit | verified absence |
+| Cash QoQ | $76.9M (Dec 31 2025) → **$80.2M** (Mar 31 2026) | verified — Q1 PR |
 | F-3 shelf (Apr 27, 2026) | Up to **$300M** securities | verified — [SEC F-3](https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm) |
 | ATM facility | Up to **$100M** via H.C. Wainwright | verified |
 | Tolmar equity | **$20M** non-dilutive vs ATM if at deal price | verified |
-| Warrant remeasurement | Q1 2026 financial expense **$9.6M** (vs income prior yr) | verified — Q1 2026 PR |
+| Warrant remeasurement | Q1 2026 financial expense **$9.6M** (vs income prior yr); warrants liability **$15.7M** Mar 31 2026 | verified — Q1 PR / 6-K |
 | Going concern | Standard clinical-stage going-concern language in 20-F | verified — [SEC 20-F FY2025](https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321) |
 | Oramed offering (Apr 2025) | 14.1M shares @ $2.612; ~$36.7M net proceeds | verified — 20-F |
 
-**Bear:** Shelf/ATM creates **overhang** — capital flexibility verified; immediate dilution **not** verified unless ATM tapped.
+**Bear:** Shelf/ATM creates **overhang** — capital flexibility verified; immediate dilution **not** verified unless ATM tapped. Do **not** treat GAAP net loss or operating loss as cash burn when sizing runway.
+
+---
+
+## Q1 2026 P&L vs cash burn (critical distinction)
+
+Community discussion sometimes equates Q1’s ~$13M GAAP operating loss (or the $22.9M net loss) with quarterly cash burn. Primary sources and CFO commentary separate these cleanly:
+
+| Metric | Value | Cash impact | Use for | Source |
+|--------|-------|-------------|---------|--------|
+| GAAP net loss | **$22.9M** ($0.26/sh) | Includes non-cash items | Headline P&L | [Q1 2026 PR](https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update) · [SEC 6-K Ex. 99.1](https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm) |
+| Warrant liability remeasurement | **$9.6M** financial expenses, net | **Non-cash** mark-to-market (DRTSW) | Explains inflated net loss | Same |
+| GAAP operating loss | **$13.3M** (R&D $11.0M + marketing $0.2M + G&A $2.1M) | OpEx accrual basis; **≠ cash burn** | Cost structure | Same |
+| Cash burn (CFO) | Historically ~**$5M/qtr**, north of ~**$6M** as trials ramp; ~**$25M/yr** | Cash management focus | **Runway** | [CFO Rafi Levy interview](https://youtu.be/Jyryv-152hc) (company-reported interview, not audited cash-flow statement) |
+| Cash on hand | **$80.2M** Mar 31 2026 | Balance sheet | Runway numerator | Q1 PR / 6-K |
+
+**Model policy:** `DEFAULT_BURN_QUARTERLY_M = 6.5` (CFO cash-burn midpoint). GAAP op loss $13.3M and warrant $9.6M are shown as facts, not runway inputs. Prior model default (~$10.6M from FY2025 op loss ÷ 4) overstated cash burn and understated runway.
+
+**Community claim rejected:** “Cash operating burn ~$13M/qtr” — that figure is GAAP operating loss, not cash burn per CFO.
 
 ---
 
@@ -225,7 +251,7 @@ No single Reddit power-user with multi-year verified track record identified —
 6. **Japan Shonin approval Feb 24, 2026** for selected H&N — first ex-Israel.  
 7. **REGAIN interim n=3:** 100% local control, 67% CR — feasibility only.  
 8. **Tolmar deal Jun 2026:** $20M equity + $15M mfg + 60% net sales supply split.  
-9. **Cash ~$80.2M** as of Mar 31, 2026.  
+9. **Cash ~$80.2M** as of Mar 31, 2026; Q1 net loss $22.9M includes $9.6M non-cash warrant MTM; GAAP op loss $13.3M ≠ cash burn (CFO ~$5–6M+/qtr).  
 10. **F-3 shelf $300M + $100M ATM** filed Apr 27, 2026.
 
 ---
@@ -262,7 +288,7 @@ No single Reddit power-user with multi-year verified track record identified —
 
 - **ReSTART tab:** Community DD subset + expanded facts (liquidity, F-3)  
 - **Pipeline tab:** Trial map + catalyst calendar + REGAIN/IMPACT panels + community threads  
-- **Valuation tab:** Community DD table + **bear case** table  
+- **Valuation tab:** Q1 P&L vs cash-burn facts grid; runway uses CFO cash burn ($6.5M default); community DD + **bear case** tables  
 - **Explain tab:** PhD/professional DD synthesis with sourced claims  
 - **Tests:** `npm test` required after edits  
 

@@ -201,9 +201,10 @@ export const VAL_BANDS = [
     id: "vv_burnQuarterly",
     min: 4,
     max: 20,
-    sig: { b1: [8, 14], b2: [6, 17], b3: [4, 20] },
-    anchor: 10.6,
-    why: "Quarterly burn — derived from FY2025 operating loss ~$42.3M ÷ 4."
+    sig: { b1: [5, 8], b2: [4.5, 12], b3: [4, 20] },
+    anchor: 6.5,
+    imp: [12, 20],
+    why: "Quarterly cash burn ($M) — CFO interview ~$5–6M+/qtr (~$25M/yr); not GAAP op loss $13.3M."
   },
   {
     id: "vv_mult",

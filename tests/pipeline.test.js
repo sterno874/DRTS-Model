@@ -50,6 +50,13 @@ test("COMMUNITY_DD flags rejected PMA-before-readout claim", () => {
   assert.equal(row.verdict, "rejected");
 });
 
+test("COMMUNITY_DD rejects GAAP op loss as cash burn", () => {
+  const row = COMMUNITY_DD.find((r) => r.theme.includes("$13M") || r.theme.includes("GAAP op loss"));
+  assert.ok(row, "expected community claim about $13M / GAAP op loss");
+  assert.equal(row.verdict, "rejected");
+  assert.match(row.note, /cash burn/i);
+});
+
 test("BEAR_CASE and COMMUNITY_THREADS non-empty", () => {
   assert.ok(BEAR_CASE.length >= 5);
   assert.ok(COMMUNITY_THREADS.length >= 5);

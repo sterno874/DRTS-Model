@@ -103,20 +103,36 @@ export function computeFullValuation(val) {
 }
 
 /**
- * Cash runway (months) from cash balance and quarterly operating burn.
+ * Cash runway (months) from cash balance and quarterly cash burn.
+ * Uses cash burn (CFO / cash management), not GAAP net loss or operating loss.
  * @param {number} cashM — cash & equivalents ($M)
- * @param {number} burnQuarterlyM — quarterly operating cash burn ($M, positive = outflow)
+ * @param {number} burnQuarterlyM — quarterly cash burn ($M, positive = outflow)
  */
 export function computeRunwayMonths(cashM, burnQuarterlyM) {
   if (burnQuarterlyM <= 0) return Infinity;
   return (cashM / burnQuarterlyM) * 3;
 }
 
-/** FY2025 disclosed cash (~$76.9M) and implied quarterly burn from operating loss. */
+/** FY2025 filing cash anchor for prior bands (UI default cash is Q1 2026 $80.2M). */
 export const DEFAULT_CASH_M = 76.9;
-export const DEFAULT_BURN_QUARTERLY_M = 10.6;
+/** Q1 2026 cash, cash equivalents, short-term + restricted deposits ($M). */
+export const Q1_2026_CASH_M = 80.2;
+/**
+ * Default quarterly cash burn ($M) for runway math.
+ * Midpoint of CFO commentary (~$5–6M+/qtr historically, ramping with trials; ~$25M/yr).
+ * Not GAAP operating loss ($13.3M Q1) or net loss ($22.9M incl. warrants).
+ */
+export const DEFAULT_BURN_QUARTERLY_M = 6.5;
+/** Q1 2026 GAAP figures ($M) — P&L context only; not runway inputs. */
+export const GAAP_OP_LOSS_Q1_2026_M = 13.3;
+export const WARRANT_REMEASURE_Q1_2026_M = 9.6;
+export const NET_LOSS_Q1_2026_M = 22.9;
 export const RUNWAY_SOURCE =
-  "https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update";
+  "https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update";
+export const Q1_2026_6K_EXHIBIT =
+  "https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm";
+/** CFO Rafi Levy interview — cash burn commentary (company-reported, not audited cash-flow statement). */
+export const CFO_BURN_INTERVIEW = "https://youtu.be/Jyryv-152hc";
 
 /** Re-export for backward compatibility. */
 export { riskAdjustedEV, evPerShare };

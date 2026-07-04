@@ -102,6 +102,10 @@ test("Phase 3 og-image and pilot panels present", () => {
   assert.match(html, /Phase 3/);
   assert.match(html, /data-as-of=/);
   assert.match(html, /vv_burnQuarterly/);
+  assert.match(html, /Quarterly cash burn/);
+  assert.match(html, /value="6\.5"/);
+  assert.match(html, /Q1 2026 P&amp;L vs cash burn/);
+  assert.match(html, /youtu\.be\/Jyryv-152hc/);
 });
 
 test("Phase 2 header strip and MC histogram present", () => {

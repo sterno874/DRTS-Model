@@ -80,7 +80,7 @@ export const DEFAULT_STATE = {
     v_mult: 4,
     v_shares: 42,
     v_cash: 80.2,
-    v_burnQuarterly: 10.6,
+    v_burnQuarterly: 6.5,
     v_riskadj: true
   },
   ui: { explainLvl: "eli5", showHeaderStrip: true }

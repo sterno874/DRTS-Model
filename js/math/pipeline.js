@@ -323,7 +323,13 @@ export const COMMUNITY_DD = [
     theme: "Cash runway covers all readouts",
     verdict: "verified",
     tag: "verified",
-    note: "$80.2M liquidity Mar 2026; ~$10.6M/qtr burn — runway ~7 qtr before Tolmar/milestone inflows; dilution risk remains"
+    note: "$80.2M liquidity Mar 2026; default cash burn ~$6.5M/qtr (CFO ~$5–6M+/qtr, not GAAP op loss $13.3M) — runway ~12 qtr before Tolmar/milestone inflows; dilution risk remains — Q1 PR + CFO interview"
+  },
+  {
+    theme: "Q1 cash burn is ~$13M/qtr (GAAP op loss)",
+    verdict: "rejected",
+    tag: "community",
+    note: "Q1 GAAP operating loss $13.3M verified (R&D $11.0M + G&A $2.1M); cash burn per CFO interview ~$5–6M+/qtr (~$25M/yr). Net loss $22.9M includes $9.6M non-cash warrant MTM — model runway uses cash burn, not GAAP op loss or net loss — Q1 PR / 6-K + https://youtu.be/Jyryv-152hc"
   },
   {
     theme: "Alpha works in hypoxic tumors (oxygen-independent)",
@@ -381,7 +387,7 @@ export const BEAR_CASE = [
     theme: "Pre-revenue / widening losses → dilution",
     verdict: "verified",
     tag: "verified",
-    note: "FY2025 net loss $42.6M; Q1 2026 $22.9M; F-3 shelf $300M + $100M ATM filed Apr 2026 — SEC 20-F + F-3; flexibility ≠ immediate dilution"
+    note: "FY2025 net loss $42.6M; Q1 2026 net loss $22.9M (incl. $9.6M non-cash warrant MTM); GAAP op loss $13.3M ≠ cash burn (CFO ~$5–6M+/qtr). F-3 $300M + $100M ATM Apr 2026 — flexibility ≠ immediate dilution — Q1 PR / 6-K + CFO interview"
   },
   {
     theme: "Single-arm PMA may fail FDA historical-control bar",
@@ -429,7 +435,7 @@ export const BEAR_CASE = [
     theme: "Warrant / SPAC overhang (DRTSW)",
     verdict: "partial",
     tag: "verified",
-    note: "Q1 2026 financial expense $9.6M from warrant remeasurement; legacy SPAC structure — SEC 20-F FY2025"
+    note: "Q1 2026 financial expense $9.6M from warrant liability remeasurement (non-cash MTM; inflates net loss, not cash). Warrants liability $15.7M Mar 31 2026 — Q1 PR / SEC 6-K Ex. 99.1"
   },
   {
     theme: "Insider selling into catalysts",
@@ -481,6 +487,6 @@ export const COMMUNITY_THREADS = [
     label: "Seeking Alpha bull framing",
     url: "https://seekingalpha.com/article/4885167-alpha-tau-medical-stock-2026-breakthrough-year",
     author: "SA contributor",
-    note: "Acknowledges dilution risk + ~5–6 qtr runway; platform/M&A angle"
+    note: "Acknowledges dilution risk; older ~5–6 qtr runway used GAAP-style burn — model now uses CFO cash burn (~12 qtr at $6.5M default)"
   }
 ];

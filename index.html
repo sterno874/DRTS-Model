@@ -200,14 +200,25 @@
       <summary>How this works</summary>
       <div class="howworks-body">
         <p><span class="tag m">Model</span> EV = Σ (peak sales × EV multiple × P(success|indication)) + platform option. Peak sales ($M/yr) = eligible patients/yr × penetration × years on therapy × price ($K) ÷ 1,000. Risk-adjust toggle multiplies each indication by its P(success) slider.</p>
-        <p><span class="tag f">Fact</span> Cash ~$80.2M (Mar 31 2026) and ~42M ADS from FY2025 filings. Tolmar prostate deal: Alpha Tau receives 60% of net sales as supplier — <a href="https://alphatau.com/alpha-tau-and-tolmar-announce-strategic-collaboration-to-bring-alpha-dart-therapy-to-u-s-urological-cancer-patients/" target="_blank" rel="noopener">Jun 2026 PR</a> · <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a>.</p>
+        <p><span class="tag f">Fact</span> Cash ~$80.2M (Mar 31 2026) and ~42M ADS from FY2025 filings. Runway uses <b>cash burn</b> (CFO ~$5–6M+/qtr), not GAAP net loss or operating loss — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a> · <a href="https://youtu.be/Jyryv-152hc" target="_blank" rel="noopener">CFO interview</a>. Tolmar: 60% of net sales as supplier — <a href="https://alphatau.com/alpha-tau-and-tolmar-announce-strategic-collaboration-to-bring-alpha-dart-therapy-to-u-s-urological-cancer-patients/" target="_blank" rel="noopener">Jun 2026 PR</a>.</p>
       </div>
     </details>
     <span class="tab-intro-sep">|</span>
     <button type="button" class="methodlink" onclick="toggleMethod('m-value')">Methodology</button>
   </div>
   <div class="methodpanel" id="m-value" hidden>
-    <b>Valuation model.</b> Per-indication peak ($M/yr) = patients/yr × pen × years × price ($K) ÷ 1,000. EV contribution = peak × mult × P(s). Implied $/sh = (EV + cash − debt stub) / shares (M). Runway = cash / quarterly burn. Not a DCF — educational sum-of-parts only.
+    <b>Valuation model.</b> Per-indication peak ($M/yr) = patients/yr × pen × years × price ($K) ÷ 1,000. EV contribution = peak × mult × P(s). Implied $/sh = (EV + cash − debt stub) / shares (M). Runway = cash ÷ quarterly <em>cash burn</em> (not GAAP net loss or operating loss). Q1 2026 net loss $22.9M includes $9.6M non-cash warrant remeasurement; GAAP op loss $13.3M is OpEx, not cash burn. Not a DCF — educational sum-of-parts only.
+  </div>
+  <div class="facts page-inner">
+    <h2>Q1 2026 P&amp;L vs cash burn <span class="tag f">as of May 2026</span></h2>
+    <div class="factgrid">
+      <div class="fact" data-as-of="2026-05-18"><b>Net loss</b> $22.9M ($0.26/sh)<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span> · <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K Ex. 99.1</a></div>
+      <div class="fact" data-as-of="2026-05-18"><b>Warrant remeasurement</b> $9.6M financial expense (non-cash MTM)<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span> · <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K</a></div>
+      <div class="fact" data-as-of="2026-05-18"><b>GAAP operating loss</b> $13.3M (R&amp;D $11.0M + G&amp;A $2.1M)<br/><span class="tag m">not cash burn</span> · <span class="cite"><a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K Ex. 99.1</a></span></div>
+      <div class="fact" data-as-of="2026-05-18"><b>Cash burn (CFO)</b> ~$5–6M+/qtr historically (~$25M/yr)<br/><span class="tag c">company-reported interview</span> · <a href="https://youtu.be/Jyryv-152hc" target="_blank" rel="noopener">CFO Rafi Levy interview</a></div>
+      <div class="fact" data-as-of="2026-05-18"><b>Cash on hand</b> $80.2M Mar 31 2026<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span></div>
+      <div class="fact" data-as-of="2026-07-04"><b>Model default burn</b> $6.5M/qtr for runway math<br/><span class="tag m">Model</span> — midpoint of CFO cash-burn range; not GAAP op loss</div>
+    </div>
   </div>
   <div class="wrap">
     <div class="card">
@@ -247,7 +258,7 @@
       </div>
       <div class="ctrl"><label>Shares (M ADS) <span id="vv_sharesVal">42</span></label><input type="range" id="vv_shares" min="20" max="80" step="1" value="42"/><div class="bands" id="band-vv_shares"></div><small class="source-line"><span class="tag f">Verified</span> ◆ ~42M FD ADS FY2025. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
       <div class="ctrl"><label>Cash ($M) <span id="vv_cashVal">80.2</span></label><input type="range" id="vv_cash" min="10" max="150" step="0.1" value="80.2"/><div class="bands" id="band-vv_cash"></div><small class="source-line"><span class="tag f">Verified</span> Q1 2026 ~$80.2M · ◆ FY2025 ~$76.9M filing anchor. <a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a> · <a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">FY2025 PR</a></small></div>
-      <div class="ctrl"><label>Quarterly burn ($M) <span id="vv_burnQuarterlyVal">10.6</span></label><input type="range" id="vv_burnQuarterly" min="4" max="20" step="0.1" value="10.6"/><div class="bands" id="band-vv_burnQuarterly"></div><small class="source-line"><span class="tag m">Derived</span> ◆ FY2025 operating loss ~$42.3M ÷ 4 quarters.</small></div>
+      <div class="ctrl"><label>Quarterly cash burn ($M) <span id="vv_burnQuarterlyVal">6.5</span></label><input type="range" id="vv_burnQuarterly" min="4" max="20" step="0.1" value="6.5"/><div class="bands" id="band-vv_burnQuarterly"></div><small class="source-line"><span class="tag c">company-reported</span> ◆ Default $6.5M/qtr — CFO interview cash burn ~$5–6M+/qtr (~$25M/yr), ramping with trials. <a href="https://youtu.be/Jyryv-152hc" target="_blank" rel="noopener">CFO interview</a>. GAAP op loss Q1 $13.3M and net loss $22.9M (incl. $9.6M non-cash warrants) are <em>not</em> cash burn — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a> · <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K Ex. 99.1</a>.</small></div>
       <div class="ctrl"><label>EV multiple <span id="vv_multVal">4</span></label><input type="range" id="vv_mult" min="2" max="8" step="0.5" value="4"/><div class="bands" id="band-vv_mult"></div><small class="source-line"><span class="tag a">Convention</span> Device/oncology M&amp;A ~3–6× peak sales (see comparables table).</small></div>
       <div class="ctrl"><label>Platform option ($M) <span id="vv_platformVal">3</span></label><input type="range" id="vv_platform" min="0" max="20" step="0.5" value="3"/><div class="bands" id="band-vv_platform"></div><small class="source-line"><span class="tag a">Assumption</span> Alpha DaRT platform across indications — Japan approval Feb 2026 for some H&amp;N. <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">Technology page</a></small></div>
       <input type="hidden" id="vv_skinYears" value="1"/><input type="hidden" id="vv_gbmYears" value="1"/><input type="hidden" id="vv_pancYears" value="1"/><input type="hidden" id="vv_prostateYears" value="1"/>
@@ -258,7 +269,7 @@
         <div><div class="ok">Risk-adj EV</div><div class="ov" id="vEv">—</div></div>
         <div><div class="ok">Implied $/sh</div><div class="ov" id="vPsh">—</div></div>
         <div><div class="ok">Risk-adj peak sales</div><div class="ov" id="vPeak" style="font-size:16px">—</div></div>
-        <div><div class="ok">Cash runway</div><div class="ov" id="vRunway" style="font-size:16px">—</div></div>
+        <div><div class="ok">Cash runway <span class="tag m" style="font-size:10px;font-weight:400">cash burn</span></div><div class="ov" id="vRunway" style="font-size:16px">—</div></div>
       </div>
       <h2 class="mt-md">EV contribution by indication</h2>
       <div class="table-wrap"><table class="valtbl"><thead><tr><th>Indication</th><th>Peak $M/yr</th><th>P(s)</th><th>EV $M</th></tr></thead><tbody id="vContribBody"></tbody></table></div>
@@ -278,6 +289,9 @@
   <div class="facts page-inner">
     <h2>References · Valuation</h2>
     <ol class="ref-list">
+      <li><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Alpha Tau Q1 2026 PR</a> — net loss $22.9M, financial expense $9.6M (warrants), cash $80.2M</li>
+      <li><a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K Ex. 99.1 (May 18, 2026)</a> — interim P&amp;L: op loss $13.3M, R&amp;D $11.0M, G&amp;A $2.1M</li>
+      <li><a href="https://youtu.be/Jyryv-152hc" target="_blank" rel="noopener">CFO Rafi Levy interview</a> — cash burn ~$5–6M+/qtr (~$25M/yr); company-reported, not audited cash-flow statement</li>
       <li><a href="https://www.alphatau.com/single-post/alpha-tau-announces-full-year-2025-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Alpha Tau FY2025 PR</a> — cash, shares, Tolmar economics</li>
       <li><a href="https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321" target="_blank" rel="noopener">SEC 20-F FY2025</a> — going concern, Oramed $36.7M, 88M shares</li>
       <li><a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm" target="_blank" rel="noopener">SEC F-3 shelf (Apr 2026)</a> — $300M + $100M ATM</li>
@@ -347,7 +361,7 @@
           <p class="alpha-sim-note" id="simA-sparing">Healthy tissue beyond ~100 μm receives negligible α dose — spatial precision.</p>
           <p class="alpha-sim-note"><span class="tag f">Fact</span> CSDA range at 6.8 MeV ≈ <span id="simA-range-val">56</span> μm in water (ICRU/NIST tables). Typical Po-216 α ≈ 6.78 MeV.</p>
         </div>
-        <p class="alpha-sim-cite"><b>Sources:</b> <a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi et al. Phys Med Biol 2010</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/18059026/" target="_blank" rel="noopener">Keisari 2007</a> · ICRU Report 49 stopping powers · <a href="https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1616_web.pdf" target="_blank" rel="noopener">IAEA alpha therapy review</a></p>
+        <p class="alpha-sim-cite"><b>Sources:</b> <a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi et al. Phys Med Biol 2010</a> · <a href="https://iopscience.iop.org/article/10.1088/1361-6560/ae5d7e" target="_blank" rel="noopener">Korotinsky &amp; Arazi Phys Med Biol 2026</a> (microdosimetry; α track range unchanged) · <a href="https://pubmed.ncbi.nlm.nih.gov/18059026/" target="_blank" rel="noopener">Keisari 2007</a> · ICRU Report 49 stopping powers · <a href="https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1616_web.pdf" target="_blank" rel="noopener">IAEA alpha therapy review</a></p>
       </article>
 
       <!-- Sim B: Bragg / LET -->
@@ -471,8 +485,57 @@
           </div>
           <p class="alpha-sim-note" id="simE-coverage">~coverage estimate appears here</p>
         </div>
-        <p class="alpha-sim-cite"><b>Sources:</b> <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">ReSTART NCT05323253</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">FIH DaRT SCC/H&amp;N</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi dosimetry 2010</a></p>
+        <p class="alpha-sim-cite"><b>Sources:</b> <a href="https://clinicaltrials.gov/study/NCT05323253" target="_blank" rel="noopener">ReSTART NCT05323253</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">FIH DaRT SCC/H&amp;N</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi dosimetry 2010</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/36464914/" target="_blank" rel="noopener">Heger et al. Med Phys 2023</a> (seed-lattice planning)</p>
       </article>
+
+      <!-- Radiosensitivity D0 table (JRPR review) -->
+      <section class="bio-section bio-section--nested" id="bio-d0-radiosensitivity">
+        <h2><span class="bio-kicker">In vitro</span> Radiosensitivity across tumor types (D₀)</h2>
+        <p class="bio-lead"><span class="tag f">Fact</span> Mean lethal dose <b>D₀</b> (Gy) from exponential survival fits: lower D₀ = more radiosensitive to α particles. Values below are compiled in an <b>independent</b> peer-reviewed review (Kim &amp; Sung, <i>J. Radiat. Prot. Res.</i> 2024) from primary in vitro studies — educational only, not clinical response rates.</p>
+        <p><span class="tag m">Educational</span> Cell-line D₀ does not prove clinical efficacy in that histology. REGAIN interim n=3 remains feasibility only.</p>
+        <div class="table-wrap">
+          <table class="cw-table" id="bio-d0-table">
+            <thead>
+              <tr><th>Cell line</th><th>Tumor type (model)</th><th>D₀ (Gy)</th><th>Primary study (via JRPR)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>FaDu</td><td>H&amp;N SCC (human)</td><td>0.64–0.69</td><td>Cooks 2012 · Lazarov 2012</td></tr>
+              <tr><td>LL2</td><td>Lung carcinoma (murine)</td><td>0.8</td><td>Cooks 2009</td></tr>
+              <tr><td>SQ2</td><td>SCC (murine)</td><td>0.85–1.44</td><td>Lazarov 2012 · Cooks 2008</td></tr>
+              <tr><td>PC3</td><td>Prostate adenocarcinoma</td><td>0.86±0.11</td><td>Cooks 2012</td></tr>
+              <tr><td>Panc1</td><td>Pancreatic (human)</td><td>0.95±0.06</td><td>Lazarov 2012</td></tr>
+              <tr><td>Panc02</td><td>Pancreatic (murine)</td><td>~1.1</td><td>Horev-Drori 2012 · Lazarov 2012</td></tr>
+              <tr><td>HCT15</td><td>Colon (human)</td><td>1.12±0.1</td><td>Cooks 2012</td></tr>
+              <tr><td>C32</td><td>Melanoma (human)</td><td>1.17±0.09</td><td>Cooks 2012</td></tr>
+              <tr><td>U87</td><td>Glioblastoma (human)</td><td>1.2±0.2</td><td>Nishri 2022</td></tr>
+              <tr><td>CT26</td><td>Colon (murine)</td><td>1.25±0.34</td><td>Lazarov 2012</td></tr>
+              <tr><td>NCI-H520</td><td>Lung (human)</td><td>1.5</td><td>Cooks 2009 · Lazarov 2012</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="alpha-sim-cite"><b>Sources:</b> <a href="https://www.jrpr.org/journal/view.php?number=1171" target="_blank" rel="noopener">Kim &amp; Sung, J. Radiat. Prot. Res. 2024;49(3):102–113</a> (Table 1; independent review, Catholic University of Korea) · primary in vitro refs therein (Cooks, Lazarov, Horev-Drori, Nishri). <span class="tag f">peer-reviewed</span></p>
+      </section>
+
+      <!-- Dosimetry modeling -->
+      <section class="bio-section bio-section--nested" id="bio-dosimetry-modeling">
+        <h2><span class="bio-kicker">Modeling</span> Dosimetry modeling</h2>
+        <p class="bio-lead"><span class="tag f">Fact</span> Macroscopic α dose in DaRT is computed from <b>diffusion-leakage (DL)</b> transport of Ra-224 daughters, not from external-beam planning alone. Individual α tracks remain ~40–70 μm; the therapeutic cloud is mm-scale from daughter diffusion.</p>
+        <ul class="bio-sources">
+          <li><span class="tag f">peer-reviewed modeling</span> <a href="https://pubmed.ncbi.nlm.nih.gov/20463379/" target="_blank" rel="noopener">Arazi et al. Phys Med Biol 2010</a> — foundational DL / CSDA range framework (Alpha Tau–affiliated program).</li>
+          <li><span class="tag f">peer-reviewed modeling</span> <a href="https://pubmed.ncbi.nlm.nih.gov/36464914/" target="_blank" rel="noopener">Heger, Roy, Dumančić &amp; Arazi, Med Phys 2023</a> (PMID 36464914) — Part I: single-seed 1D/2D solutions; finite line-source approximations underestimate dose vs full 2D; recommends TG-43-style lookup tables for planning. Alpha TAU–funded; Ben-Gurion group.</li>
+          <li><span class="tag f">peer-reviewed modeling</span> <a href="https://iopscience.iop.org/article/10.1088/1361-6560/ae5d7e" target="_blank" rel="noopener">Korotinsky &amp; Arazi, Phys Med Biol 2026</a> — microdosimetry Part I: broad nucleus-size distributions alter survival/TCP vs uniform-cell assumptions; does <b>not</b> revise the ~40–70 μm α track range. Ben-Gurion / Arazi group (Alpha Tau–affiliated modeling lineage).</li>
+          <li><span class="tag f">peer-reviewed review</span> <a href="https://www.jrpr.org/journal/view.php?number=1171" target="_blank" rel="noopener">Kim &amp; Sung, JRPR 2024</a> — <b>independent</b> outside review of DaRT dosimetry (DL models, Heger/Zhang FEM, MC studies) and biology. Not an Alpha Tau publication.</li>
+        </ul>
+        <h3>Independent review themes (JRPR — sourced, not overclaimed)</h3>
+        <ul class="bio-sources">
+          <li><span class="tag f">Fact</span> High LET → complex DSB, reduced oxygen dependence vs photons (mechanism consensus; not a new clinical proof).</li>
+          <li><span class="tag f">Fact</span> Clinical planning in early trials often used a standardized ~10 Gy prescription from models — JRPR calls this planning approach <b>rudimentary</b> and urges image-based, more sophisticated planning, especially near bone/teeth.</li>
+          <li><span class="tag f">Fact</span> Reported local toxicities (pain, erythema, swelling, mild ulceration) are generally described as tolerable in published cohorts; long-term multicenter toxicity follow-up still needed.</li>
+          <li><span class="tag u">Emerging / theoretical</span> Abscopal effect and immune modulation: case-level and preclinical signals (e.g. Bellia case report; combo with checkpoint blockade in mice). <b>Not</b> proven pivotal clinical efficacy for immunotherapy combinations.</li>
+          <li><span class="tag u">Limit</span> JRPR does <b>not</b> prove registrational efficacy across indications — it synthesizes modeling and early clinical feasibility literature.</li>
+        </ul>
+        <p class="alpha-sim-cite"><b>Sources:</b> Kim &amp; Sung JRPR 2024 Summary &amp; Discussion · Heger et al. Med Phys 2023 · Korotinsky &amp; Arazi Phys Med Biol 2026 · Arazi 2010. Distinguish Arazi-group modeling (Alpha Tau–affiliated) from independent JRPR review.</p>
+      </section>
 
       <div class="bio-modality-grid">
         <div class="bio-modality mod-gps"><h4>Alpha (DaRT)</h4><p>High LET, ~40–70 μm α track, oxygen-independent mechanism — spares distant organs when seeds placed correctly.</p></div>

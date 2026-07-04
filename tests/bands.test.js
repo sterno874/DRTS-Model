@@ -54,6 +54,10 @@ test("key anchors match known reported values", () => {
   assert.equal(enroll.anchor, 88);
   const cash = VAL_BANDS.find((c) => c.id === "vv_cash");
   assert.equal(cash.anchor, 76.9);
+  const burn = VAL_BANDS.find((c) => c.id === "vv_burnQuarterly");
+  assert.equal(burn.anchor, 6.5);
+  assert.ok(burn.imp, "GAAP op-loss territory marked implausible as cash burn");
+  assert.ok(burn.imp[0] >= 12);
 });
 
 test("bandCoversRange helper", () => {
