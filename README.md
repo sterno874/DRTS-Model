@@ -25,6 +25,8 @@ python3 -m http.server 8080
 npm test
 ```
 
+Or open via any static host. No build step, no npm analytics packages, no server-side storage. Vercel Web Analytics loads only on `*.vercel.app` deployments (not local file open).
+
 Share URLs encode slider deltas: `#s1=<base64>` (empty hash = defaults).
 
 Example (bull ReSTART scenario):  
@@ -34,7 +36,7 @@ Append `?embed=1` to hide chrome for iframe embeds.
 
 ## Deploy (Vercel)
 
-Zero-config static site — same layout as [SLS-Model](https://github.com/sterno874/SLS-Model). Import [sterno874/DRTS-Model](https://github.com/sterno874/DRTS-Model) at [vercel.com/new](https://vercel.com/new); Vercel serves `index.html` from the repo root automatically. Assign the domain `drts-model.vercel.app` in **Project → Settings → Domains**. No build step or `package.json` dependencies required for deploy (`vercel.json` sets `cleanUrls` only).
+Zero-config static site — same layout as [SLS-Model](https://github.com/sterno874/SLS-Model). Import [sterno874/DRTS-Model](https://github.com/sterno874/DRTS-Model) at [vercel.com/new](https://vercel.com/new); Vercel serves `index.html` from the repo root automatically. Assign the domain `drts-model.vercel.app` in **Project → Settings → Domains**. Enable **Web Analytics** in the Vercel project settings → **Analytics** tab (required for visitor counts to flow; the static `/_vercel/insights/script.js` snippet in `index.html` only works when hosted on Vercel). No build step or `package.json` dependencies required for deploy (`vercel.json` sets `cleanUrls` only) — this is not a Next.js app, so `@vercel/analytics/next` does not apply.
 
 Redeploy from CLI (optional):
 
@@ -46,7 +48,7 @@ vercel deploy --prod
 
 ```
 DRTS-Model/
-├── index.html
+├── index.html          # HTML shell, meta/OG tags, Vercel Web Analytics snippet
 ├── css/main.css
 ├── js/main.js
 ├── js/math/{device,restart,pipeline,valuation}.js
