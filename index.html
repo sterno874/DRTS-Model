@@ -400,13 +400,12 @@
             <text x="240" y="223" text-anchor="middle" font-size="9" fill="#1a4fb8">Ra-224 seed</text>
             <circle id="simA-killzone" cx="240" cy="205" r="40" fill="#d64545" opacity=".12" stroke="#d64545" stroke-width="1" stroke-dasharray="4 3"/>
             <g id="simA-particles"></g>
-            <text x="400" y="192" class="as-label-sm">α track ≈ <tspan id="simA-range-svg" class="as-label">55</tspan> μm</text>
-            <text x="400" y="212" class="as-label-sm">β/γ traverse entire field →</text>
-            <g class="scale-bar" transform="translate(480,355)">
+            <text x="320" y="288" text-anchor="middle" class="as-label-sm">α track ≈ <tspan id="simA-range-svg" class="as-label">55</tspan> μm · β/γ traverse entire field</text>
+            <g class="scale-bar" transform="translate(500,368)">
               <line x1="0" y1="0" x2="42" y2="0"/><line x1="0" y1="-3" x2="0" y2="3"/><line x1="42" y1="-3" x2="42" y2="3"/>
               <text x="21" y="12" text-anchor="middle" class="as-label-sm">~56 μm α range</text>
             </g>
-            <g class="sim-legend" transform="translate(32,355)">
+            <g class="sim-legend" transform="translate(32,368)">
               <rect x="0" y="-8" width="10" height="10" fill="#d64545" rx="2"/><text x="14" y="0" class="as-label-sm">α track</text>
               <rect x="70" y="-8" width="10" height="10" fill="#fdeaea" stroke="#d64545" rx="2"/><text x="84" y="0" class="as-label-sm">Tumor</text>
               <rect x="140" y="-8" width="10" height="10" fill="#e8f6ee" stroke="#1f9d55" rx="2"/><text x="154" y="0" class="as-label-sm">Tissue</text>
@@ -430,16 +429,16 @@
         <p class="sim-lead"><span class="tag m">Pedagogical schematic</span> LET rises toward end of track (Bragg-like peak) — dense ionization causes complex DNA damage. Not a full Monte Carlo simulation.</p>
         <div class="alpha-sim-body">
           <div class="alpha-sim-viz">
-          <svg class="alpha-sim-svg" viewBox="0 0 600 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="LET along alpha track">
+          <svg class="alpha-sim-svg" viewBox="0 0 600 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="LET along alpha track">
             <text x="300" y="22" text-anchor="middle" class="as-label">Relative LET vs distance along track</text>
             <g id="simB-grid"></g>
             <line x1="48" y1="200" x2="552" y2="200" class="as-axis"/>
-            <text x="48" y="218" class="as-label-sm">Track entry (0 μm)</text>
-            <text x="500" y="218" class="as-label-sm">Range end (~55 μm)</text>
+            <text x="48" y="228" class="as-label-sm">Track entry (0 μm)</text>
+            <text x="500" y="228" class="as-label-sm">Range end (~55 μm)</text>
             <text x="24" y="120" class="as-label-sm" transform="rotate(-90 24 120)">LET (rel. keV/μm)</text>
             <path id="simB-let-curve" fill="none" stroke="#d64545" stroke-width="2.5"/>
             <circle id="simB-scan-dot" cx="480" cy="80" r="6" fill="#2f6fed" stroke="#fff" stroke-width="2"/>
-            <text x="300" y="248" text-anchor="middle" class="as-label-sm">Bragg-like peak at range end — dense ionization, complex DSB (schematic)</text>
+            <text x="300" y="268" text-anchor="middle" class="as-label-sm">Bragg-like peak at range end — dense ionization, complex DSB (schematic)</text>
           </svg>
           </div>
           <div class="alpha-sim-controls">
@@ -547,11 +546,11 @@
           <div class="alpha-sim-viz">
           <svg class="alpha-sim-svg" viewBox="0 0 400 260" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Seed placement cross section">
             <ellipse cx="200" cy="130" rx="85" ry="65" class="as-tumor"/>
-            <text x="200" y="126" text-anchor="middle" class="as-label-sm" fill="#8f2020">cSCC tumor (BEV)</text>
+            <text x="200" y="108" text-anchor="middle" class="as-label-sm" fill="#8f2020">cSCC tumor (BEV)</text>
             <ellipse cx="200" cy="130" rx="95" ry="72" fill="none" stroke="#94a3b8" stroke-dasharray="5 4" opacity=".5"/>
-            <text x="200" y="210" text-anchor="middle" class="as-label-sm">Dashed: ~2.5 mm DL dose cloud (mm scale)</text>
+            <text x="200" y="218" text-anchor="middle" class="as-label-sm">Dashed: ~2.5 mm DL dose cloud (mm scale)</text>
             <g id="simE-zones"></g>
-            <g class="scale-bar" transform="translate(24,238)">
+            <g class="scale-bar" transform="translate(24,248)">
               <line x1="0" y1="0" x2="56" y2="0"/><line x1="0" y1="-3" x2="0" y2="3"/><line x1="56" y1="-3" x2="56" y2="3"/>
               <text x="28" y="12" text-anchor="middle" class="as-label-sm">~70 μm kill zone</text>
             </g>

@@ -193,11 +193,12 @@ function initPenetration(root) {
               : s.key === "beta"
                 ? "~4 mm"
                 : "cm+";
+          const labelX = Math.min(x0 + barW + 8, 612);
           return (
             `<g><text x="${x0 - 8}" y="${y + 10}" text-anchor="end" class="as-label">${s.label}</text>` +
             `<rect x="${x0}" y="${y}" width="${barW}" height="14" rx="3" fill="${SIM_COLORS.grid}"/>` +
             `<rect x="${x0}" y="${y}" width="${w.toFixed(1)}" height="14" rx="3" fill="${s.color}" opacity=".88"/>` +
-            `<text x="${x0 + barW + 8}" y="${y + 10}" class="as-label-sm">${label}</text></g>`
+            `<text x="${labelX}" y="${y + 10}" class="as-label-sm">${label}</text></g>`
           );
         })
         .join("") +

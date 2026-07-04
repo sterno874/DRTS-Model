@@ -17,7 +17,7 @@
 .alpha-sim-controls label{font-weight:600;display:flex;align-items:center;gap:var(--space-sm);flex:1 1 min(100%,220px);min-width:0}
 .alpha-sim-controls input[type=range]{flex:1;min-width:100px;max-width:100%}
 .alpha-sim-controls button.p{min-height:36px;padding:var(--space-xs) var(--space-md);font-size:12px;flex-shrink:0}
-.alpha-sim-readout{font-size:13px;color:var(--ink);flex:1 1 100%}
+.alpha-sim-readout{font-size:13px;color:var(--ink);flex:1 1 100%;min-width:0;line-height:1.45}
 .alpha-sim-readout .as-muted{color:var(--muted);font-weight:400;font-size:12px}
 .alpha-sim-note{font-size:11.5px;color:var(--muted);margin:0;line-height:1.5}
 .alpha-sim-cite{font-size:11.5px;color:var(--muted);margin-top:var(--space-md);padding-top:var(--space-sm);border-top:1px dashed var(--line);line-height:1.55;clear:both}
@@ -83,6 +83,9 @@
   .alpha-sim{padding:var(--space-md)}
   .alpha-sim-viz{padding:var(--space-sm)}
   .alpha-sim-controls label{flex:1 1 100%}
+  .alpha-sim-readout{flex:1 1 100%;font-size:12px}
+  .as-label{font-size:10px}
+  .as-label-sm{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){
   .simC-node,.simC-tl-seg{transition:none}
