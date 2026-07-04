@@ -80,3 +80,22 @@ test("v_linkSkinPs false round-trips", () => {
   const d = decodeShareHash(buildShareHash(s));
   assert.equal(d.val.v_linkSkinPs, false);
 });
+
+test("linked skin P(s) is omitted from share hash (derived from ReSTART)", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_linkSkinPs = true;
+  s.val.v_skinPs = 0.95; // MC-derived — must not pollute share URL
+  assert.equal(buildShareHash(s), "#s1=");
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.val.v_linkSkinPs, true);
+  assert.equal(d.val.v_skinPs, DEFAULT_STATE.val.v_skinPs);
+});
+
+test("unlinked custom skin P(s) still round-trips", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_linkSkinPs = false;
+  s.val.v_skinPs = 0.7;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.val.v_linkSkinPs, false);
+  assert.equal(d.val.v_skinPs, 0.7);
+});

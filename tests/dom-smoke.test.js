@@ -111,6 +111,12 @@ test("explain levels cite newer dosimetry sources", () => {
   assert.match(js, /bio-dosimetry-modeling/);
 });
 
+test("explain levels document MC co-primary DOR and skin P(s) link", () => {
+  assert.match(js, /durable-responder fraction|durable\/responders/);
+  assert.match(js, /P\(DOR≥6mo\|responder\)|pDurable/);
+  assert.match(js, /Skin P\(s\) links to MC P\(success\)|skin P\(s\) defaults to this MC/);
+});
+
 test("explain levels link to biology simulations", () => {
   assert.match(js, /alpha-sim-penetration/);
   assert.match(js, /alpha-sim-bragg/);

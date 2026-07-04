@@ -11,9 +11,9 @@ Primary-sourced, open-source interactive model of **Alpha Tau Medical** (NASDAQ:
 
 ## Tabs (Phase 2)
 
-1. **ReSTART (cSCC pivotal)** — Wilson CI + binomial ORR vs historical benchmark (26–40% literature range; cemiplimab/pembrolizumab citations); DOR gate; Monte Carlo; modular PMA timeline heuristic; bear/base/bull/best/stress presets ([NCT05323253](https://clinicaltrials.gov/study/NCT05323253)).
-2. **Pipeline & catalysts** — IMPACT, REGAIN (n=3 interim caveat), prostate/Tolmar, Japan approval; interactive catalyst calendar (2026–2027).
-3. **Valuation** — Skin, GBM, pancreatic, prostate (60% Tolmar supply share); risk-adjusted EV; comparables; community DD reality-check table.
+1. **ReSTART (cSCC pivotal)** — Wilson CI + binomial ORR vs historical benchmark (26–40% literature range; cemiplimab/pembrolizumab citations); MC co-primary DOR (per-responder durability prior); modular PMA timeline heuristic; bear/base/bull/best/stress presets ([NCT05323253](https://clinicaltrials.gov/study/NCT05323253)).
+2. **Pipeline & catalysts** — IMPACT, REGAIN (n=3 interim caveat), prostate/Tolmar, Japan approval; display-only pilot posteriors (15% registrational P(s) cap); interactive catalyst calendar (2026–2027).
+3. **Valuation** — Skin, GBM, pancreatic, prostate (60% Tolmar supply share); skin P(s) links to ReSTART MC P(success) by default; risk-adjusted EV; commercial bull platform capped at $8M; comparables; community DD reality-check table.
 4. **Explain (ELI5 → PhD)** — Alpha vs beta/gamma, device PMA vs drug NDA, single-arm ORR logic — all sourced.
 5. **The Biology** — Ra-224 decay chain SVG, hypoxia independence, seed placement — Keisari/Kelson / PubMed citations.
 
@@ -53,7 +53,7 @@ DRTS-Model/
 ├── js/main.js
 ├── js/math/{device,restart,pipeline,valuation}.js
 ├── js/ui/state.js
-├── tests/               # 54 unit/smoke tests + mutation runner
+├── tests/               # unit/smoke tests + mutation runner
 ├── RESEARCH.md
 ├── CONTRIBUTING.md
 └── vercel.json

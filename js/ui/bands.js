@@ -116,7 +116,7 @@ export const VAL_BANDS = [
     min: 0.05,
     max: 0.95,
     sig: { b1: [0.35, 0.7], b2: [0.2, 0.85], b3: [0.05, 0.95] },
-    why: "P(ReSTART PMA success) — should track ReSTART tab structural score."
+    why: "P(ReSTART PMA success) — default links to ReSTART MC co-primary P(success); unlink to set manually."
   },
   {
     id: "vv_gbmPts",

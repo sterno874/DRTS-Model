@@ -3,13 +3,25 @@ import assert from "node:assert/strict";
 import {
   computeHeaderStrip,
   resolveLinkedSkinPs,
+  valuationInputsForState,
   DEFAULT_STATE,
   VAL_PRESETS
 } from "../js/ui/state.js";
+import { computeFullValuation } from "../js/math/valuation.js";
 import { computeRestartMetrics, mcRestartORR } from "../js/math/restart.js";
 
+const BASE_MC = mcRestartORR({
+  n: 88,
+  orrPct: 55,
+  benchOrrPct: 30,
+  dorDurablePct: 81,
+  dorMinFracPct: 50,
+  sims: 1500,
+  seed: 42
+});
+
 test("computeHeaderStrip returns ORR and per-share", () => {
-  const h = computeHeaderStrip(DEFAULT_STATE);
+  const h = computeHeaderStrip(DEFAULT_STATE, BASE_MC.pSuccess);
   assert.equal(h.orrPct, 55);
   assert.match(h.wilson, /%/);
   assert.ok(parseFloat(h.perSh) > 0);
@@ -22,16 +34,35 @@ test("computeHeaderStrip updates with bull preset ORR", () => {
 });
 
 test("frozen header strip base golden $/sh and vs-ref upside", () => {
-  const h = computeHeaderStrip(DEFAULT_STATE);
-  // Base EV ~$574M, shares 88M, cash $80.2M → $/sh ≈ $7.44
-  assert.ok(Math.abs(parseFloat(h.perSh) - 7.44) < 0.1);
+  // Link default on: header uses MC co-primary P(success) → skin P(s) 0.95, $/sh ≈ $10.22
+  const h = computeHeaderStrip(DEFAULT_STATE, BASE_MC.pSuccess);
+  assert.ok(Math.abs(parseFloat(h.perSh) - 10.22) < 0.1);
   assert.equal(h.refPrice, "13.00");
-  // Equity $654M vs mkt cap 88×13=$1144M → about −43% (0.57×)
+  // Equity ~$899M vs mkt cap 88×13=$1144M → about −21% (0.79×)
   assert.match(h.upsideLabel, /%/);
   assert.match(h.upsideLabel, /×/);
   assert.ok(parseFloat(h.upsidePct) < 0);
   assert.ok(h.upsideLabel.startsWith("-"), "base vs-ref must show negative sign");
-  assert.ok(Math.abs(parseFloat(h.upsideMult) - 0.57) < 0.05);
+  assert.ok(Math.abs(parseFloat(h.upsideMult) - 0.79) < 0.05);
+});
+
+test("header with link on ignores stale v_skinPs and matches valuation", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_linkSkinPs = true;
+  s.val.v_skinPs = 0.55; // stale manual value
+  const h = computeHeaderStrip(s, BASE_MC.pSuccess);
+  const linkedVal = valuationInputsForState(s, BASE_MC.pSuccess);
+  assert.equal(linkedVal.v_skinPs, 0.95);
+  const v = computeFullValuation(linkedVal);
+  assert.ok(Math.abs(parseFloat(h.perSh) - v.perSh) < 0.01);
+});
+
+test("header with link off uses manual skin P(s)", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_linkSkinPs = false;
+  s.val.v_skinPs = 0.55;
+  const h = computeHeaderStrip(s, BASE_MC.pSuccess);
+  assert.ok(Math.abs(parseFloat(h.perSh) - 7.44) < 0.1);
 });
 
 test("header labels risk-adj equity $/sh and vs-ref", () => {
@@ -45,11 +76,12 @@ test("header labels risk-adj equity $/sh and vs-ref", () => {
 });
 
 test("header strip commercial bull raises $/sh and upside vs base", () => {
-  const base = computeHeaderStrip(DEFAULT_STATE);
+  const base = computeHeaderStrip(DEFAULT_STATE, BASE_MC.pSuccess);
   const s = structuredClone(DEFAULT_STATE);
   const { label: _lb, ...bullPreset } = VAL_PRESETS.bull;
   Object.assign(s.val, bullPreset);
-  const bull = computeHeaderStrip(s);
+  // Link stays on — bull raises pen/mult/platform; skin P(s) still from MC
+  const bull = computeHeaderStrip(s, BASE_MC.pSuccess);
   assert.ok(parseFloat(bull.perSh) > parseFloat(base.perSh));
   assert.ok(parseFloat(bull.upsidePct) > parseFloat(base.upsidePct));
   // Positive upside must keep explicit "+" sign (mutation target)

@@ -243,10 +243,14 @@ export function buildShareHash(state) {
     ...DEFAULT_STATE.restart,
     ...presetCore
   };
+  // When link is on, skin P(s) is derived from ReSTART — omit from delta so share
+  // links stay stable and do not freeze a stale MC snapshot.
+  const valForHash = { ...state.val };
+  if (valForHash.v_linkSkinPs) delete valForHash.v_skinPs;
   const payload = {
     v: 2,
     r: deltaEncode(state.restart, base),
-    val: deltaEncode(state.val, DEFAULT_STATE.val),
+    val: deltaEncode(valForHash, DEFAULT_STATE.val),
     pipe: deltaEncode(state.pipeline, DEFAULT_STATE.pipeline)
   };
   if (state.tab !== DEFAULT_STATE.tab) payload.tab = state.tab;
@@ -340,10 +344,29 @@ export function resolveLinkedSkinPs(restartState, mcPSuccess) {
   return Math.round(m.pCombined * 20) / 20;
 }
 
-/** Frozen header strip: ReSTART ORR scenario + risk-adj equity $/sh vs illustrative ref. */
-export function computeHeaderStrip(state) {
+/**
+ * Valuation inputs with skin P(s) resolved when the ReSTART link toggle is on.
+ * @param {object} state
+ * @param {number|null|undefined} mcPSuccess — MC co-primary P(success); falls back to pCombined
+ */
+export function valuationInputsForState(state, mcPSuccess) {
+  if (!state.val.v_linkSkinPs) return state.val;
+  return {
+    ...state.val,
+    v_skinPs: resolveLinkedSkinPs(state.restart, mcPSuccess)
+  };
+}
+
+/**
+ * Frozen header strip: ReSTART ORR scenario + risk-adj equity $/sh vs illustrative ref.
+ * When v_linkSkinPs is on, $/sh uses linked skin P(s) (MC preferred, else pCombined) so the
+ * header matches the Valuation tab after applyLinkedSkinPs.
+ * @param {object} state
+ * @param {number|null|undefined} [mcPSuccess]
+ */
+export function computeHeaderStrip(state, mcPSuccess) {
   const r = computeRestartMetrics(state.restart);
-  const v = computeFullValuation(state.val);
+  const v = computeFullValuation(valuationInputsForState(state, mcPSuccess));
   const riskAdj = !!state.val.v_riskadj;
   const shares = state.val.v_shares;
   const cash = state.val.v_cash ?? 0;
