@@ -13,6 +13,8 @@ import {
 test("computeRunwayMonths scales with cash and burn", () => {
   assert.ok(Math.abs(computeRunwayMonths(80.2, 6.5) - 37.0) < 0.5);
   assert.ok(computeRunwayMonths(100, 10) > computeRunwayMonths(50, 10));
+  // Must convert quarters to months (×3) — mutation dropping ×3 fails
+  assert.equal(computeRunwayMonths(30, 10), 9);
 });
 
 test("default burn is CFO cash burn, not GAAP op loss", () => {

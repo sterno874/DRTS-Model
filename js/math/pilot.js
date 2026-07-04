@@ -1,9 +1,16 @@
 /**
  * Read-only Bayesian response-rate panels for IMPACT / REGAIN pilot trials.
  * Uses disclosed interim counts only — wide priors when n is tiny.
+ * Feasibility / pilot posteriors are display-only and cannot set registrational P(s)
+ * without a hard contribution cap (see capRegistrationalPs).
  */
 
-import { wilsonInterval } from "./device.js";
+import {
+  wilsonInterval,
+  capRegistrationalPs,
+  REGAIN_MAX_REGISTRATIONAL_PS,
+  IMPACT_MAX_REGISTRATIONAL_PS
+} from "./device.js";
 
 /** Beta(a,b) posterior mean after observing s successes in n trials (conjugate update). */
 export function betaPosteriorMean(successes, n, alphaPrior = 1, betaPrior = 1) {
@@ -43,35 +50,50 @@ export const IMPACT_PILOT = {
 };
 
 /**
- * REGAIN read-only panel metrics.
- * @returns {{ n: number, ratePct: number, ciLo: number, ciHi: number, crRatePct: number, crCiLo: number, crCiHi: number, note: string }}
+ * REGAIN read-only panel metrics — feasibility, not pivotal.
+ * n=3 posterior cannot set registrational P(s) without hard cap (max 15% contribution).
  */
 export function computeRegainPanel() {
   const { n, localControl, completeResponse } = REGAIN_INTERIM;
   const ldc = betaPosteriorInterval(localControl, n);
   const cr = betaPosteriorInterval(completeResponse, n);
+  const rawPs = betaPosteriorMean(localControl, n);
+  const cappedPs = capRegistrationalPs(rawPs, REGAIN_MAX_REGISTRATIONAL_PS);
   return {
     n,
-    ratePct: betaPosteriorMean(localControl, n) * 100,
+    ratePct: rawPs * 100,
     ciLo: ldc.lo * 100,
     ciHi: ldc.hi * 100,
     crRatePct: betaPosteriorMean(completeResponse, n) * 100,
     crCiLo: cr.lo * 100,
     crCiHi: cr.hi * 100,
-    note: `Interim n=${n} only — 95% credible intervals span ~${(cr.lo * 100).toFixed(0)}–${(cr.hi * 100).toFixed(0)}% CR; not OS or pivotal proof`
+    displayOnly: true,
+    feasibilityNotPivotal: true,
+    rawRegistrationalPs: rawPs,
+    cappedRegistrationalPs: cappedPs,
+    maxRegistrationalPs: REGAIN_MAX_REGISTRATIONAL_PS,
+    note: `Interim n=${n} only — feasibility not pivotal. 95% CI ~${(cr.lo * 100).toFixed(0)}–${(cr.hi * 100).toFixed(0)}% CR; registrational P(s) contribution capped at ${(REGAIN_MAX_REGISTRATIONAL_PS * 100).toFixed(0)}% (display-only, cannot drive valuation P(s))`
   };
 }
 
 /**
- * IMPACT read-only panel — no US pilot response data; shows prior-only uncertainty band.
+ * IMPACT read-only panel — no US pilot response data; wide prior band only.
+ * Display-only: cannot drive high P(s) without hard cap.
  */
 export function computeImpactPanel() {
   const prior = betaPosteriorInterval(0, 0, 1, 1);
+  const priorMean = betaPosteriorMean(0, 0, 1, 1);
+  const cappedPs = capRegistrationalPs(priorMean, IMPACT_MAX_REGISTRATIONAL_PS);
   return {
     targetN: IMPACT_PILOT.targetN,
     disclosed: false,
+    displayOnly: true,
+    feasibilityNotPivotal: true,
     priorLo: prior.lo * 100,
     priorHi: prior.hi * 100,
-    note: "No IMPACT US pilot response counts disclosed — uniform Beta(1,1) prior shown; do not import pooled ASCO pancreatic OS into IMPACT n=40 feasibility"
+    priorMeanPct: priorMean * 100,
+    cappedRegistrationalPs: cappedPs,
+    maxRegistrationalPs: IMPACT_MAX_REGISTRATIONAL_PS,
+    note: "No IMPACT US pilot response counts disclosed — wide uniform Beta(1,1) prior only (display-only). Cannot drive high P(s); registrational contribution capped at 15%. Do not import pooled ASCO pancreatic OS into IMPACT n=40 feasibility."
   };
 }

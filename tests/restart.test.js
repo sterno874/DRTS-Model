@@ -6,7 +6,9 @@ import {
   CSCC_BENCHMARKS,
   estimateReadoutMonths,
   pmaTimelineMonths,
-  DEFAULT_ORR_THRESHOLD_PCT
+  modularPmaTimeline,
+  DEFAULT_ORR_THRESHOLD_PCT,
+  DEFAULT_DOR_DURABLE_PCT
 } from "../js/math/restart.js";
 
 test("computeRestartMetrics golden base case n=88 ORR 55%", () => {
@@ -25,13 +27,46 @@ test("computeRestartMetrics golden base case n=88 ORR 55%", () => {
   assert.ok(Math.abs(m.pCombined - 0.869999183576396) < 1e-6);
 });
 
-test("mcRestartORR golden seed=42 sims=1500", () => {
+test("mcRestartORR golden seed=42 sims=1500 co-primary DOR", () => {
   const mc = mcRestartORR(
-    { n: 88, orrPct: 55, benchOrrPct: 30, orrThresholdPct: 35, sims: 1500, seed: 42 },
+    {
+      n: 88,
+      orrPct: 55,
+      benchOrrPct: 30,
+      orrThresholdPct: 35,
+      dorDurablePct: 81,
+      dorMinFracPct: 50,
+      sims: 1500,
+      seed: 42
+    },
     undefined
   );
-  assert.ok(Math.abs(mc.pSuccess - 0.9553333333333334) < 1e-10);
-  assert.ok(Math.abs(mc.orrMedian - 54.54545454545454) < 1e-10);
+  assert.ok(Math.abs(mc.pSuccess - 0.9586666666666667) < 1e-10);
+  assert.ok(Math.abs(mc.orrMedian - 56.81818181818182) < 1e-10);
+  assert.ok(mc.pOrrOnly >= mc.pSuccess);
+});
+
+test("MC co-primary DOR gate reduces success when durability prior is low", () => {
+  const high = mcRestartORR({
+    n: 88,
+    orrPct: 55,
+    benchOrrPct: 30,
+    dorDurablePct: 90,
+    dorMinFracPct: 50,
+    sims: 800,
+    seed: 7
+  });
+  const low = mcRestartORR({
+    n: 88,
+    orrPct: 55,
+    benchOrrPct: 30,
+    dorDurablePct: 20,
+    dorMinFracPct: 50,
+    sims: 800,
+    seed: 7
+  });
+  assert.ok(high.pSuccess > low.pSuccess);
+  assert.ok(low.pSuccess < low.pOrrOnly);
 });
 
 test("computeRestartMetrics Wilson CI brackets observed ORR", () => {
@@ -83,6 +118,19 @@ test("pmaTimelineMonths increases with remaining modules", () => {
   assert.ok(pmaTimelineMonths(1, 3) < pmaTimelineMonths(0, 3));
 });
 
+test("modularPmaTimeline clock-stop band widens with more stops", () => {
+  const none = modularPmaTimeline({ modulesSubmitted: 1, modulesTotal: 3, clockStops: 0 });
+  const one = modularPmaTimeline({ modulesSubmitted: 1, modulesTotal: 3, clockStops: 1 });
+  assert.equal(none.monthsMid, pmaTimelineMonths(1, 3));
+  assert.ok(one.monthsHi > one.monthsLo);
+  assert.ok(one.monthsHi - one.monthsLo > none.monthsHi - none.monthsLo);
+  assert.ok(one.monthsMid > none.monthsMid);
+});
+
 test("DEFAULT_ORR_THRESHOLD_PCT is 35", () => {
   assert.equal(DEFAULT_ORR_THRESHOLD_PCT, 35);
+});
+
+test("DEFAULT_DOR_DURABLE_PCT is PD-1 comp 81%", () => {
+  assert.equal(DEFAULT_DOR_DURABLE_PCT, 81);
 });

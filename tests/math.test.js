@@ -4,7 +4,9 @@ import {
   wilsonInterval,
   binomUpperTail,
   riskAdjustedEV,
-  evPerShare
+  evPerShare,
+  capRegistrationalPs,
+  REGAIN_MAX_REGISTRATIONAL_PS
 } from "../js/math/device.js";
 
 test("wilsonInterval golden values for ReSTART base case k=48 n=88", () => {
@@ -40,4 +42,13 @@ test("riskAdjustedEV sums indications", () => {
 
 test("evPerShare includes cash", () => {
   assert.equal(evPerShare(100, 10, 20), 12);
+  // Cash term is material — mutation dropping cash fails this
+  assert.ok(evPerShare(100, 10, 20) > evPerShare(100, 10, 0));
+});
+
+test("capRegistrationalPs hard-caps feasibility posteriors at 15%", () => {
+  assert.equal(REGAIN_MAX_REGISTRATIONAL_PS, 0.15);
+  assert.equal(capRegistrationalPs(0.9), 0.15);
+  assert.equal(capRegistrationalPs(0.1), 0.1);
+  assert.ok(capRegistrationalPs(0.99) <= 0.15);
 });

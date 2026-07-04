@@ -27,6 +27,11 @@ test("VAL_PRESETS has base bull bear", () => {
   assert.ok(VAL_PRESETS.base && VAL_PRESETS.bull && VAL_PRESETS.bear);
 });
 
+test("bull preset is Commercial bull (ops) with platform ≤$8M", () => {
+  assert.match(VAL_PRESETS.bull.label, /Commercial bull \(ops\)/);
+  assert.ok(VAL_PRESETS.bull.v_platform <= 8);
+});
+
 test("best preset exists for FIH-adjacent scenario", () => {
   assert.ok(SHARE_PRESETS.best);
   assert.ok(SHARE_PRESETS.best.orrPct >= 55);

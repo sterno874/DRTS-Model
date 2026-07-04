@@ -21,11 +21,28 @@ test("computeRegainPanel CR interval is very wide at n=3", () => {
   assert.equal(p.crRatePct, 60);
 });
 
+test("REGAIN n=3 cannot set registrational P(s) without hard cap", () => {
+  const p = computeRegainPanel();
+  assert.equal(p.displayOnly, true);
+  assert.equal(p.feasibilityNotPivotal, true);
+  assert.ok(p.rawRegistrationalPs > p.maxRegistrationalPs);
+  assert.equal(p.cappedRegistrationalPs, p.maxRegistrationalPs);
+  assert.ok(p.cappedRegistrationalPs <= 0.15);
+});
+
 test("computeImpactPanel shows no disclosed responses", () => {
   const p = computeImpactPanel();
   assert.equal(p.disclosed, false);
   assert.equal(p.targetN, 40);
   assert.ok(p.priorLo < 20 && p.priorHi > 80);
+});
+
+test("IMPACT is display-only with wide prior and P(s) cap", () => {
+  const p = computeImpactPanel();
+  assert.equal(p.displayOnly, true);
+  assert.equal(p.feasibilityNotPivotal, true);
+  assert.ok(p.priorHi - p.priorLo > 50, "wide prior band");
+  assert.ok(p.cappedRegistrationalPs <= 0.15);
 });
 
 test("betaPosteriorMean uniform prior at 2/3", () => {

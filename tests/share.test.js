@@ -66,3 +66,17 @@ test("inferActivePresets matches bull ORR", () => {
   s.restart.orrPct = 65;
   assert.equal(inferActivePresets(s).activeRestartPreset, "bull");
 });
+
+test("v_shares round-trips through share hash", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_shares = 100;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.val.v_shares, 100);
+});
+
+test("v_linkSkinPs false round-trips", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_linkSkinPs = false;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.val.v_linkSkinPs, false);
+});

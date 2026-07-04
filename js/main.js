@@ -5,7 +5,8 @@ import {
   mcRestartORR,
   CSCC_BENCHMARKS,
   estimateReadoutMonths,
-  pmaTimelineMonths
+  pmaTimelineMonths,
+  modularPmaTimeline
 } from "./math/restart.js";
 import {
   PIPELINE_TRIALS,
@@ -34,6 +35,7 @@ import {
   parseEmbedMode,
   computeValuationMetrics,
   computeHeaderStrip,
+  resolveLinkedSkinPs,
   paramsFromPreset,
   inferActivePresets
 } from "./ui/state.js";
@@ -183,15 +185,27 @@ function renderPilotPanels() {
   if (!host) return;
   const regain = computeRegainPanel();
   const impact = computeImpactPanel();
+  const r = state.restart;
+  const pma = modularPmaTimeline({
+    modulesSubmitted: r.pmaModulesDone,
+    modulesTotal: r.pmaModulesTotal,
+    clockStops: r.pmaClockStops ?? 1
+  });
   host.innerHTML =
-    `<div class="pilot-card card"><h2>REGAIN · GBM feasibility</h2>` +
+    `<div class="pilot-card card"><h2>Modular PMA · clock-stop heuristic</h2>` +
+    `<div class="pilot-stat"><b>Review band (post top-line)</b> ${pma.monthsLo}–${pma.monthsHi} mo (mid ${pma.monthsMid})</div>` +
+    `<div class="pilot-stat"><b>Modules</b> ${r.pmaModulesDone}/${r.pmaModulesTotal} submitted · clock-stops ${r.pmaClockStops ?? 1}</div>` +
+    `<p class="field-note">${pma.note}. Point estimate without stops: ~${pmaTimelineMonths(r.pmaModulesDone, r.pmaModulesTotal)} mo.</p></div>` +
+    `<div class="pilot-card card"><h2>REGAIN · GBM feasibility <span class="tag c">not pivotal</span></h2>` +
     `<div class="pilot-stat"><b>Local control</b> ${regain.ratePct.toFixed(0)}% posterior mean<br/>95% CI ${regain.ciLo.toFixed(0)}–${regain.ciHi.toFixed(0)}% · n=${regain.n} disclosed</div>` +
     `<div class="pilot-stat"><b>Complete response (RANO)</b> ${regain.crRatePct.toFixed(0)}% posterior mean<br/>95% CI ${regain.crCiLo.toFixed(0)}–${regain.crCiHi.toFixed(0)}%</div>` +
+    `<div class="pilot-stat"><b>Registrational P(s) cap</b> ≤${(regain.maxRegistrationalPs * 100).toFixed(0)}% (raw ${(regain.rawRegistrationalPs * 100).toFixed(0)}% → capped ${(regain.cappedRegistrationalPs * 100).toFixed(0)}%) · display-only</div>` +
     `<p class="field-note">${regain.note} · <a href="${REGAIN_INTERIM.source}" target="_blank" rel="noopener">Primary source</a></p></div>` +
-    `<div class="pilot-card card"><h2>IMPACT · pancreatic pilot</h2>` +
+    `<div class="pilot-card card"><h2>IMPACT · pancreatic pilot <span class="tag c">feasibility</span></h2>` +
     `<div class="pilot-stat"><b>US pilot responses</b> not disclosed</div>` +
     `<div class="pilot-stat"><b>Target enrollment</b> n=${impact.targetN}</div>` +
-    `<div class="pilot-stat"><b>Uniform prior band</b> ${impact.priorLo.toFixed(0)}–${impact.priorHi.toFixed(0)}% (no data yet)</div>` +
+    `<div class="pilot-stat"><b>Wide prior band</b> ${impact.priorLo.toFixed(0)}–${impact.priorHi.toFixed(0)}% (no US data)</div>` +
+    `<div class="pilot-stat"><b>Registrational P(s) cap</b> ≤${(impact.maxRegistrationalPs * 100).toFixed(0)}% · display-only, cannot drive high P(s)</div>` +
     `<p class="field-note">${impact.note} · <a href="${IMPACT_PILOT.pooledSource}" target="_blank" rel="noopener">ASCO 2026 pooled pancreatic</a> is separate design.</p></div>`;
 }
 
@@ -236,14 +250,14 @@ function updateHeaderStrip() {
   if (!strip || !state.ui.showHeaderStrip) return;
   const h = computeHeaderStrip(state);
   const upsideTitle =
-    `Model equity $${h.equity}M (EV+cash) vs mkt cap $${h.mktCap}M (shares × ref $${h.refPrice}). Ref price is an assumption as-of ~Jul 2026 (Yahoo/market ~$13) — not a live quote.`;
+    `Model equity $${h.equity}M (EV+cash) vs mkt cap $${h.mktCap}M (shares × ref $${h.refPrice}). ${h.riskAdj ? "Risk-adjusted" : "Gross"} equity $/sh. Ref price is an assumption as-of ~Jul 2026 (Yahoo/market ~$13) — not a live quote.`;
   strip.innerHTML =
     `<span class="best-est-item best-est-item--scenario"><span class="best-est-label">Scenario</span><span class="best-est-val best-est-val--scenario">${SHARE_PRESETS[state.activeRestartPreset]?.label || h.preset}</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Assumed ORR</span><span class="best-est-val">${h.orrPct}%</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Wilson CI</span><span class="best-est-val">${h.wilson}</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">P(beat bench)</span><span class="best-est-val">${h.pBeat}%</span></span>` +
-    `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Implied $/sh</span><span class="best-est-val">$${h.perSh}</span></span>` +
-    `<span class="best-est-sep">·</span><span class="best-est-item" title="${upsideTitle}"><span class="best-est-label">vs ref</span><span class="best-est-val">${h.upsideLabel}</span></span>`;
+    `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">${h.perShLabel}</span><span class="best-est-val">$${h.perSh}</span></span>` +
+    `<span class="best-est-sep">·</span><span class="best-est-item" title="${upsideTitle}"><span class="best-est-label">${h.vsRefLabel}</span><span class="best-est-val">${h.upsideLabel}</span></span>`;
 }
 
 function renderMcHistogram(mc) {
@@ -267,7 +281,43 @@ function renderMcHistogram(mc) {
   }
   const cap = $("rMcCaption");
   if (cap) {
-    cap.textContent = `MC n=${mc.sims}: P(success) ${(mc.pSuccess * 100).toFixed(1)}% · median ORR ${mc.orrMedian.toFixed(1)}% (95% ${mc.orrLo.toFixed(0)}–${mc.orrHi.toFixed(0)}%)`;
+    const dorNote =
+      mc.pOrrOnly != null
+        ? ` · ORR-only ${(mc.pOrrOnly * 100).toFixed(1)}% · P(DOR|ORR) ${(mc.pDorGivenOrr * 100).toFixed(0)}%`
+        : "";
+    cap.textContent = `MC n=${mc.sims}: co-primary P(success) ${(mc.pSuccess * 100).toFixed(1)}%${dorNote} · median ORR ${mc.orrMedian.toFixed(1)}% (95% ${mc.orrLo.toFixed(0)}–${mc.orrHi.toFixed(0)}%)`;
+  }
+}
+
+function applyLinkedSkinPs() {
+  if (!state.val.v_linkSkinPs) return;
+  const linked = resolveLinkedSkinPs(state.restart, lastMcResult?.pSuccess);
+  state.val.v_skinPs = linked;
+  const el = $("vv_skinPs");
+  if (el) el.value = linked;
+  const lab = $("vv_skinPsVal");
+  if (lab) lab.textContent = linked.toFixed(2);
+}
+
+function updateSkinPsLinkUI() {
+  const linkEl = $("v_linkSkinPs");
+  if (linkEl) state.val.v_linkSkinPs = linkEl.checked;
+  const skinEl = $("vv_skinPs");
+  if (skinEl) skinEl.disabled = !!state.val.v_linkSkinPs;
+  const note = $("skinPsLinkNote");
+  if (!note) return;
+  const restartPs = resolveLinkedSkinPs(state.restart, lastMcResult?.pSuccess);
+  const skinPs = state.val.v_skinPs;
+  if (state.val.v_linkSkinPs) {
+    const src = lastMcResult ? "MC P(success)" : "pCombined";
+    note.textContent = `Linked to ReSTART ${src} = ${restartPs.toFixed(2)}.`;
+    note.className = "field-note skin-ps-link-note";
+  } else {
+    const diverge = Math.abs(skinPs - restartPs) > 0.02;
+    note.textContent = diverge
+      ? `Unlinked — skin P(s) ${skinPs.toFixed(2)} diverges from ReSTART ${restartPs.toFixed(2)} (MC/pCombined).`
+      : `Unlinked — skin P(s) ${skinPs.toFixed(2)} matches ReSTART ${restartPs.toFixed(2)}.`;
+    note.className = "field-note skin-ps-link-note" + (diverge ? " skin-ps-diverge" : "");
   }
 }
 
@@ -279,6 +329,8 @@ function runMcSimulation() {
       orrPct: r.orrPct,
       benchOrrPct: r.benchOrrPct,
       orrThresholdPct: r.orrThresholdPct,
+      dorDurablePct: r.dorDurablePct,
+      dorMinFracPct: r.dorMinFracPct,
       sims: r.mcSims,
       seed: 42
     },
@@ -286,6 +338,11 @@ function runMcSimulation() {
   );
   renderMcHistogram(lastMcResult);
   if ($("rMcPsucc")) $("rMcPsucc").textContent = (lastMcResult.pSuccess * 100).toFixed(1) + "%";
+  if ($("rMcOrrOnly")) $("rMcOrrOnly").textContent = (lastMcResult.pOrrOnly * 100).toFixed(1) + "%";
+  applyLinkedSkinPs();
+  updateSkinPsLinkUI();
+  if (activeTab === "value" || tabsDirty.value) updateValUI();
+  updateHeaderStrip();
 }
 
 const scheduleMcUpdate = debounce(runMcSimulation, 120);
@@ -307,14 +364,26 @@ function updateRestartUI(includeMc = true) {
   }
   const readoutMo = estimateReadoutMonths(5, 2026, r.readoutMonth, r.readoutYear);
   if ($("rReadout")) $("rReadout").textContent = readoutMo + " mo from May 2026 enroll complete";
+  const pmaBand = modularPmaTimeline({
+    modulesSubmitted: r.pmaModulesDone,
+    modulesTotal: r.pmaModulesTotal,
+    clockStops: r.pmaClockStops ?? 1
+  });
   if ($("rPmaEta")) {
     $("rPmaEta").textContent =
-      "~" + pmaTimelineMonths(r.pmaModulesDone, r.pmaModulesTotal) + " mo post top-line (heuristic)";
+      `${pmaBand.monthsLo}–${pmaBand.monthsHi} mo post top-line (mid ${pmaBand.monthsMid}; clock-stop band)`;
   }
 
-  if (!includeMc) return;
+  if (!includeMc) {
+    applyLinkedSkinPs();
+    updateSkinPsLinkUI();
+    return;
+  }
   if (activeTab === "restart") {
     scheduleMcUpdate();
+  } else {
+    applyLinkedSkinPs();
+    updateSkinPsLinkUI();
   }
 }
 
@@ -430,6 +499,7 @@ function renderCatalystCalendar() {
 
 function updatePipelineUI() {
   renderCatalystCalendar();
+  renderPilotPanels();
   const s = computePipelineSummary(state.pipeline);
   if ($("pipeSummary")) {
     $("pipeSummary").textContent = `${s.usTrials} US IDE trials · REGAIN ${s.regainNote} · IMPACT target n=${s.impactTargetN}`;
@@ -437,10 +507,13 @@ function updatePipelineUI() {
 }
 
 function updateValUI() {
+  applyLinkedSkinPs();
+  updateSkinPsLinkUI();
   const m = computeValuationMetrics(state.val);
+  const riskAdj = !!state.val.v_riskadj;
   if ($("vEv")) $("vEv").textContent = "$" + m.ev.toFixed(0) + "M";
-  if ($("vPsh")) $("vPsh").textContent = "$" + m.perSh.toFixed(2);
-  if ($("vPeak")) $("vPeak").textContent = "$" + m.totalPeak.toFixed(0) + "M/yr risk-adj";
+  if ($("vPsh")) $("vPsh").textContent = "$" + m.perSh.toFixed(2) + (riskAdj ? " risk-adj" : " gross");
+  if ($("vPeak")) $("vPeak").textContent = "$" + m.totalPeak.toFixed(0) + "M/yr" + (riskAdj ? " risk-adj" : " gross");
   const burn = state.val.v_burnQuarterly ?? 6.5;
   const runway = computeRunwayMonths(state.val.v_cash, burn);
   if ($("vRunway")) {
@@ -471,9 +544,12 @@ function updateNow(forceAll = false) {
   readSliders("p", Object.keys(state.pipeline), state.pipeline);
   const riskEl = $("v_riskadj");
   if (riskEl) state.val.v_riskadj = riskEl.checked;
+  const linkEl = $("v_linkSkinPs");
+  if (linkEl) state.val.v_linkSkinPs = linkEl.checked;
   updateRestartUI(forceAll || activeTab === "restart");
   if (forceAll || activeTab === "pipeline" || tabsDirty.pipeline) updatePipelineUI();
   if (forceAll || activeTab === "value" || tabsDirty.value) updateValUI();
+  updateSkinPsLinkUI();
   updateHeaderStrip();
   updateBands();
   tabsDirty.restart = activeTab !== "restart";
@@ -506,6 +582,7 @@ function applyState(s) {
   writeSliders("v", state.val);
   writeSliders("p", state.pipeline);
   if ($("v_riskadj")) $("v_riskadj").checked = state.val.v_riskadj;
+  if ($("v_linkSkinPs")) $("v_linkSkinPs").checked = state.val.v_linkSkinPs;
   curLvl = state.ui.explainLvl || "eli5";
   updateNow(true);
   showLevel(curLvl);
@@ -534,7 +611,8 @@ function applyRestartPreset(name) {
 function applyValPreset(name) {
   const q = VAL_PRESETS[name];
   if (!q) return;
-  Object.assign(state.val, q);
+  const { label: _lb, ...rest } = q;
+  Object.assign(state.val, rest);
   state.activeValPreset = name;
   writeSliders("v", state.val);
   document.querySelectorAll("[data-val-preset]").forEach((b) => {
@@ -689,6 +767,8 @@ function init() {
   });
   const risk = $("v_riskadj");
   if (risk) risk.addEventListener("change", scheduleUpdate);
+  const linkSkin = $("v_linkSkinPs");
+  if (linkSkin) linkSkin.addEventListener("change", scheduleUpdate);
 
   const btnShare = $("btnShare");
   if (btnShare) {

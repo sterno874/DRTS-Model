@@ -52,6 +52,22 @@ export const RESTART_BANDS = [
     why: "DOR gate per ReSTART protocol — 6-month durability co-primary."
   },
   {
+    id: "rdorDurablePct",
+    min: 40,
+    max: 95,
+    sig: { b1: [70, 90], b2: [55, 95], b3: [40, 95] },
+    anchor: 81,
+    why: "MC P(DOR≥6mo | responder). Default 81% from pembrolizumab LA cSCC label."
+  },
+  {
+    id: "rdorMinFracPct",
+    min: 25,
+    max: 90,
+    sig: { b1: [40, 70], b2: [30, 80], b3: [25, 90] },
+    anchor: 50,
+    why: "MC co-primary: min fraction of responders that must be durable."
+  },
+  {
     id: "rpSuccess",
     min: 5,
     max: 95,

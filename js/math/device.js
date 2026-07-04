@@ -87,4 +87,21 @@ export function evPerShare(evMillions, sharesMillions, cashMillions = 0, debtMil
   return (evMillions + cashMillions - debtMillions) / sharesMillions;
 }
 
-/** TODO Phase 2: modular PMA timeline MC, IMPACT pilot Bayesian monitoring, REGAIN GBM RANO response model. */
+/**
+ * Hard cap on registrational P(success) contribution from feasibility / pilot posteriors.
+ * REGAIN n=3 and IMPACT (no US response data) are display-only feasibility — cannot drive
+ * high valuation P(s) without this cap.
+ */
+export const REGAIN_MAX_REGISTRATIONAL_PS = 0.15;
+export const IMPACT_MAX_REGISTRATIONAL_PS = 0.15;
+
+/**
+ * Cap a pilot/feasibility posterior so it cannot set registrational P(s) above maxContribution.
+ * @param {number} rawPs — unconstrained posterior mean (0–1)
+ * @param {number} maxContribution — hard cap (default 15%)
+ */
+export function capRegistrationalPs(rawPs, maxContribution = REGAIN_MAX_REGISTRATIONAL_PS) {
+  const p = Math.max(0, Math.min(1, rawPs));
+  const cap = Math.max(0, Math.min(1, maxContribution));
+  return Math.min(p, cap);
+}

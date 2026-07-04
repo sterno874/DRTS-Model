@@ -85,6 +85,14 @@ test("commercial bull raises skin pen and multiple vs base", () => {
   assert.ok(VAL_PRESETS.bull.v_skinPs > VAL_PRESETS.base.v_skinPs);
 });
 
+test("commercial bull (ops) caps platform at $8M", () => {
+  assert.equal(VAL_PRESETS.bull.v_platform, 8);
+  assert.ok(VAL_PRESETS.bull.v_platform <= 8);
+  assert.match(VAL_PRESETS.bull.label, /Commercial bull/);
+  // Units are $M — $8M not $8B or $15M
+  assert.ok(VAL_PRESETS.bull.v_platform < 15);
+});
+
 test("default share count is 88M ordinary shares", () => {
   assert.equal(DEFAULT_STATE.val.v_shares, 88);
 });
@@ -103,10 +111,12 @@ test("golden base-case numbers", () => {
 });
 
 test("golden commercial bull numbers", () => {
-  const v = computeFullValuation({ ...DEFAULT_STATE.val, ...VAL_PRESETS.bull });
-  assert.ok(Math.abs(v.ev - 1948.77) < 2);
-  // (1948.77 + 80.2) / 88 ≈ 23.06
-  assert.ok(Math.abs(v.perSh - 23.06) < 0.2);
+  const { label: _lb, ...bull } = VAL_PRESETS.bull;
+  const v = computeFullValuation({ ...DEFAULT_STATE.val, ...bull });
+  assert.ok(Math.abs(v.ev - 1941.77) < 2);
+  // (1941.77 + 80.2) / 88 ≈ 22.98
+  assert.ok(Math.abs(v.perSh - 22.98) < 0.2);
+  assert.equal(v.platform, 8);
 });
 
 test("COMPARABLES includes Tolmar deal", () => {

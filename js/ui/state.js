@@ -40,12 +40,18 @@ export const DEFAULT_STATE = {
     benchOrrPct: 30,
     dorMonths: 6,
     dorBenchMonths: 6,
+    /** P(DOR ≥ 6 mo | responder) % — MC co-primary prior (PD-1 comps default 81%). */
+    dorDurablePct: 81,
+    /** Min % of responders that must be durable for MC co-primary pass. */
+    dorMinFracPct: 50,
     orrThresholdPct: 35,
     pSuccess: 65,
     readoutMonth: 12,
     readoutYear: 2026,
     pmaModulesDone: 1,
     pmaModulesTotal: 3,
+    /** Expected FDA clock-stops in modular PMA heuristic. */
+    pmaClockStops: 1,
     mcSims: 1500
   },
   pipeline: {
@@ -88,7 +94,9 @@ export const DEFAULT_STATE = {
     v_burnQuarterly: 6.5,
     /** Illustrative market ref ($/sh), not a live quote — Yahoo/market ~Jul 2026. */
     v_refPrice: 13,
-    v_riskadj: true
+    v_riskadj: true,
+    /** When true, skin P(s) tracks ReSTART MC P(success) (fallback: pCombined). Default on. */
+    v_linkSkinPs: true
   },
   ui: { explainLvl: "eli5", showHeaderStrip: true }
 };
@@ -143,9 +151,13 @@ export const VAL_PRESETS = {
     v_japanPen: 0.08,
     v_japanPs: 0.5,
     v_mult: 4,
-    v_platform: 3
+    v_platform: 3,
+    label: "Base"
   },
-  /** Commercial bull: higher pen + P(s) + multiple — still assumptions. */
+  /**
+   * Commercial bull (ops): higher pen + P(s) + multiple — still assumptions.
+   * Platform optionality capped at $8M (units are $M) so residual platform does not dominate ops.
+   */
   bull: {
     v_skinPen: 0.25,
     v_skinPs: 0.8,
@@ -156,7 +168,8 @@ export const VAL_PRESETS = {
     v_japanPen: 0.15,
     v_japanPs: 0.7,
     v_mult: 6,
-    v_platform: 15
+    v_platform: 8,
+    label: "Commercial bull (ops)"
   },
   bear: {
     v_skinPen: 0.1,
@@ -168,9 +181,13 @@ export const VAL_PRESETS = {
     v_japanPen: 0.03,
     v_japanPs: 0.25,
     v_mult: 3,
-    v_platform: 0
+    v_platform: 0,
+    label: "Bear"
   }
 };
+
+/** Max platform optionality ($M) allowed in commercial bull preset. */
+export const BULL_PLATFORM_CAP_M = 8;
 
 const RESTART_KEYS = Object.keys(DEFAULT_STATE.restart);
 const VAL_KEYS = Object.keys(DEFAULT_STATE.val);
@@ -262,7 +279,15 @@ export function decodeShareHash(hash) {
     if (p.rp) s.activeRestartPreset = p.rp;
     if (p.vp) s.activeValPreset = p.vp;
     if (p.r) Object.assign(s.restart, p.r);
-    if (p.val) Object.assign(s.val, p.val);
+    if (p.val) {
+      Object.assign(s.val, p.val);
+      // deltaEncode stores booleans as 0/1 — restore real booleans
+      for (const k of Object.keys(s.val)) {
+        if (typeof DEFAULT_STATE.val[k] === "boolean" && typeof s.val[k] === "number") {
+          s.val[k] = !!s.val[k];
+        }
+      }
+    }
     if (p.pipe) Object.assign(s.pipeline, p.pipe);
     if (p.ui) Object.assign(s.ui, p.ui);
     if (!p.rp || !p.vp) {
@@ -301,10 +326,25 @@ export function paramsFromPreset(name) {
   return { ...DEFAULT_STATE.restart, ...rest };
 }
 
-/** Frozen header strip: ReSTART ORR scenario + implied $/sh vs illustrative ref. */
+/**
+ * Resolve skin P(s) from ReSTART when link toggle is on.
+ * Prefers MC P(success); falls back to deterministic pCombined.
+ * @param {object} restartState
+ * @param {number|null|undefined} mcPSuccess
+ */
+export function resolveLinkedSkinPs(restartState, mcPSuccess) {
+  if (mcPSuccess != null && Number.isFinite(mcPSuccess)) {
+    return Math.round(mcPSuccess * 20) / 20;
+  }
+  const m = computeRestartMetrics(restartState);
+  return Math.round(m.pCombined * 20) / 20;
+}
+
+/** Frozen header strip: ReSTART ORR scenario + risk-adj equity $/sh vs illustrative ref. */
 export function computeHeaderStrip(state) {
   const r = computeRestartMetrics(state.restart);
   const v = computeFullValuation(state.val);
+  const riskAdj = !!state.val.v_riskadj;
   const shares = state.val.v_shares;
   const cash = state.val.v_cash ?? 0;
   const refPrice = state.val.v_refPrice ?? 13;
@@ -318,6 +358,9 @@ export function computeHeaderStrip(state) {
     wilson: `${(r.wilson.lo * 100).toFixed(0)}–${(r.wilson.hi * 100).toFixed(0)}%`,
     pBeat: (r.pBeatBench * 100).toFixed(0),
     pPma: state.restart.pSuccess,
+    riskAdj,
+    perShLabel: riskAdj ? "Risk-adj equity $/sh" : "Gross equity $/sh",
+    vsRefLabel: "vs-ref",
     ev: v.ev.toFixed(0),
     perSh: v.perSh.toFixed(2),
     refPrice: refPrice.toFixed(2),

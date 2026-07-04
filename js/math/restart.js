@@ -58,6 +58,13 @@ export const CSCC_BENCHMARKS = [
 /** Default SAP-style success thresholds (public SAP not filed — user-adjustable). */
 export const DEFAULT_ORR_THRESHOLD_PCT = 35;
 export const DEFAULT_DOR_THRESHOLD_MONTHS = 6;
+/**
+ * Default P(DOR ≥ 6 mo | responder) from PD-1 cSCC labels (pembrolizumab LA: 81% DOR ≥6 mo).
+ * MC co-primary uses this per-responder prior; deterministic dorMonths slider remains sensitivity only.
+ */
+export const DEFAULT_DOR_DURABLE_PCT = 81;
+/** Min fraction of responders that must be durable for MC co-primary pass. */
+export const DEFAULT_DOR_MIN_FRAC_PCT = 50;
 
 /**
  * Deterministic ReSTART metrics from assumed ORR and enrollment.
@@ -108,19 +115,35 @@ function sampleBinomial(n, p, rng = Math.random) {
 
 /**
  * Monte Carlo: draw true ORR ~ Beta prior centered on assumed ORR, observe n patients.
- * @returns {{ sims: number, pSuccess: number, orrMedian: number, orrLo: number, orrHi: number, histogram: number[] }}
+ * Co-primary win = ORR gate (threshold + beat bench) AND durable-responder fraction gate.
+ * Each responder is durable with P(DOR ≥ 6 mo) from prior (PD-1 comps / FIH default).
+ * Deterministic dorMonths slider is sensitivity only — not used in MC draws.
+ * @returns {{ sims: number, pSuccess: number, orrMedian: number, orrLo: number, orrHi: number, histogram: number[], pOrrOnly: number, pDorGivenOrr: number }}
  */
 export function mcRestartORR(
-  { n, orrPct, benchOrrPct, orrThresholdPct = DEFAULT_ORR_THRESHOLD_PCT, sims = 2000, seed },
+  {
+    n,
+    orrPct,
+    benchOrrPct,
+    orrThresholdPct = DEFAULT_ORR_THRESHOLD_PCT,
+    dorDurablePct = DEFAULT_DOR_DURABLE_PCT,
+    dorMinFracPct = DEFAULT_DOR_MIN_FRAC_PCT,
+    sims = 2000,
+    seed
+  },
   rng = Math.random
 ) {
   const N = Math.max(1, Math.round(n));
   const center = orrPct / 100;
   const bench = benchOrrPct / 100;
   const thresh = orrThresholdPct / 100;
+  const pDurable = Math.max(0, Math.min(1, dorDurablePct / 100));
+  const minFrac = Math.max(0, Math.min(1, dorMinFracPct / 100));
   const bins = 20;
   const hist = new Array(bins).fill(0);
   let wins = 0;
+  let orrWins = 0;
+  let dorWinsGivenOrr = 0;
   const observed = [];
 
   let r = rng;
@@ -145,7 +168,18 @@ export function mcRestartORR(
     hist[bin]++;
     const beatBench = 1 - binomUpperTail(k, N, bench) > 0.5 || orrObs > bench;
     const passThresh = orrObs >= thresh;
-    if (beatBench && passThresh) wins++;
+    const passOrr = beatBench && passThresh;
+    if (passOrr) orrWins++;
+    // Co-primary DOR: each responder durable with pDurable; need durable/k ≥ minFrac
+    let passDor = false;
+    if (k > 0) {
+      const durable = sampleBinomial(k, pDurable, r);
+      passDor = durable / k >= minFrac;
+    }
+    if (passOrr && passDor) {
+      wins++;
+      dorWinsGivenOrr++;
+    }
   }
 
   observed.sort((x, y) => x - y);
@@ -154,6 +188,8 @@ export function mcRestartORR(
   return {
     sims,
     pSuccess: wins / sims,
+    pOrrOnly: orrWins / sims,
+    pDorGivenOrr: orrWins > 0 ? dorWinsGivenOrr / orrWins : 0,
     orrMedian: q(0.5) * 100,
     orrLo: q(0.025) * 100,
     orrHi: q(0.975) * 100,
@@ -195,9 +231,31 @@ export function estimateReadoutMonths(enrollCompleteMonth = 5, enrollCompleteYea
   return (readoutYear - enrollCompleteYear) * 12 + (readoutMonth - enrollCompleteMonth);
 }
 
-/** Modular PMA timeline heuristic (months post top-line). */
+/** Modular PMA timeline heuristic (months post top-line) — point estimate. */
 export function pmaTimelineMonths(modulesSubmitted = 1, modulesTotal = 3) {
   const baseReview = 6;
   const perModule = 2;
   return baseReview + (modulesTotal - modulesSubmitted) * perModule;
+}
+
+/**
+ * Modular PMA timeline with clock-stop uncertainty band (heuristic, not FDA clock).
+ * @param {{ modulesSubmitted?: number, modulesTotal?: number, clockStops?: number, clockStopMonthsMean?: number, clockStopMonthsSd?: number }} p
+ * @returns {{ monthsLo: number, monthsMid: number, monthsHi: number, note: string }}
+ */
+export function modularPmaTimeline(p = {}) {
+  const modulesSubmitted = p.modulesSubmitted ?? 1;
+  const modulesTotal = p.modulesTotal ?? 3;
+  const clockStops = Math.max(0, p.clockStops ?? 1);
+  const stopMean = p.clockStopMonthsMean ?? 3;
+  const stopSd = p.clockStopMonthsSd ?? 1.5;
+  const base = pmaTimelineMonths(modulesSubmitted, modulesTotal);
+  const stopTotal = clockStops * stopMean;
+  const stopSpread = clockStops * 2 * stopSd;
+  return {
+    monthsLo: Math.max(3, Math.round(base + stopTotal - stopSpread)),
+    monthsMid: Math.round(base + stopTotal),
+    monthsHi: Math.round(base + stopTotal + stopSpread),
+    note: "Heuristic modular PMA + clock-stop band — not FDA review clock"
+  };
 }
