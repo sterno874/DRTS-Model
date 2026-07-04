@@ -264,7 +264,7 @@ No single Reddit power-user with multi-year verified track record identified —
 | cSCC TAM penetration | Double-digit share if PMA + reimbursement | Niche vs cemiplimab | community |
 | GBM in SOTP | Platform halo | Zero until pivotal — REGAIN n=3 only | partial |
 | Japan in models | Near-term revenue | PMS delay; no disclosed sales | partial |
-| Share count | ~42M FD ADS (FY2025) | ATM + warrants expand float | verified / partial |
+| Share count | **~88.0M ordinary shares** (88,009,737 per F-3/20-F) — model corrected from prior ~42M “FD ADS” mislabel | ATM + warrants expand float | verified / partial |
 | EV multiple | 4–6× peak (device M&A comps) | 2–3× if binary miss | assumption |
 
 ---
@@ -278,7 +278,9 @@ No single Reddit power-user with multi-year verified track record identified —
 | **ReSTART bull** | ORR 65%, P(PMA) 75% | FIH-adjacent upper bound |
 | **Dilution bear** | Shares +20%, cash from ATM not modeled | F-3 Apr 2026 |
 | **Tolmar bull** | Prostate P(s) 0.35, pen 0.10 | Jun 2026 deal |
-| **Japan ramp** | Platform option $10–20M | Shonin verified; revenue unverified |
+| **Commercial bull (implemented)** | Skin pen 0.25, P(s) 0.80; prostate pen 0.10; Japan pen 0.15 / P(s) 0.70; mult 6×; platform $15M | Higher pen + P(s) — still assumptions |
+| **Japan H&N line (implemented)** | Fifth indication: pts × pen × price × P(s); default peak ~$22M/yr | Shonin verified; PMS n=66 ≠ revenue; pool/price assumptions |
+| **Japan ramp (legacy)** | Platform option $10–20M alone | Superseded by dedicated Japan row + residual platform |
 | **Post-PMA cSCC** | Skin pen 0.25, P(s) 0.85 | Hypothetical approval |
 | **GBM zero** | GBM P(s) 0.05 | REGAIN feasibility only |
 
@@ -288,7 +290,11 @@ No single Reddit power-user with multi-year verified track record identified —
 
 - **ReSTART tab:** Community DD subset + expanded facts (liquidity, F-3)  
 - **Pipeline tab:** Trial map + catalyst calendar + REGAIN/IMPACT panels + community threads  
-- **Valuation tab:** Q1 P&L vs cash-burn facts grid; runway uses CFO cash burn ($6.5M default); community DD + **bear case** tables  
+- **Valuation tab:** Q1 P&L vs cash-burn facts grid; **~88.0M ordinary shares** (F-3/20-F; corrected from ~42M ADS); Japan H&N fifth indication; commercial bull preset (pen+P(s)); header vs-ref upside (illustrative ~$13); runway uses CFO cash burn ($6.5M default); community DD + **bear case** tables  
+
+### Model correction (Jul 2026)
+
+Prior default `v_shares = 42` labeled “FD ADS” understated the ordinary-share denominator. Filings cite **88,009,737 ordinary shares** ([SEC F-3](https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm), 20-F). Market float is ~90M. Default is now **88M ordinary shares**; base $/sh roughly halves on the same EV. No ADS ratio is modeled (none found in diligence).
 - **Explain tab:** PhD/professional DD synthesis with sourced claims  
 - **Tests:** `npm test` required after edits  
 

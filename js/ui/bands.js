@@ -182,12 +182,48 @@ export const VAL_BANDS = [
     why: "P(prostate approval) — earlier than GBM/panc in partner timeline."
   },
   {
+    id: "vv_japanPts",
+    min: 1000,
+    max: 12000,
+    sig: { b1: [2500, 6000], b2: [1500, 8000], b3: [1000, 12000] },
+    why: "Japan unresectable/recurrent H&N eligible pool (assumption — not disclosed)."
+  },
+  {
+    id: "vv_japanPen",
+    min: 0.01,
+    max: 0.3,
+    sig: { b1: [0.04, 0.12], b2: [0.02, 0.18], b3: [0.01, 0.3] },
+    why: "Japan H&N penetration — Shonin approved; PMS/reimbursement lag."
+  },
+  {
+    id: "vv_japanPrice",
+    min: 30,
+    max: 120,
+    sig: { b1: [50, 85], b2: [40, 100], b3: [30, 120] },
+    why: "Japan procedure price ($K) — assumption; no list price disclosed."
+  },
+  {
+    id: "vv_japanPs",
+    min: 0.1,
+    max: 0.9,
+    sig: { b1: [0.35, 0.65], b2: [0.2, 0.8], b3: [0.1, 0.9] },
+    why: "P(Japan commercial ramp) — approval verified; revenue unverified (PMS n=66 ≠ sales)."
+  },
+  {
     id: "vv_shares",
-    min: 20,
-    max: 80,
-    sig: { b1: [38, 48], b2: [32, 55], b3: [20, 80] },
-    anchor: 42,
-    why: "Fully diluted ADS (M) — FY2025 ~42M per company filings."
+    min: 40,
+    max: 120,
+    sig: { b1: [85, 95], b2: [75, 105], b3: [40, 120] },
+    anchor: 88,
+    why: "Ordinary shares outstanding (M) — ◆ ~88.0M per SEC F-3 / 20-F (not ADS)."
+  },
+  {
+    id: "vv_refPrice",
+    min: 5,
+    max: 30,
+    sig: { b1: [10, 16], b2: [8, 20], b3: [5, 30] },
+    anchor: 13,
+    why: "Illustrative ref price ($/sh) — assumption as-of ~Jul 2026, not a live quote."
   },
   {
     id: "vv_cash",
@@ -220,7 +256,7 @@ export const VAL_BANDS = [
     max: 20,
     sig: { b1: [1, 6], b2: [0, 10], b3: [0, 20] },
     imp: [14, 20],
-    why: "Platform option ($M) — Alpha DaRT across indications; pre-approval uncertainty."
+    why: "Platform option ($M) — residual optionality; Japan H&N is a separate indication line."
   }
 ];
 

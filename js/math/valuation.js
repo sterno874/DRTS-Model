@@ -83,6 +83,15 @@ export function computeFullValuation(val) {
       years: val.v_prostateYears ?? 5,
       pSuccess: risk ? (val.v_prostatePs ?? 0.2) : 1,
       supplyShare: 0.6
+    },
+    {
+      id: "japan",
+      label: "Japan H&N (Shonin)",
+      patients: val.v_japanPts ?? 4000,
+      penetration: val.v_japanPen ?? 0.08,
+      price: val.v_japanPrice ?? 70,
+      years: val.v_japanYears ?? 1,
+      pSuccess: risk ? (val.v_japanPs ?? 0.5) : 1
     }
   ];
 

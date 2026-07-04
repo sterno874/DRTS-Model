@@ -76,11 +76,18 @@ export const DEFAULT_STATE = {
     v_prostatePrice: 80,
     v_prostateYears: 1,
     v_prostatePs: 0.2,
+    v_japanPts: 4000,
+    v_japanPen: 0.08,
+    v_japanPrice: 70,
+    v_japanYears: 1,
+    v_japanPs: 0.5,
     v_platform: 3,
     v_mult: 4,
-    v_shares: 42,
+    v_shares: 88,
     v_cash: 80.2,
     v_burnQuarterly: 6.5,
+    /** Illustrative market ref ($/sh), not a live quote — Yahoo/market ~Jul 2026. */
+    v_refPrice: 13,
     v_riskadj: true
   },
   ui: { explainLvl: "eli5", showHeaderStrip: true }
@@ -127,26 +134,39 @@ export const SHARE_PRESETS = {
 
 export const VAL_PRESETS = {
   base: {
+    v_skinPen: 0.15,
     v_skinPs: 0.55,
     v_gbmPs: 0.25,
     v_pancPs: 0.15,
+    v_prostatePen: 0.06,
     v_prostatePs: 0.2,
+    v_japanPen: 0.08,
+    v_japanPs: 0.5,
     v_mult: 4,
     v_platform: 3
   },
+  /** Commercial bull: higher pen + P(s) + multiple — still assumptions. */
   bull: {
-    v_skinPs: 0.7,
+    v_skinPen: 0.25,
+    v_skinPs: 0.8,
     v_gbmPs: 0.4,
     v_pancPs: 0.25,
+    v_prostatePen: 0.1,
     v_prostatePs: 0.35,
-    v_mult: 5,
-    v_platform: 6
+    v_japanPen: 0.15,
+    v_japanPs: 0.7,
+    v_mult: 6,
+    v_platform: 15
   },
   bear: {
+    v_skinPen: 0.1,
     v_skinPs: 0.35,
     v_gbmPs: 0.12,
     v_pancPs: 0.08,
+    v_prostatePen: 0.03,
     v_prostatePs: 0.1,
+    v_japanPen: 0.03,
+    v_japanPs: 0.25,
     v_mult: 3,
     v_platform: 0
   }
@@ -281,10 +301,17 @@ export function paramsFromPreset(name) {
   return { ...DEFAULT_STATE.restart, ...rest };
 }
 
-/** Frozen header strip: ReSTART ORR scenario + implied $/sh. */
+/** Frozen header strip: ReSTART ORR scenario + implied $/sh vs illustrative ref. */
 export function computeHeaderStrip(state) {
   const r = computeRestartMetrics(state.restart);
   const v = computeFullValuation(state.val);
+  const shares = state.val.v_shares;
+  const cash = state.val.v_cash ?? 0;
+  const refPrice = state.val.v_refPrice ?? 13;
+  const equity = v.ev + cash;
+  const mktCap = shares * refPrice;
+  const upsidePct = mktCap > 0 ? ((equity / mktCap) - 1) * 100 : NaN;
+  const upsideMult = mktCap > 0 ? equity / mktCap : NaN;
   return {
     preset: state.activeRestartPreset,
     orrPct: state.restart.orrPct,
@@ -292,7 +319,16 @@ export function computeHeaderStrip(state) {
     pBeat: (r.pBeatBench * 100).toFixed(0),
     pPma: state.restart.pSuccess,
     ev: v.ev.toFixed(0),
-    perSh: v.perSh.toFixed(2)
+    perSh: v.perSh.toFixed(2),
+    refPrice: refPrice.toFixed(2),
+    equity: equity.toFixed(0),
+    mktCap: mktCap.toFixed(0),
+    upsidePct: Number.isFinite(upsidePct) ? upsidePct.toFixed(0) : "—",
+    upsideMult: Number.isFinite(upsideMult) ? upsideMult.toFixed(2) : "—",
+    upsideLabel:
+      Number.isFinite(upsidePct) && Number.isFinite(upsideMult)
+        ? `${upsidePct >= 0 ? "+" : ""}${upsidePct.toFixed(0)}% (${upsideMult.toFixed(2)}×)`
+        : "—"
   };
 }
 

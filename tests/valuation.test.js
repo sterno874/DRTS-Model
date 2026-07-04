@@ -46,9 +46,10 @@ test("risk-off uses P(s)=1 for EV contributions", () => {
   }
 });
 
-test("computeFullValuation includes four indications", () => {
+test("computeFullValuation includes five indications including Japan", () => {
   const v = computeFullValuation(DEFAULT_STATE.val);
-  assert.equal(v.rows.length, 4);
+  assert.equal(v.rows.length, 5);
+  assert.ok(v.rows.some((r) => r.id === "japan"));
   assert.ok(v.ev > 0);
   assert.ok(v.perSh > 0);
 });
@@ -60,6 +61,14 @@ test("prostate row applies 60% Tolmar supply share", () => {
   assert.ok(Math.abs(prostate.peak - gross * 0.6) < 0.01);
 });
 
+test("Japan H&N peak uses patients × pen × years × price / 1000", () => {
+  const v = computeFullValuation(DEFAULT_STATE.val);
+  const japan = v.rows.find((r) => r.id === "japan");
+  // 4000 × 0.08 × 1 × 70 / 1000 = 22.4
+  assert.ok(Math.abs(japan.peak - 22.4) < 0.01);
+  assert.ok(Math.abs(japan.evContrib - 22.4 * 0.5 * 4) < 0.01);
+});
+
 test("bull preset raises EV vs bear", () => {
   const base = DEFAULT_STATE.val;
   const bull = computeFullValuation({ ...base, ...VAL_PRESETS.bull });
@@ -69,14 +78,35 @@ test("bull preset raises EV vs bear", () => {
   assert.ok(bear.ev >= 100 && bear.ev <= 3000);
 });
 
+test("commercial bull raises skin pen and multiple vs base", () => {
+  assert.equal(VAL_PRESETS.bull.v_skinPen, 0.25);
+  assert.equal(VAL_PRESETS.bull.v_prostatePen, 0.1);
+  assert.equal(VAL_PRESETS.bull.v_mult, 6);
+  assert.ok(VAL_PRESETS.bull.v_skinPs > VAL_PRESETS.base.v_skinPs);
+});
+
+test("default share count is 88M ordinary shares", () => {
+  assert.equal(DEFAULT_STATE.val.v_shares, 88);
+});
+
 test("golden base-case numbers", () => {
   const v = computeFullValuation(DEFAULT_STATE.val);
   const skin = v.rows.find((r) => r.id === "skin");
+  const japan = v.rows.find((r) => r.id === "japan");
   // 12000 × 0.15 × 1 × 85 / 1000 = 153 $M/yr gross peak
   assert.ok(Math.abs(skin.peak - 153) < 0.01);
-  // EV ≈ 529M, $/sh ≈ 14.5 with cash
-  assert.ok(Math.abs(v.ev - 529.46) < 1);
-  assert.ok(Math.abs(v.perSh - 14.51) < 0.1);
+  // Japan: 22.4 peak → EV contrib 44.8; prior four-ind EV 529.46 + 44.8 = 574.26
+  assert.ok(Math.abs(japan.peak - 22.4) < 0.01);
+  assert.ok(Math.abs(v.ev - 574.26) < 1);
+  // $/sh = (574.26 + 80.2) / 88 ≈ 7.44
+  assert.ok(Math.abs(v.perSh - 7.44) < 0.1);
+});
+
+test("golden commercial bull numbers", () => {
+  const v = computeFullValuation({ ...DEFAULT_STATE.val, ...VAL_PRESETS.bull });
+  assert.ok(Math.abs(v.ev - 1948.77) < 2);
+  // (1948.77 + 80.2) / 88 ≈ 23.06
+  assert.ok(Math.abs(v.perSh - 23.06) < 0.2);
 });
 
 test("COMPARABLES includes Tolmar deal", () => {
