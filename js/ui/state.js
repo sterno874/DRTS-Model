@@ -391,23 +391,28 @@ export function valuationInputsForState(state, mcPSuccess) {
 }
 
 /**
- * Frozen header strip: ReSTART ORR scenario + risk-adj equity $/sh vs illustrative ref.
+ * Frozen header strip: ReSTART ORR scenario + risk-adj equity $/sh vs live or illustrative ref.
  * When v_linkSkinPs is on, $/sh uses linked approval P(s) (trial × haircut) so the
  * header matches the Valuation tab after applyLinkedSkinPs.
  * @param {object} state
  * @param {number|null|undefined} [mcPSuccess]
+ * @param {{ ok?: boolean, price?: number, marketCapM?: number|null, marketCapEstimated?: boolean, asOf?: string }|null} [liveQuote]
  */
-export function computeHeaderStrip(state, mcPSuccess) {
+export function computeHeaderStrip(state, mcPSuccess, liveQuote) {
   const r = computeRestartMetrics(state.restart);
   const v = computeFullValuation(valuationInputsForState(state, mcPSuccess));
   const riskAdj = !!state.val.v_riskadj;
   const shares = state.val.v_shares;
   const cash = state.val.v_cash ?? 0;
-  const refPrice = state.val.v_refPrice ?? 13;
+  const refPrice = liveQuote?.ok && liveQuote.price != null ? liveQuote.price : state.val.v_refPrice ?? 13;
+  const refSource = liveQuote?.ok && liveQuote.price != null ? "live" : "illustrative";
   const equity = v.ev + cash;
-  const mktCap = shares * refPrice;
-  const upsidePct = mktCap > 0 ? ((equity / mktCap) - 1) * 100 : NaN;
-  const upsideMult = mktCap > 0 ? equity / mktCap : NaN;
+  let mktCapM =
+    liveQuote?.ok && liveQuote.marketCapM != null && liveQuote.marketCapM > 0
+      ? liveQuote.marketCapM
+      : shares * refPrice;
+  const upsidePct = mktCapM > 0 ? (equity / mktCapM - 1) * 100 : NaN;
+  const upsideMult = mktCapM > 0 ? equity / mktCapM : NaN;
   return {
     preset: state.activeRestartPreset,
     orrPct: state.restart.orrPct,
@@ -416,12 +421,15 @@ export function computeHeaderStrip(state, mcPSuccess) {
     pPma: state.restart.pSuccess,
     riskAdj,
     perShLabel: riskAdj ? "Risk-adj equity $/sh" : "Gross equity $/sh",
-    vsRefLabel: "vs-ref",
+    vsRefLabel: refSource === "live" ? "vs live" : "vs-ref",
+    refSource,
     ev: v.ev.toFixed(0),
     perSh: v.perSh.toFixed(2),
     refPrice: refPrice.toFixed(2),
     equity: equity.toFixed(0),
-    mktCap: mktCap.toFixed(0),
+    mktCap: mktCapM.toFixed(0),
+    marketCapEstimated: !!(liveQuote?.ok && liveQuote.marketCapEstimated),
+    liveAsOf: liveQuote?.ok ? liveQuote.asOf : null,
     upsidePct: Number.isFinite(upsidePct) ? upsidePct.toFixed(0) : "—",
     upsideMult: Number.isFinite(upsideMult) ? upsideMult.toFixed(2) : "—",
     upsideLabel:

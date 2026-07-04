@@ -42,6 +42,13 @@ import {
 } from "./ui/state.js";
 import { buildBands, renderBands } from "./ui/bands.js";
 import { initAlphaSims } from "./ui/alpha-sims.js";
+import {
+  DEFAULT_TICKER,
+  formatPrice,
+  formatChangePct,
+  buildQuoteMeta,
+  startLiveQuotePoll
+} from "./ui/market-quote.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -51,6 +58,8 @@ let curLvl = "eli5";
 let restoringState = false;
 let updateRaf = null;
 let lastMcResult = null;
+let liveQuote = null;
+let stopQuotePoll = null;
 const tabsDirty = { restart: true, pipeline: true, value: true, explain: true, biology: true };
 
 function debounce(fn, ms) {
@@ -249,16 +258,47 @@ function writeSliders(prefix, obj) {
 function updateHeaderStrip() {
   const strip = $("headerStrip");
   if (!strip || !state.ui.showHeaderStrip) return;
-  const h = computeHeaderStrip(state, lastMcResult?.pSuccess);
+  const h = computeHeaderStrip(state, lastMcResult?.pSuccess, liveQuote?.ok ? liveQuote : null);
+  const refNote =
+    h.refSource === "live"
+      ? `Live $${h.refPrice} · mkt cap $${h.mktCap}M${h.marketCapEstimated ? " (implied from model shares)" : ""}`
+      : `Illustrative ref $${h.refPrice} (slider) · not a live quote`;
   const upsideTitle =
-    `Model equity $${h.equity}M (EV+cash) vs mkt cap $${h.mktCap}M (shares × illustrative ref $${h.refPrice}). ${h.riskAdj ? "Risk-adjusted" : "Gross"} equity $/sh. Ref price is illustrative only (assumption as-of ~Jul 2026) — not a live quote or market data feed.`;
+    `Model equity $${h.equity}M (EV+cash) vs mkt cap $${h.mktCap}M. ${h.riskAdj ? "Risk-adjusted" : "Gross"} equity $/sh. ${refNote}. Not investment advice.`;
+  let liveBlock = "";
+  if (liveQuote?.loading) {
+    liveBlock =
+      `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Live quote <span class="tag f">market</span></span><span class="best-est-val best-est-val--loading">…</span><span class="best-est-sub">fetching…</span></span>`;
+  } else if (liveQuote?.ok) {
+    const ch = formatChangePct(liveQuote.changePct);
+    const meta = buildQuoteMeta(liveQuote);
+    liveBlock =
+      `<span class="best-est-sep">·</span><span class="best-est-item" title="${meta}"><span class="best-est-label">Live quote <span class="tag f">market</span></span><span class="best-est-val">${formatPrice(liveQuote.price, liveQuote.currency)}${ch ? ` (${ch})` : ""}</span>${meta ? `<span class="best-est-sub">${meta}</span>` : ""}</span>`;
+  } else if (liveQuote && !liveQuote.ok) {
+    liveBlock =
+      `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Live quote <span class="tag f">market</span></span><span class="best-est-val best-est-val--error">—</span><span class="best-est-sub">unavailable</span></span>`;
+  }
   strip.innerHTML =
     `<span class="best-est-item best-est-item--scenario"><span class="best-est-label">Scenario</span><span class="best-est-val best-est-val--scenario">${SHARE_PRESETS[state.activeRestartPreset]?.label || h.preset}</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Assumed ORR</span><span class="best-est-val">${h.orrPct}%</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Wilson CI</span><span class="best-est-val">${h.wilson}</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">P(beat bench)</span><span class="best-est-val">${h.pBeat}%</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">${h.perShLabel}</span><span class="best-est-val">$${h.perSh}</span></span>` +
+    liveBlock +
     `<span class="best-est-sep">·</span><span class="best-est-item" title="${upsideTitle}"><span class="best-est-label">${h.vsRefLabel}</span><span class="best-est-val">${h.upsideLabel}</span></span>`;
+}
+
+function initLiveQuote() {
+  if (parseEmbedMode() || typeof fetch === "undefined") return;
+  if (stopQuotePoll) stopQuotePoll();
+  stopQuotePoll = startLiveQuotePoll(
+    DEFAULT_TICKER,
+    (q) => {
+      liveQuote = q;
+      updateHeaderStrip();
+    },
+    { sharesM: state.val.v_shares }
+  );
 }
 
 function renderMcHistogram(mc) {
@@ -897,6 +937,7 @@ function init() {
     runMcSimulation();
   }
   initAlphaSims();
+  initLiveQuote();
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
