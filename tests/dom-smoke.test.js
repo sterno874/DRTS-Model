@@ -153,6 +153,19 @@ test("Phase 3 og-image and pilot panels present", () => {
   assert.match(html, /value="6\.5"/);
   assert.match(html, /Q1 2026 P&amp;L vs cash burn/);
   assert.match(html, /youtu\.be\/Jyryv-152hc/);
+  assert.match(html, /company-reported interview, not audited CFS/);
+});
+
+test("honesty framing: approval haircut, dilution stress, platform $M", () => {
+  assert.match(html, /Model P\(success \| assumptions\)/);
+  assert.match(html, /vv_approvalHaircut/);
+  assert.match(html, /PMA approval given trial success/);
+  assert.match(html, /data-dilution-stress="100"/);
+  assert.match(html, /data-dilution-stress="110"/);
+  assert.match(html, /F-3 shelf \+ ATM/);
+  assert.match(html, /Platform optionality \(\$M, not \$B\)/);
+  assert.match(html, /illustrative, not live/);
+  assert.match(html, /MC trial P\(success \| assumptions\)/);
 });
 
 test("Phase 2 header strip and MC histogram present", () => {

@@ -36,6 +36,7 @@ import {
   computeValuationMetrics,
   computeHeaderStrip,
   resolveLinkedSkinPs,
+  resolveTrialPs,
   paramsFromPreset,
   inferActivePresets
 } from "./ui/state.js";
@@ -132,7 +133,7 @@ const EXPL = {
 <p><span class="tag f">Fact</span> Alpha DaRT is a Class III device seeking <b>modular PMA</b> for recurrent cSCC (<a href="https://www.fda.gov/medical-devices/how-study-and-market-your-device/breakthrough-devices-program" target="_blank" rel="noopener">Breakthrough Device</a>). FDA evaluates vs historical performance — single-arm bias flagged in <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices" target="_blank" rel="noopener">pivotal device design guidance</a>. That is a different evidentiary frame than a drug NDA with concurrent controls and ICH E9 estimands. Modular review can include clock-stops and interactive Q-subs outside any timeline heuristic in this app.</p>
 <h4>ReSTART — registrational spine</h4>
 <p><span class="tag f">Fact</span> ReSTART (n=88) co-primaries ORR + 6-month DOR are the registrational spine for US skin. ORR inference here uses Wilson CI + exact binomial vs historical p₀; DOR is not KM/Brookmeyer–Crowley — MC uses a per-responder durability prior (PD-1 comps) plus a min durable-fraction gate. SAP-defined thresholds are not public — default ORR success threshold 35% is an assumption. Secondary PFS/OS at 1 yr are supportive readouts, not co-primary gates.</p>
-<p><span class="tag m">Model</span> Combined P(PMA) blends a structural ORR/DOR score (55%) with a subjective PMA prior slider (45%). Monte Carlo draws true ORR from a moderate Beta prior, simulates n=88 binomial outcomes, and scores co-primary success only if ORR threshold + historical-benchmark beat + durable-responder fraction all hold. Seeded n=1500 for reproducible histograms. Valuation skin P(s) defaults to this MC P(success) when the link toggle is on.</p>
+<p><span class="tag m">Model</span> Combined P(PMA) blends a structural ORR/DOR score (55%) with a subjective PMA prior slider (45%). Monte Carlo draws true ORR from a moderate Beta prior, simulates n=88 binomial outcomes, and scores co-primary success only if ORR threshold + historical-benchmark beat + durable-responder fraction all hold. Seeded n=1500 for reproducible histograms. MC P(success) is <b>trial co-primary success under model assumptions</b> — not approval certainty. When the valuation link toggle is on, skin P(s) = trial P(success) × PMA approval haircut (default 75%), labeled model P(success | assumptions).</p>
 <h4>Pipeline — REGAIN n=3 and IMPACT</h4>
 <p><span class="tag f">Fact</span> REGAIN (rGBM) Breakthrough Device + <a href="https://www.fda.gov/medical-devices/total-product-life-cycle-advisory-program-tap" target="_blank" rel="noopener">FDA TAP</a> pilot (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-acceptance-into-fda-s-total-product-life-cycle-advisory-program-to-accelerate-ma" target="_blank" rel="noopener">Oct 2024 PR</a>); feasibility enrollment n≤10. Interim n=3: 100% local disease control, 67% CR per RANO — <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>. Does not establish OS benefit or registrational success; posterior intervals on the Pipeline tab stay wide by design.</p>
 <p><span class="tag f">Fact</span> IMPACT pancreatic US pilot targets n=40 (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-fda-approval-of-ide-supplement-to-expand-alpha-dart-impact-trial-to-patients-wi" target="_blank" rel="noopener">IDE supplement Apr 2026</a>) — no US response counts disclosed; pooled ASCO 2026 pancreatic OS data is a separate design and must not be mixed into IMPACT priors. Japan Shonin (Feb 2026) is the first ex-Israel approval; PMS and reimbursement timing remain commercial risks.</p>
@@ -250,7 +251,7 @@ function updateHeaderStrip() {
   if (!strip || !state.ui.showHeaderStrip) return;
   const h = computeHeaderStrip(state, lastMcResult?.pSuccess);
   const upsideTitle =
-    `Model equity $${h.equity}M (EV+cash) vs mkt cap $${h.mktCap}M (shares × ref $${h.refPrice}). ${h.riskAdj ? "Risk-adjusted" : "Gross"} equity $/sh. Ref price is an assumption as-of ~Jul 2026 (Yahoo/market ~$13) — not a live quote.`;
+    `Model equity $${h.equity}M (EV+cash) vs mkt cap $${h.mktCap}M (shares × illustrative ref $${h.refPrice}). ${h.riskAdj ? "Risk-adjusted" : "Gross"} equity $/sh. Ref price is illustrative only (assumption as-of ~Jul 2026) — not a live quote or market data feed.`;
   strip.innerHTML =
     `<span class="best-est-item best-est-item--scenario"><span class="best-est-label">Scenario</span><span class="best-est-val best-est-val--scenario">${SHARE_PRESETS[state.activeRestartPreset]?.label || h.preset}</span></span>` +
     `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Assumed ORR</span><span class="best-est-val">${h.orrPct}%</span></span>` +
@@ -285,13 +286,17 @@ function renderMcHistogram(mc) {
       mc.pOrrOnly != null
         ? ` · ORR-only ${(mc.pOrrOnly * 100).toFixed(1)}% · P(DOR|ORR) ${(mc.pDorGivenOrr * 100).toFixed(0)}%`
         : "";
-    cap.textContent = `MC n=${mc.sims}: co-primary P(success) ${(mc.pSuccess * 100).toFixed(1)}%${dorNote} · median ORR ${mc.orrMedian.toFixed(1)}% (95% ${mc.orrLo.toFixed(0)}–${mc.orrHi.toFixed(0)}%)`;
+    cap.textContent = `MC n=${mc.sims}: trial co-primary P(success | assumptions) ${(mc.pSuccess * 100).toFixed(1)}%${dorNote} · median ORR ${mc.orrMedian.toFixed(1)}% (95% ${mc.orrLo.toFixed(0)}–${mc.orrHi.toFixed(0)}%) — educational gates only, not PMA certainty`;
   }
 }
 
 function applyLinkedSkinPs() {
   if (!state.val.v_linkSkinPs) return;
-  const linked = resolveLinkedSkinPs(state.restart, lastMcResult?.pSuccess);
+  const linked = resolveLinkedSkinPs(
+    state.restart,
+    lastMcResult?.pSuccess,
+    state.val.v_approvalHaircut
+  );
   state.val.v_skinPs = linked;
   const el = $("vv_skinPs");
   if (el) el.value = linked;
@@ -304,21 +309,43 @@ function updateSkinPsLinkUI() {
   if (linkEl) state.val.v_linkSkinPs = linkEl.checked;
   const skinEl = $("vv_skinPs");
   if (skinEl) skinEl.disabled = !!state.val.v_linkSkinPs;
+  const haircutEl = $("vv_approvalHaircut");
+  if (haircutEl) haircutEl.disabled = !state.val.v_linkSkinPs;
   const note = $("skinPsLinkNote");
   if (!note) return;
-  const restartPs = resolveLinkedSkinPs(state.restart, lastMcResult?.pSuccess);
+  const trialPs = resolveTrialPs(state.restart, lastMcResult?.pSuccess);
+  const approvalPs = resolveLinkedSkinPs(
+    state.restart,
+    lastMcResult?.pSuccess,
+    state.val.v_approvalHaircut
+  );
+  const haircut = state.val.v_approvalHaircut ?? 0.75;
   const skinPs = state.val.v_skinPs;
   if (state.val.v_linkSkinPs) {
-    const src = lastMcResult ? "MC P(success)" : "pCombined";
-    note.textContent = `Linked to ReSTART ${src} = ${restartPs.toFixed(2)}.`;
+    const src = lastMcResult ? "MC trial co-primary" : "pCombined";
+    note.textContent =
+      `Linked — trial P(success | assumptions) ${trialPs.toFixed(2)} (${src}) × PMA haircut ${(haircut * 100).toFixed(0)}% → approval P(s) ${approvalPs.toFixed(2)}. ` +
+      `Single-arm ORR+DOR gates are educational; PMA is not ~${(trialPs * 100).toFixed(0)}% certain — historical-control and FDA review risk remain.`;
     note.className = "field-note skin-ps-link-note";
   } else {
-    const diverge = Math.abs(skinPs - restartPs) > 0.02;
+    const diverge = Math.abs(skinPs - approvalPs) > 0.02;
     note.textContent = diverge
-      ? `Unlinked — skin P(s) ${skinPs.toFixed(2)} diverges from ReSTART ${restartPs.toFixed(2)} (MC/pCombined).`
-      : `Unlinked — skin P(s) ${skinPs.toFixed(2)} matches ReSTART ${restartPs.toFixed(2)}.`;
+      ? `Unlinked — model P(success | assumptions) ${skinPs.toFixed(2)} diverges from linked approval P(s) ${approvalPs.toFixed(2)} (trial ${trialPs.toFixed(2)} × haircut).`
+      : `Unlinked — model P(success | assumptions) ${skinPs.toFixed(2)} matches linked approval path ${approvalPs.toFixed(2)}.`;
     note.className = "field-note skin-ps-link-note" + (diverge ? " skin-ps-diverge" : "");
   }
+}
+
+function applyDilutionStress(sharesM) {
+  state.val.v_shares = sharesM;
+  const el = $("vv_shares");
+  if (el) el.value = sharesM;
+  const lab = $("vv_sharesVal");
+  if (lab) lab.textContent = sharesM;
+  document.querySelectorAll("[data-dilution-stress]").forEach((b) => {
+    b.classList.toggle("p-def", Number(b.dataset.dilutionStress) === sharesM);
+  });
+  scheduleUpdate();
 }
 
 function runMcSimulation() {
@@ -507,6 +534,9 @@ function updatePipelineUI() {
 function updateValUI() {
   applyLinkedSkinPs();
   updateSkinPsLinkUI();
+  document.querySelectorAll("[data-dilution-stress]").forEach((b) => {
+    b.classList.toggle("p-def", Number(b.dataset.dilutionStress) === state.val.v_shares);
+  });
   const m = computeValuationMetrics(state.val);
   const riskAdj = !!state.val.v_riskadj;
   if ($("vEv")) $("vEv").textContent = "$" + m.ev.toFixed(0) + "M";
@@ -757,6 +787,9 @@ function init() {
   document.querySelectorAll(".lvlb").forEach((b) => (b.onclick = () => showLevel(b.dataset.lvl)));
   document.querySelectorAll("[data-preset]").forEach((b) => (b.onclick = () => applyRestartPreset(b.dataset.preset)));
   document.querySelectorAll("[data-val-preset]").forEach((b) => (b.onclick = () => applyValPreset(b.dataset.valPreset)));
+  document.querySelectorAll("[data-dilution-stress]").forEach((b) => {
+    b.onclick = () => applyDilutionStress(Number(b.dataset.dilutionStress));
+  });
 
   ["r", "v", "p"].forEach((prefix) => {
     document.querySelectorAll(`[id^="${prefix}"]`).forEach((el) => {

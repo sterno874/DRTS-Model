@@ -95,8 +95,16 @@ export const DEFAULT_STATE = {
     /** Illustrative market ref ($/sh), not a live quote — Yahoo/market ~Jul 2026. */
     v_refPrice: 13,
     v_riskadj: true,
-    /** When true, skin P(s) tracks ReSTART MC P(success) (fallback: pCombined). Default on. */
-    v_linkSkinPs: true
+    /**
+     * When true, skin P(s) = trial co-primary P(success) × PMA approval haircut.
+     * Trial P(s) tracks ReSTART MC (fallback: pCombined). Default on.
+     */
+    v_linkSkinPs: true,
+    /**
+     * P(PMA approval | trial co-primary success) — haircut applied when link is on.
+     * MC alone is educational trial-gate success, not approval certainty.
+     */
+    v_approvalHaircut: 0.75
   },
   ui: { explainLvl: "eli5", showHeaderStrip: true }
 };
@@ -330,18 +338,39 @@ export function paramsFromPreset(name) {
   return { ...DEFAULT_STATE.restart, ...rest };
 }
 
+/** Round probability to nearest 0.05 for slider alignment. */
+function roundPs05(p) {
+  return Math.round(p * 20) / 20;
+}
+
 /**
- * Resolve skin P(s) from ReSTART when link toggle is on.
- * Prefers MC P(success); falls back to deterministic pCombined.
+ * Trial co-primary P(success) under model assumptions (MC preferred, else pCombined).
+ * Educational single-arm ORR+DOR gate — not PMA / approval certainty.
  * @param {object} restartState
  * @param {number|null|undefined} mcPSuccess
  */
-export function resolveLinkedSkinPs(restartState, mcPSuccess) {
+export function resolveTrialPs(restartState, mcPSuccess) {
   if (mcPSuccess != null && Number.isFinite(mcPSuccess)) {
-    return Math.round(mcPSuccess * 20) / 20;
+    return roundPs05(mcPSuccess);
   }
   const m = computeRestartMetrics(restartState);
-  return Math.round(m.pCombined * 20) / 20;
+  return roundPs05(m.pCombined);
+}
+
+/**
+ * Valuation skin P(s) when link toggle is on:
+ * trial co-primary P(success) × PMA approval haircut (default 0.75).
+ * @param {object} restartState
+ * @param {number|null|undefined} mcPSuccess
+ * @param {number} [approvalHaircut=0.75] — P(PMA | trial success)
+ */
+export function resolveLinkedSkinPs(restartState, mcPSuccess, approvalHaircut = 0.75) {
+  const trial = resolveTrialPs(restartState, mcPSuccess);
+  const h =
+    approvalHaircut != null && Number.isFinite(approvalHaircut)
+      ? Math.max(0.05, Math.min(1, approvalHaircut))
+      : 0.75;
+  return roundPs05(trial * h);
 }
 
 /**
@@ -353,13 +382,17 @@ export function valuationInputsForState(state, mcPSuccess) {
   if (!state.val.v_linkSkinPs) return state.val;
   return {
     ...state.val,
-    v_skinPs: resolveLinkedSkinPs(state.restart, mcPSuccess)
+    v_skinPs: resolveLinkedSkinPs(
+      state.restart,
+      mcPSuccess,
+      state.val.v_approvalHaircut
+    )
   };
 }
 
 /**
  * Frozen header strip: ReSTART ORR scenario + risk-adj equity $/sh vs illustrative ref.
- * When v_linkSkinPs is on, $/sh uses linked skin P(s) (MC preferred, else pCombined) so the
+ * When v_linkSkinPs is on, $/sh uses linked approval P(s) (trial × haircut) so the
  * header matches the Valuation tab after applyLinkedSkinPs.
  * @param {object} state
  * @param {number|null|undefined} [mcPSuccess]

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   computeHeaderStrip,
   resolveLinkedSkinPs,
+  resolveTrialPs,
   valuationInputsForState,
   DEFAULT_STATE,
   VAL_PRESETS
@@ -34,16 +35,16 @@ test("computeHeaderStrip updates with bull preset ORR", () => {
 });
 
 test("frozen header strip base golden $/sh and vs-ref upside", () => {
-  // Link default on: header uses MC co-primary P(success) → skin P(s) 0.95, $/sh ≈ $10.22
+  // Link default on: trial MC ~0.96 → 0.95 × PMA haircut 0.75 → approval P(s) 0.70, $/sh ≈ $8.48
   const h = computeHeaderStrip(DEFAULT_STATE, BASE_MC.pSuccess);
-  assert.ok(Math.abs(parseFloat(h.perSh) - 10.22) < 0.1);
+  assert.ok(Math.abs(parseFloat(h.perSh) - 8.48) < 0.1);
   assert.equal(h.refPrice, "13.00");
-  // Equity ~$899M vs mkt cap 88×13=$1144M → about −21% (0.79×)
+  // Equity ~$746M vs mkt cap 88×13=$1144M → about −35% (0.65×)
   assert.match(h.upsideLabel, /%/);
   assert.match(h.upsideLabel, /×/);
   assert.ok(parseFloat(h.upsidePct) < 0);
   assert.ok(h.upsideLabel.startsWith("-"), "base vs-ref must show negative sign");
-  assert.ok(Math.abs(parseFloat(h.upsideMult) - 0.79) < 0.05);
+  assert.ok(Math.abs(parseFloat(h.upsideMult) - 0.65) < 0.05);
 });
 
 test("header with link on ignores stale v_skinPs and matches valuation", () => {
@@ -52,7 +53,7 @@ test("header with link on ignores stale v_skinPs and matches valuation", () => {
   s.val.v_skinPs = 0.55; // stale manual value
   const h = computeHeaderStrip(s, BASE_MC.pSuccess);
   const linkedVal = valuationInputsForState(s, BASE_MC.pSuccess);
-  assert.equal(linkedVal.v_skinPs, 0.95);
+  assert.equal(linkedVal.v_skinPs, 0.7);
   const v = computeFullValuation(linkedVal);
   assert.ok(Math.abs(parseFloat(h.perSh) - v.perSh) < 0.01);
 });
@@ -89,7 +90,7 @@ test("header strip commercial bull raises $/sh and upside vs base", () => {
   assert.ok(bull.upsideLabel.startsWith("+"), "bull vs-ref must show + sign");
 });
 
-test("resolveLinkedSkinPs prefers MC P(success) over pCombined", () => {
+test("resolveTrialPs prefers MC P(success) over pCombined", () => {
   const mc = mcRestartORR({
     n: 88,
     orrPct: 55,
@@ -97,13 +98,32 @@ test("resolveLinkedSkinPs prefers MC P(success) over pCombined", () => {
     sims: 1500,
     seed: 42
   });
-  const linked = resolveLinkedSkinPs(DEFAULT_STATE.restart, mc.pSuccess);
-  assert.ok(Math.abs(linked - Math.round(mc.pSuccess * 20) / 20) < 1e-9);
-  const fallback = resolveLinkedSkinPs(DEFAULT_STATE.restart, null);
+  const trial = resolveTrialPs(DEFAULT_STATE.restart, mc.pSuccess);
+  assert.ok(Math.abs(trial - Math.round(mc.pSuccess * 20) / 20) < 1e-9);
+  const fallback = resolveTrialPs(DEFAULT_STATE.restart, null);
   const pCombined = computeRestartMetrics(DEFAULT_STATE.restart).pCombined;
   assert.ok(Math.abs(fallback - Math.round(pCombined * 20) / 20) < 1e-9);
 });
 
-test("link toggle default is on for base", () => {
+test("resolveLinkedSkinPs applies PMA approval haircut to trial P(s)", () => {
+  const trial = resolveTrialPs(DEFAULT_STATE.restart, BASE_MC.pSuccess);
+  assert.equal(trial, 0.95);
+  const linked = resolveLinkedSkinPs(DEFAULT_STATE.restart, BASE_MC.pSuccess, 0.75);
+  assert.equal(linked, 0.7);
+  const noHaircut = resolveLinkedSkinPs(DEFAULT_STATE.restart, BASE_MC.pSuccess, 1);
+  assert.equal(noHaircut, 0.95);
+});
+
+test("link toggle default is on with 75% PMA haircut", () => {
   assert.equal(DEFAULT_STATE.val.v_linkSkinPs, true);
+  assert.equal(DEFAULT_STATE.val.v_approvalHaircut, 0.75);
+});
+
+test("dilution stress raises share count and lowers $/sh", () => {
+  const base = computeHeaderStrip(DEFAULT_STATE, BASE_MC.pSuccess);
+  const stress = structuredClone(DEFAULT_STATE);
+  stress.val.v_shares = 110;
+  const h = computeHeaderStrip(stress, BASE_MC.pSuccess);
+  assert.ok(parseFloat(h.perSh) < parseFloat(base.perSh));
+  assert.ok(Math.abs(parseFloat(h.perSh) - 6.78) < 0.1);
 });

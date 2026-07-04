@@ -56,10 +56,15 @@ test("key anchors match known reported values", () => {
   assert.equal(cash.anchor, 76.9);
   const shares = VAL_BANDS.find((c) => c.id === "vv_shares");
   assert.equal(shares.anchor, 88);
+  const haircut = VAL_BANDS.find((c) => c.id === "vv_approvalHaircut");
+  assert.equal(haircut.anchor, 0.75);
   const burn = VAL_BANDS.find((c) => c.id === "vv_burnQuarterly");
   assert.equal(burn.anchor, 6.5);
   assert.ok(burn.imp, "GAAP op-loss territory marked implausible as cash burn");
   assert.ok(burn.imp[0] >= 12);
+  assert.match(burn.why, /not audited CFS/i);
+  const platform = VAL_BANDS.find((c) => c.id === "vv_platform");
+  assert.match(platform.why, /not \$B/i);
 });
 
 test("bandCoversRange helper", () => {

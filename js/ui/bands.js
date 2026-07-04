@@ -116,7 +116,15 @@ export const VAL_BANDS = [
     min: 0.05,
     max: 0.95,
     sig: { b1: [0.35, 0.7], b2: [0.2, 0.85], b3: [0.05, 0.95] },
-    why: "P(ReSTART PMA success) — default links to ReSTART MC co-primary P(success); unlink to set manually."
+    why: "Model P(success | assumptions) — when linked: trial co-primary × PMA haircut (not MC alone / not approval certainty)."
+  },
+  {
+    id: "vv_approvalHaircut",
+    min: 0.25,
+    max: 1,
+    sig: { b1: [0.55, 0.85], b2: [0.4, 0.95], b3: [0.25, 1] },
+    anchor: 0.75,
+    why: "P(PMA approval | trial co-primary success) — haircut when link is on; default 75%."
   },
   {
     id: "vv_gbmPts",
@@ -231,7 +239,7 @@ export const VAL_BANDS = [
     max: 120,
     sig: { b1: [85, 95], b2: [75, 105], b3: [40, 120] },
     anchor: 88,
-    why: "Ordinary shares outstanding (M) — ◆ ~88.0M per SEC F-3 / 20-F (not ADS)."
+    why: "Ordinary shares (M) — ◆ default ~88.0M per SEC F-3 / 20-F; header $/sh denominator. Dilution stress 100–110M for F-3/ATM."
   },
   {
     id: "vv_refPrice",
@@ -239,7 +247,7 @@ export const VAL_BANDS = [
     max: 30,
     sig: { b1: [10, 16], b2: [8, 20], b3: [5, 30] },
     anchor: 13,
-    why: "Illustrative ref price ($/sh) — assumption as-of ~Jul 2026, not a live quote."
+    why: "Illustrative ref price ($/sh) — assumption as-of ~Jul 2026; not a live quote or data feed."
   },
   {
     id: "vv_cash",
@@ -256,7 +264,7 @@ export const VAL_BANDS = [
     sig: { b1: [5, 8], b2: [4.5, 12], b3: [4, 20] },
     anchor: 6.5,
     imp: [12, 20],
-    why: "Quarterly cash burn ($M) — CFO interview ~$5–6M+/qtr (~$25M/yr); not GAAP op loss $13.3M."
+    why: "Quarterly cash burn ($M) — CFO interview (company-reported, not audited CFS) ~$5–6M+/qtr; not GAAP op loss $13.3M."
   },
   {
     id: "vv_mult",
@@ -272,7 +280,7 @@ export const VAL_BANDS = [
     max: 20,
     sig: { b1: [1, 6], b2: [0, 10], b3: [0, 20] },
     imp: [14, 20],
-    why: "Platform option ($M) — residual optionality; Japan H&N is a separate indication line."
+    why: "Platform optionality ($M, not $B) — residual optionality; Japan H&N is a separate indication line."
   }
 ];
 

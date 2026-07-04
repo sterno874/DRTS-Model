@@ -84,11 +84,12 @@ test("v_linkSkinPs false round-trips", () => {
 test("linked skin P(s) is omitted from share hash (derived from ReSTART)", () => {
   const s = structuredClone(DEFAULT_STATE);
   s.val.v_linkSkinPs = true;
-  s.val.v_skinPs = 0.95; // MC-derived — must not pollute share URL
+  s.val.v_skinPs = 0.7; // derived — must not pollute share URL
   assert.equal(buildShareHash(s), "#s1=");
   const d = decodeShareHash(buildShareHash(s));
   assert.equal(d.val.v_linkSkinPs, true);
   assert.equal(d.val.v_skinPs, DEFAULT_STATE.val.v_skinPs);
+  assert.equal(d.val.v_approvalHaircut, 0.75);
 });
 
 test("unlinked custom skin P(s) still round-trips", () => {
@@ -98,4 +99,18 @@ test("unlinked custom skin P(s) still round-trips", () => {
   const d = decodeShareHash(buildShareHash(s));
   assert.equal(d.val.v_linkSkinPs, false);
   assert.equal(d.val.v_skinPs, 0.7);
+});
+
+test("v_approvalHaircut round-trips through share hash", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_approvalHaircut = 0.6;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.val.v_approvalHaircut, 0.6);
+});
+
+test("dilution stress shares round-trip", () => {
+  const s = structuredClone(DEFAULT_STATE);
+  s.val.v_shares = 110;
+  const d = decodeShareHash(buildShareHash(s));
+  assert.equal(d.val.v_shares, 110);
 });
