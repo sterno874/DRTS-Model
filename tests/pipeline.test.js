@@ -5,6 +5,10 @@ import {
   CATALYSTS,
   catalystsInYear,
   sortCatalysts,
+  layoutTimeline,
+  timelineFrac,
+  quarterTicks,
+  formatCatalystMonth,
   computePipelineSummary,
   COMMUNITY_DD,
   BEAR_CASE,
@@ -56,4 +60,26 @@ test("all catalysts have source URLs", () => {
   for (const c of CATALYSTS) {
     assert.ok(c.source.startsWith("http"), c.id);
   }
+});
+
+test("layoutTimeline positions events within year", () => {
+  const items = layoutTimeline(catalystsInYear(2026), 2026);
+  assert.ok(items.length >= 4);
+  for (const it of items) {
+    assert.ok(it.left >= 0 && it.left <= 1, it.catalyst.id);
+    assert.ok(it.width > 0 && it.left + it.width <= 1.02, it.catalyst.id);
+    assert.ok(it.lane >= 0);
+  }
+  assert.ok(new Set(items.map((it) => it.lane)).size >= 1);
+});
+
+test("timelineFrac and quarterTicks", () => {
+  assert.equal(timelineFrac("2026-01-01", "2026-01-01", "2026-12-31"), 0);
+  assert.ok(Math.abs(timelineFrac("2026-07-02", "2026-01-01", "2026-12-31") - 0.5) < 0.02);
+  assert.equal(quarterTicks(2026).length, 4);
+  assert.equal(quarterTicks(2026)[2].label, "Q3 2026");
+});
+
+test("formatCatalystMonth", () => {
+  assert.equal(formatCatalystMonth("2026-10-01"), "Oct 2026");
 });

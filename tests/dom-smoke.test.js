@@ -127,8 +127,11 @@ test("pipeline has community threads table", () => {
   assert.match(html, /id="pipeRestartDDBody"/);
 });
 
-test("pipeline catalyst calendar", () => {
+test("pipeline catalyst timeline", () => {
   assert.match(html, /id="pipeCalendar"/);
+  assert.match(html, /Catalyst timeline/);
+  assert.match(html, /class="cat-tl-host"/);
+  assert.match(html, /id="pcalendarYear"/);
 });
 
 test("prior bands on ReSTART and valuation sliders", () => {

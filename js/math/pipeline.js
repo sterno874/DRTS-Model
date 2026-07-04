@@ -185,6 +185,86 @@ export function sortCatalysts(list) {
 }
 
 /**
+ * Calendar-year bounds for the catalyst timeline (ISO dates).
+ * @param {number} year
+ * @returns {{ start: string, end: string }}
+ */
+export function timelineBounds(year) {
+  return { start: `${year}-01-01`, end: `${year}-12-31` };
+}
+
+/**
+ * Fraction of a date within [start, end], clamped to [0, 1].
+ * @param {string} iso
+ * @param {string} start
+ * @param {string} end
+ */
+export function timelineFrac(iso, start, end) {
+  const t0 = Date.parse(start + "T00:00:00Z");
+  const t1 = Date.parse(end + "T00:00:00Z");
+  const t = Date.parse(iso + "T00:00:00Z");
+  if (!(t1 > t0)) return 0;
+  return Math.min(1, Math.max(0, (t - t0) / (t1 - t0)));
+}
+
+/**
+ * Quarter tick marks for a calendar year.
+ * @param {number} year
+ * @returns {{ label: string, frac: number }[]}
+ */
+export function quarterTicks(year) {
+  return [1, 2, 3, 4].map((q) => ({
+    label: `Q${q} ${year}`,
+    frac: (q - 1) / 4
+  }));
+}
+
+/**
+ * Assign non-overlapping lanes for timeline bars (greedy by start).
+ * @param {Catalyst[]} list
+ * @param {number} year
+ * @returns {{ catalyst: Catalyst, lane: number, left: number, width: number, continuesLeft: boolean, continuesRight: boolean }[]}
+ */
+export function layoutTimeline(list, year) {
+  const { start, end } = timelineBounds(year);
+  const sorted = sortCatalysts(list);
+  /** @type {string[]} */
+  const laneEnds = [];
+  return sorted.map((c) => {
+    const clipStart = c.windowStart < start ? start : c.windowStart;
+    const clipEnd = c.windowEnd > end ? end : c.windowEnd;
+    const left = timelineFrac(clipStart, start, end);
+    const right = timelineFrac(clipEnd, start, end);
+    const width = Math.min(Math.max(right - left, 0.02), Math.max(1 - left, 0.02));
+    let lane = laneEnds.findIndex((le) => le <= clipStart);
+    if (lane < 0) {
+      lane = laneEnds.length;
+      laneEnds.push(clipEnd);
+    } else {
+      laneEnds[lane] = clipEnd;
+    }
+    return {
+      catalyst: c,
+      lane,
+      left,
+      width,
+      continuesLeft: c.windowStart < start,
+      continuesRight: c.windowEnd > end
+    };
+  });
+}
+
+/**
+ * Short month label for catalyst windows (e.g. "Apr 2026").
+ * @param {string} iso
+ */
+export function formatCatalystMonth(iso) {
+  const [y, m] = iso.split("-");
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${months[Number(m) - 1]} ${y}`;
+}
+
+/**
  * Pipeline summary metrics from UI state (no invented trial results).
  * @param {{ impactEnroll?: number, regainN?: number, regainLdcPct?: number, japanApproved?: number }} state
  */
