@@ -329,7 +329,7 @@ export const COMMUNITY_DD = [
     theme: "Q1 cash burn is ~$13M/qtr (GAAP op loss)",
     verdict: "rejected",
     tag: "community",
-    note: "Q1 GAAP operating loss $13.3M verified (R&D $11.0M + G&A $2.1M); cash burn per CFO interview ~$5–6M+/qtr (~$25M/yr). Net loss $22.9M includes $9.6M non-cash warrant MTM — model runway uses cash burn, not GAAP op loss or net loss — Q1 PR / 6-K + https://youtu.be/Jyryv-152hc"
+    note: "Q1 GAAP operating loss $13.3M verified (R&D $11.0M + marketing $0.2M + G&A $2.1M); cash burn per CFO interview ~$5–6M+/qtr (~$25M/yr). Net loss $22.9M includes $9.6M non-cash warrant MTM — model runway uses cash burn, not GAAP op loss or net loss — Q1 PR / 6-K + https://youtu.be/Jyryv-152hc"
   },
   {
     theme: "Alpha works in hypoxic tumors (oxygen-independent)",
