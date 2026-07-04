@@ -162,9 +162,12 @@
     <h2>Pipeline map</h2>
     <div class="factgrid" id="pipeTrialsGrid"></div>
     <p id="pipeSummary" class="field-note"></p>
-    <h2>Catalyst calendar <span class="tag m">model</span></h2>
-    <div class="ctrl" style="max-width:320px"><label>Calendar year <span id="pcalendarYearVal">2026</span></label><input type="range" id="pcalendarYear" min="2026" max="2027" step="1" value="2026"/></div>
-    <div id="pipeCalendar"></div>
+    <h2>Catalyst timeline <span class="tag m">model</span></h2>
+    <p class="field-note cat-tl-intro">Primary-sourced windows along the year axis — hover for notes, open Source for the filing or PR.</p>
+    <div class="cat-tl-controls">
+      <div class="ctrl"><label>Year <span id="pcalendarYearVal">2026</span></label><input type="range" id="pcalendarYear" min="2026" max="2027" step="1" value="2026"/></div>
+    </div>
+    <div id="pipeCalendar" class="cat-tl-host"></div>
     <h2 class="mt-md">Pilot response panels <span class="tag m">read-only</span></h2>
     <p class="field-note">Bayesian Beta(1,1) posterior intervals from disclosed counts only — not predictive models. REGAIN interim n=3 per <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>.</p>
     <div class="pilot-panels" id="pilotPanels"></div>
@@ -299,8 +302,10 @@
       <button type="button" class="lvlb" data-lvl="pro">Professional</button>
       <button type="button" class="lvlb" data-lvl="phd">PhD</button>
     </div>
-    <div class="card expl-card"><div id="explbody"></div></div>
-    <p class="field-note expl-sources">Sources: <a href="https://alphatau.com/alpha-dart-technology/" target="_blank" rel="noopener">Alpha DaRT technology</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">FIH SCC trial</a> · <a href="https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321" target="_blank" rel="noopener">SEC 20-F</a> · ClinicalTrials.gov NCT IDs in Pipeline tab · Reddit themes tagged <span class="tag c">community</span> in Valuation DD table.</p>
+    <div class="card expl-card">
+      <div id="explbody"></div>
+      <p class="expl-sources">Sources: <a href="https://alphatau.com/alpha-dart-technology/" target="_blank" rel="noopener">Alpha DaRT technology</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/31759075/" target="_blank" rel="noopener">FIH SCC trial</a> · <a href="https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321" target="_blank" rel="noopener">SEC 20-F</a> · ClinicalTrials.gov NCT IDs in Pipeline tab · Reddit themes tagged <span class="tag c">community</span> in Valuation DD table.</p>
+    </div>
   </div>
 </div>
 
