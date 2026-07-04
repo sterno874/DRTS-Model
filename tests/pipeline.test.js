@@ -80,6 +80,17 @@ test("layoutTimeline positions events within year", () => {
   assert.ok(new Set(items.map((it) => it.lane)).size >= 1);
 });
 
+test("layoutTimeline marks open-ended bars past year end", () => {
+  const items = layoutTimeline(catalystsInYear(2026), 2026);
+  const japan = items.find((it) => it.catalyst.id === "japan_commercial");
+  assert.ok(japan, "japan_commercial in 2026");
+  assert.equal(japan.continuesRight, true);
+  assert.ok(japan.left + japan.width <= 1.02);
+  const impact = items.find((it) => it.catalyst.id === "impact_data");
+  assert.ok(impact);
+  assert.equal(impact.continuesRight, true);
+});
+
 test("timelineFrac and quarterTicks", () => {
   assert.equal(timelineFrac("2026-01-01", "2026-01-01", "2026-12-31"), 0);
   assert.ok(Math.abs(timelineFrac("2026-07-02", "2026-01-01", "2026-12-31") - 0.5) < 0.02);

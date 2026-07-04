@@ -323,6 +323,34 @@ function catalystTagHtml(tag) {
   return `<span class="tag a">estimate</span>`;
 }
 
+function catalystCardHtml(it) {
+  const c = it.catalyst;
+  const windowLabel = `${formatCatalystMonth(c.windowStart)} – ${formatCatalystMonth(c.windowEnd)}`;
+  const nct = c.nct
+    ? ` · <a href="https://clinicaltrials.gov/study/${c.nct}" target="_blank" rel="noopener">${c.nct}</a>`
+    : "";
+  const note = c.note ? `<div class="cat-tl-note">${c.note}</div>` : "";
+  const source = c.source
+    ? `<a class="cat-tl-source" href="${c.source}" target="_blank" rel="noopener">Source</a>`
+    : "";
+  const cont =
+    it.continuesRight || it.continuesLeft
+      ? `<span class="cat-tl-continues">${it.continuesRight ? "continues →" : "← continues"}</span>`
+      : "";
+  const dotClass =
+    "cat-tl-dot" + (c.tag === "verified" ? " cat-tl-dot--verified" : " cat-tl-dot--estimate");
+  return (
+    `<li class="cat-tl-item">` +
+    `<div class="${dotClass}" aria-hidden="true"></div>` +
+    `<div class="cat-tl-card">` +
+    `<div class="cat-tl-card-head"><span class="cat-tl-trial">${c.trial}</span>${catalystTagHtml(c.tag)}${source}</div>` +
+    `<div class="cat-tl-label">${c.label}</div>` +
+    `<div class="cat-tl-window">${windowLabel}${cont}${nct}</div>` +
+    note +
+    `</div></li>`
+  );
+}
+
 function renderCatalystCalendar() {
   const host = $("pipeCalendar");
   if (!host) return;
@@ -348,13 +376,15 @@ function renderCatalystCalendar() {
     )
     .join("");
 
-  const eventHtml = items
+  // Layer 1: Gantt bars only (no cards over the chart)
+  const barHtml = items
     .map((it) => {
       const c = it.catalyst;
       const leftPct = (it.left * 100).toFixed(2);
       const widthPct = (it.width * 100).toFixed(2);
       const windowLabel = `${formatCatalystMonth(c.windowStart)} – ${formatCatalystMonth(c.windowEnd)}`;
-      const titleParts = [windowLabel, c.trial, c.tag === "verified" ? "verified" : "estimate"];
+      const titleParts = [windowLabel, c.trial, c.label, c.tag === "verified" ? "verified" : "estimate"];
+      if (it.continuesRight) titleParts.push("continues past year end");
       if (c.note) titleParts.push(c.note);
       const title = titleParts.join(" · ").replace(/"/g, "&quot;");
       const barClass =
@@ -362,23 +392,12 @@ function renderCatalystCalendar() {
         (c.tag === "verified" ? " cat-tl-bar--verified" : " cat-tl-bar--estimate") +
         (it.continuesLeft ? " cat-tl-bar--cont-left" : "") +
         (it.continuesRight ? " cat-tl-bar--cont-right" : "");
-      const nct = c.nct
-        ? ` · <a href="https://clinicaltrials.gov/study/${c.nct}" target="_blank" rel="noopener">${c.nct}</a>`
+      const contMark = it.continuesRight
+        ? `<span class="cat-tl-bar-arrow" aria-hidden="true">→</span>`
         : "";
-      const note = c.note ? `<div class="cat-tl-note">${c.note}</div>` : "";
-      const source = c.source
-        ? `<a class="cat-tl-source" href="${c.source}" target="_blank" rel="noopener">Source</a>`
-        : "";
-      // Bar spans the true window; card is anchored at window start with a readable min width.
       return (
-        `<div class="${barClass}" style="left:${leftPct}%;width:${widthPct}%;--lane:${it.lane}" title="${title}"></div>` +
-        `<div class="cat-tl-event" style="left:min(${leftPct}%,calc(100% - 148px));--lane:${it.lane}" title="${title}">` +
-        `<div class="cat-tl-card">` +
-        `<div class="cat-tl-card-head"><span class="cat-tl-trial">${c.trial}</span>${catalystTagHtml(c.tag)}${source}</div>` +
-        `<div class="cat-tl-label">${c.label}</div>` +
-        `<div class="cat-tl-window">${windowLabel}${nct}</div>` +
-        note +
-        `</div></div>`
+        `<div class="${barClass}" style="left:${leftPct}%;width:${widthPct}%;--lane:${it.lane}" title="${title}">` +
+        `<span class="cat-tl-bar-label">${c.trial}</span>${contMark}</div>`
       );
     })
     .join("");
@@ -387,30 +406,8 @@ function renderCatalystCalendar() {
     ? `<div class="cat-tl-today" style="left:${(todayFrac * 100).toFixed(2)}%" title="Today"><span>Today</span></div>`
     : "";
 
-  // Mobile: chronological list with vertical axis (same data, no lane math needed in CSS)
-  const mobileHtml = items
-    .map((it) => {
-      const c = it.catalyst;
-      const windowLabel = `${formatCatalystMonth(c.windowStart)} – ${formatCatalystMonth(c.windowEnd)}`;
-      const nct = c.nct
-        ? ` · <a href="https://clinicaltrials.gov/study/${c.nct}" target="_blank" rel="noopener">${c.nct}</a>`
-        : "";
-      const note = c.note ? `<div class="cat-tl-note">${c.note}</div>` : "";
-      const source = c.source
-        ? `<a class="cat-tl-source" href="${c.source}" target="_blank" rel="noopener">Source</a>`
-        : "";
-      return (
-        `<li class="cat-tl-v-item">` +
-        `<div class="cat-tl-v-dot${c.tag === "verified" ? " cat-tl-v-dot--verified" : " cat-tl-v-dot--estimate"}"></div>` +
-        `<div class="cat-tl-v-card">` +
-        `<div class="cat-tl-card-head"><span class="cat-tl-trial">${c.trial}</span>${catalystTagHtml(c.tag)}${source}</div>` +
-        `<div class="cat-tl-label">${c.label}</div>` +
-        `<div class="cat-tl-window">${windowLabel}${nct}</div>` +
-        note +
-        `</div></li>`
-      );
-    })
-    .join("");
+  // Layer 2: full-width event cards in date order (shared desktop + mobile)
+  const listHtml = items.map(catalystCardHtml).join("");
 
   host.innerHTML =
     `<div class="cat-timeline" style="--lanes:${lanes}">` +
@@ -418,15 +415,16 @@ function renderCatalystCalendar() {
     `<span class="cat-tl-leg"><i class="cat-tl-leg-swatch cat-tl-leg-swatch--verified"></i> verified</span>` +
     `<span class="cat-tl-leg"><i class="cat-tl-leg-swatch cat-tl-leg-swatch--estimate"></i> estimate</span>` +
     (showToday ? `<span class="cat-tl-leg"><i class="cat-tl-leg-today"></i> today</span>` : "") +
+    `<span class="cat-tl-leg"><i class="cat-tl-leg-cont">→</i> continues past year</span>` +
     `</div>` +
-    `<div class="cat-tl-desktop" aria-label="Catalyst timeline ${year}">` +
+    `<div class="cat-tl-chart" aria-label="Catalyst timeline ${year}">` +
     `<div class="cat-tl-ticks">${tickHtml}</div>` +
     `<div class="cat-tl-track">` +
     `<div class="cat-tl-line"></div>` +
     todayHtml +
-    eventHtml +
+    barHtml +
     `</div></div>` +
-    `<ol class="cat-tl-mobile">${mobileHtml}</ol>` +
+    `<ol class="cat-tl-list">${listHtml}</ol>` +
     `</div>`;
 }
 
