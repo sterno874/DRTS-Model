@@ -105,12 +105,18 @@ export function csdaRangeAlphaUm(energyMeV) {
   return last.rangeUm * Math.pow(energyMeV / last.eMeV, 1.5);
 }
 
+/** Log-scale max for bar charts (μm). */
+const LOG_MAX_UM = 150000;
+
+/** Colors aligned with --sim-* tokens */
+const SIM_COLORS = { alpha: "#d64545", beta: "#d98a00", gamma: "#2f6fed", grid: "#e8ecf2" };
+
 /**
  * Log-scale position 0–1 for bar charts (μm).
  * @param {number} valueUm
  * @param {number} maxUm
  */
-export function logScaleFraction(valueUm, maxUm = 150000) {
+export function logScaleFraction(valueUm, maxUm = LOG_MAX_UM) {
   const v = Math.max(1, valueUm);
   const max = Math.max(v, maxUm);
   return Math.log10(v) / Math.log10(max);
@@ -161,29 +167,41 @@ function initPenetration(root) {
     const bars = q(svg, "#simA-bars");
     if (!bars) return;
     const specs = [
-      { key: "alpha", label: "α (DaRT)", um: alphaUm, color: "#d64545" },
-      { key: "beta", label: "β", um: MODALITY_RANGES_UM.beta, color: "#d98a00" },
-      { key: "gamma", label: "γ / X-ray", um: MODALITY_RANGES_UM.gamma, color: "#2f6fed" }
+      { key: "alpha", label: "α (DaRT)", um: alphaUm, color: SIM_COLORS.alpha },
+      { key: "beta", label: "β", um: MODALITY_RANGES_UM.beta, color: SIM_COLORS.beta },
+      { key: "gamma", label: "γ / X-ray", um: MODALITY_RANGES_UM.gamma, color: SIM_COLORS.gamma }
     ];
     const barW = 440;
     const x0 = 108;
-    bars.innerHTML = specs
-      .map((s, i) => {
-        const y = 32 + i * 22;
-        const frac = logScaleFraction(s.um);
-        const w = Math.max(4, frac * barW);
-        const label =
-          s.key === "alpha"
-            ? `${s.um.toFixed(0)} μm`
-            : s.key === "beta"
-              ? "~4 mm"
-              : "cm+";
-        return `<g><text x="${x0 - 8}" y="${y + 10}" text-anchor="end" class="as-label">${s.label}</text>` +
-          `<rect x="${x0}" y="${y}" width="${barW}" height="14" rx="3" fill="#eef0f3"/>` +
-          `<rect x="${x0}" y="${y}" width="${w.toFixed(1)}" height="14" rx="3" fill="${s.color}" opacity=".85"/>` +
-          `<text x="${x0 + barW + 8}" y="${y + 10}" class="as-label-sm">${label}</text></g>`;
+    const gridTicks = [1, 10, 100, 1000, 10000, 100000];
+    const gridLines = gridTicks
+      .map((t) => {
+        const fx = x0 + logScaleFraction(t, LOG_MAX_UM) * barW;
+        return `<line x1="${fx.toFixed(1)}" y1="24" x2="${fx.toFixed(1)}" y2="88" class="as-grid" stroke-dasharray="2 3"/>`;
       })
       .join("");
+    bars.innerHTML =
+      gridLines +
+      specs
+        .map((s, i) => {
+          const y = 32 + i * 22;
+          const frac = logScaleFraction(s.um);
+          const w = Math.max(4, frac * barW);
+          const label =
+            s.key === "alpha"
+              ? `${s.um.toFixed(0)} μm`
+              : s.key === "beta"
+                ? "~4 mm"
+                : "cm+";
+          return (
+            `<g><text x="${x0 - 8}" y="${y + 10}" text-anchor="end" class="as-label">${s.label}</text>` +
+            `<rect x="${x0}" y="${y}" width="${barW}" height="14" rx="3" fill="${SIM_COLORS.grid}"/>` +
+            `<rect x="${x0}" y="${y}" width="${w.toFixed(1)}" height="14" rx="3" fill="${s.color}" opacity=".88"/>` +
+            `<text x="${x0 + barW + 8}" y="${y + 10}" class="as-label-sm">${label}</text></g>`
+          );
+        })
+        .join("") +
+      `<text x="${x0 + barW / 2}" y="98" text-anchor="middle" class="as-label-sm">log₁₀ scale (μm) · 1 — 10 — 100 — 1k — 10k — 100k</text>`;
 
     if (killZone) {
       const r = Math.min(alphaUm * pxPerUm, killCapPx);
@@ -215,7 +233,7 @@ function initPenetration(root) {
       .map((p) => {
         const x = seedX + Math.cos(p.angle) * p.dist * pxPerUm;
         const y = seedY + Math.sin(p.angle) * p.dist * pxPerUm;
-        return `<line x1="${seedX}" y1="${seedY}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#d64545" stroke-width="1.2" opacity="${(p.life * 0.9).toFixed(2)}"/>`;
+        return `<line x1="${seedX}" y1="${seedY}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${SIM_COLORS.alpha}" stroke-width="1.4" opacity="${(p.life * 0.9).toFixed(2)}"/>`;
       })
       .join("");
   }
@@ -256,20 +274,33 @@ function initBragg(root) {
   const pts = [];
   for (let i = 0; i <= 100; i++) {
     const t = i / 100;
-    const letValue = 20 + 180 * Math.pow(t, 2.2);
+    const letValue = 18 + 182 * Math.pow(t, 2.15) * (1 - 0.08 * t);
     pts.push({ t, letValue });
   }
   const maxLet = pts[pts.length - 1].letValue;
+  const axisG = q(host, "#simB-grid");
 
-  function letAt(t) {
-    const i = Math.min(100, Math.max(0, Math.round(t * 100)));
-    return pts[i].letValue;
+  if (axisG) {
+    const grid = [];
+    for (let g = 0; g <= 4; g++) {
+      const gy = 200 - (g / 4) * 155;
+      grid.push(`<line x1="48" y1="${gy}" x2="552" y2="${gy}" class="as-grid"/>`);
+      grid.push(`<text x="42" y="${gy + 3}" text-anchor="end" class="as-label-sm">${Math.round((g / 4) * maxLet)}</text>`);
+    }
+    axisG.innerHTML = grid.join("");
   }
 
   if (path) {
     const d = pts.map((p, i) => `${i ? "L" : "M"} ${48 + p.t * 504} ${200 - (p.letValue / maxLet) * 155}`).join(" ");
     path.setAttribute("d", d);
+    path.setAttribute("stroke", SIM_COLORS.alpha);
+    path.setAttribute("fill", "none");
   }
+  function letAt(t) {
+    const i = Math.min(100, Math.max(0, Math.round(t * 100)));
+    return pts[i].letValue;
+  }
+
   if (letPeak) letPeak.textContent = maxLet.toFixed(0);
 
   function update() {
@@ -293,6 +324,7 @@ function initDecay(root) {
   host.dataset.init = "1";
 
   const progress = q(host, "#simC-progress");
+  const timeline = q(host, "#simC-timeline");
   const detailIso = q(host, "#simC-detail-iso");
   const detailHl = q(host, "#simC-detail-hl");
   const detailMode = q(host, "#simC-detail-mode");
@@ -326,6 +358,22 @@ function initDecay(root) {
       el.classList.toggle("simC-done", i < step);
       el.setAttribute("aria-current", active ? "step" : "false");
     });
+    if (timeline) {
+      const maxLog = Math.log10(DECAY_CHAIN[0].hlSec);
+      timeline.innerHTML = DECAY_CHAIN.map((c, i) => {
+        const w =
+          c.hlSec === Infinity
+            ? 8
+            : Math.max(4, (Math.log10(Math.max(c.hlSec, 0.001)) / maxLog) * 100);
+        const fill =
+          c.mode.includes("α") && !c.mode.includes("β")
+            ? SIM_COLORS.alpha
+            : c.mode.includes("β")
+              ? SIM_COLORS.beta
+              : "#94a3b8";
+        return `<span class="simC-tl-seg${i === step ? " simC-active" : ""}" style="flex:${w};background:${fill}" title="${c.iso} t½ ${c.hl}"></span>`;
+      }).join("");
+    }
     if (progress) progress.textContent = `Step ${step + 1} of ${n}: ${node.iso}`;
     if (detailIso) detailIso.textContent = node.iso;
     if (detailHl) detailHl.textContent = node.hl === "stable" ? "Stable (NNDC)" : `t½ ${node.hl} (NNDC)`;
@@ -388,6 +436,7 @@ function initHypoxia(root) {
   host.dataset.init = "1";
 
   const toggle = q(host, "#simD-toggle");
+  const oerEl = q(host, "#simD-oer");
   let hypoxic = false;
 
   function render() {
@@ -395,21 +444,33 @@ function initHypoxia(root) {
       const mode = panel.dataset.mode;
       const core = q(panel, ".simD-core");
       const status = q(panel, ".simD-status");
+      const o2grad = q(panel, ".simD-o2");
       if (mode === "photon") {
         const dead = hypoxic;
         if (core) core.setAttribute("fill", dead ? "#5b6472" : "#fdeaea");
+        if (o2grad) o2grad.setAttribute("opacity", dead ? "0.95" : "0.5");
         if (status) {
-          status.textContent = dead ? "Hypoxic core: resistant — poor kill" : "Normoxic: photons effective";
+          status.textContent = dead
+            ? "Hypoxic core: OER ~2.5–3 → photons lose ~60% kill"
+            : "Normoxic: photons effective (OER ~1)";
           status.className = "simD-status " + (dead ? "simD-bad" : "simD-good");
         }
       } else {
         if (core) core.setAttribute("fill", "#fdeaea");
+        if (o2grad) o2grad.setAttribute("opacity", hypoxic ? "0.85" : "0.45");
         if (status) {
-          status.textContent = hypoxic ? "Hypoxic core: α still kills (high LET)" : "Normoxic: α kills locally";
+          status.textContent = hypoxic
+            ? "Hypoxic core: α OER ~1.0–1.2 — high LET still kills"
+            : "Normoxic: α kills locally (LET ~80 keV/μm)";
           status.className = "simD-status simD-good";
         }
       }
     });
+    if (oerEl) {
+      oerEl.textContent = hypoxic
+        ? "O₂ gradient: rim normoxic · core &lt;5 mmHg · α effectiveness ~85–95% of normoxic vs photons ~30–40%"
+        : "Uniform O₂ — both modalities at full relative effectiveness (schematic OER values)";
+    }
     if (toggle) toggle.textContent = hypoxic ? "Show normoxic tumor" : "Show hypoxic core";
   }
 
@@ -460,14 +521,21 @@ function initSeeds(root) {
     const seeds = seedPositions(n);
 
     if (zonesG) {
-      zonesG.innerHTML =
-        seeds
-          .map(
-            (s) =>
-              `<circle cx="${s.x}" cy="${s.y}" r="${killR}" fill="#d64545" opacity=".18" stroke="#d64545" stroke-width="1" stroke-dasharray="3 2"/>` +
-              `<circle cx="${s.x}" cy="${s.y}" r="5" fill="#2f6fed"/>`
-          )
-          .join("");
+      zonesG.innerHTML = seeds
+        .map((s) => {
+          const rings = [1, 0.65, 0.35]
+            .map(
+              (f, ri) =>
+                `<circle cx="${s.x}" cy="${s.y}" r="${(killR * f).toFixed(1)}" fill="none" stroke="${SIM_COLORS.alpha}" stroke-width="${ri === 0 ? 1.2 : 0.8}" opacity="${(0.35 - ri * 0.08).toFixed(2)}" stroke-dasharray="${ri ? "2 3" : "4 3"}"/>`
+            )
+            .join("");
+          return (
+            rings +
+            `<circle cx="${s.x}" cy="${s.y}" r="5" fill="#2f6fed" stroke="#1a4fb8" stroke-width="1"/>` +
+            `<circle cx="${s.x}" cy="${s.y}" r="2" fill="#fff" opacity=".6"/>`
+          );
+        })
+        .join("");
     }
 
     const grid = 24;

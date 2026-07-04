@@ -1,14 +1,14 @@
 /* Alpha DaRT interactive simulations — Biology tab */
-.alpha-sims-intro{margin:0 0 var(--space-lg);padding:var(--space-md);border-radius:10px;background:#eef3fe;border:1px solid #c9daf8;font-size:13px;line-height:1.6}
+.alpha-sims-intro{margin:0 0 var(--space-lg);padding:var(--space-md);border-radius:10px;background:var(--surface-accent,#eef3fe);border:1px solid #c9daf8;font-size:13px;line-height:1.6}
 .bio-section .alpha-sim{margin-top:var(--space-xl)}
 .bio-section .alpha-sims-intro+.alpha-sim{margin-top:var(--space-md)}
 .alpha-sim{display:flex;flex-direction:column;gap:0;margin-bottom:0;padding:var(--panel-pad);border:1px solid var(--line);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow)}
 .alpha-sim:last-of-type{margin-bottom:0}
 .alpha-sim h3{margin:0 0 var(--space-xs);font-size:16px;line-height:1.3;display:flex;align-items:baseline;gap:var(--space-sm);flex-wrap:wrap}
-.alpha-sim .sim-kicker{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);background:#eef3fe;border-radius:6px;padding:2px 8px;flex-shrink:0}
+.alpha-sim .sim-kicker{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--bio-accent,var(--accent));background:var(--surface-accent,#eef3fe);border-radius:6px;padding:2px 8px;flex-shrink:0}
 .alpha-sim p.sim-lead{font-size:13px;color:var(--muted);margin:0 0 var(--space-md);max-width:72ch;line-height:1.55}
 .alpha-sim-body{display:flex;flex-direction:column;gap:var(--space-md);min-width:0}
-.alpha-sim-viz{margin:0;padding:var(--space-md);border:1px solid var(--line);border-radius:10px;background:#fbfcfe;overflow:hidden;min-width:0}
+.alpha-sim-viz{margin:0;padding:var(--space-md);border:1px solid var(--line);border-radius:10px;background:var(--bio-bg,#fbfcfe);overflow:hidden;min-width:0}
 .alpha-sim-viz--compact{padding:var(--space-sm)}
 .alpha-sim-viz--chain{padding:var(--space-md)}
 .alpha-sim svg,.alpha-sim-svg{display:block;width:100%;height:auto;max-width:100%;min-height:0;background:transparent;border:none;border-radius:0;overflow:visible}
@@ -24,20 +24,35 @@
 .alpha-sim-cite a{color:var(--accent);text-decoration:none}
 .alpha-sim-cite a:hover{text-decoration:underline}
 .alpha-sim-disclaimer{font-size:11px;color:#6b4e00;background:#fff7ea;border:1px solid #f0d090;border-radius:8px;padding:var(--space-sm) var(--space-md);margin-top:var(--space-md)}
+.sim-caption{font-size:11px;font-weight:600;color:var(--bio-label,var(--muted))}
+.sim-legend{display:flex;flex-wrap:wrap;gap:var(--space-sm) var(--space-md);align-items:center;font-size:11px;color:var(--muted);margin-top:var(--space-sm)}
+.sim-legend-item{display:inline-flex;align-items:center;gap:5px}
+.sim-legend-swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0;border:1px solid rgba(20,27,38,.08)}
+.scale-bar line{stroke:var(--ink);stroke-width:1.5}
+.scale-bar text{font:600 9px -apple-system,sans-serif;fill:var(--bio-label,var(--muted))}
 .as-label{font:600 11px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:var(--ink)}
 .as-label-sm{font:500 10px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:var(--muted)}
 .as-divider{stroke:var(--line);stroke-width:1}
 .as-axis{stroke:var(--muted);stroke-width:1}
-.as-tissue{fill:#e8f6ee;stroke:#1f9d55;stroke-width:1}
-.as-tumor{fill:#fdeaea;stroke:#d64545;stroke-width:1.5}
+.as-grid{stroke:var(--sim-grid,#e8ecf2);stroke-width:1}
+.as-tissue{fill:var(--sim-tissue,#e8f6ee);stroke:#1f9d55;stroke-width:1}
+.as-tumor{fill:var(--sim-tumor,#fdeaea);stroke:#d64545;stroke-width:1.5}
 .as-seed{fill:#2f6fed;stroke:#1a4fb8;stroke-width:1}
-.simC-progress{margin:0 0 var(--space-sm);font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.01em}
+.as-healthy{fill:#f4f8f5;stroke:#94a3b8;stroke-width:.8;opacity:.7}
+.as-cell{fill:#fff;stroke:#c5cad2;stroke-width:.6}
+.as-o2-high{stop-color:#7ec8e3}
+.as-o2-low{stop-color:#5b6472}
+.simC-progress{margin:0 0 var(--space-sm);font-size:12px;font-weight:700;color:var(--bio-accent,var(--accent));letter-spacing:.01em}
+.simC-timeline{margin:0 0 var(--space-sm);height:8px;border-radius:4px;background:var(--sim-grid,#e8ecf2);overflow:hidden;display:flex}
+.simC-tl-seg{height:100%;min-width:2px;transition:opacity .2s}
+.simC-tl-seg.simC-active{opacity:1;box-shadow:inset 0 0 0 1px rgba(47,111,237,.4)}
+.simC-tl-seg:not(.simC-active){opacity:.35}
 .simC-chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px 4px;margin:0}
 .simC-arrow{flex:0 0 auto;color:var(--muted);font-size:14px;font-weight:700;line-height:1;user-select:none;padding:0 2px}
 .simC-node{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:11px;background:#fff;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;line-height:1.35;flex:1 1 auto;min-width:92px;max-width:148px;text-align:left}
 .simC-node b{display:block;font-size:12px}
 .simC-node-meta{display:block;font-size:10px;color:var(--muted);font-weight:500;margin-top:2px}
-.simC-node.simC-active{border-color:var(--accent);background:#eef3fe;box-shadow:0 0 0 2px rgba(47,111,237,.15)}
+.simC-node.simC-active{border-color:var(--accent);background:var(--surface-accent,#eef3fe);box-shadow:0 0 0 2px rgba(47,111,237,.15)}
 .simC-node.simC-active .simC-node-meta{color:var(--accent)}
 .simC-node.simC-done{opacity:.7;background:#f4f6f8}
 .simC-node:hover{border-color:var(--accent)}
@@ -48,14 +63,15 @@
 .simC-detail-mode-row{margin:0 0 var(--space-sm);font-size:13px}
 .simC-detail-label{font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-right:6px}
 .simC-detail-clinical{margin:0 0 var(--space-sm);font-size:13px;line-height:1.55;color:var(--ink)}
-.simC-detail-distance{margin:0;font-size:12px;line-height:1.5;color:#1a4fb8;background:#eef3fe;border-radius:6px;padding:var(--space-xs) var(--space-sm)}
+.simC-detail-distance{margin:0;font-size:12px;line-height:1.5;color:#1a4fb8;background:var(--surface-accent,#eef3fe);border-radius:6px;padding:var(--space-xs) var(--space-sm)}
 .simC-controls{align-items:center}
 .simC-controls button.p:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
 .simD-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);min-width:0}
 @media(max-width:640px){.simD-grid{grid-template-columns:1fr}}
-.simD-panel{display:flex;flex-direction:column;gap:var(--space-sm);border:1px solid var(--line);border-radius:10px;padding:var(--space-sm);background:#fafbfc;text-align:center;min-width:0}
+.simD-panel{display:flex;flex-direction:column;gap:var(--space-sm);border:1px solid var(--line);border-radius:10px;padding:var(--space-sm);background:var(--surface-soft,#fafbfc);text-align:center;min-width:0}
 .simD-panel h4{margin:0;font-size:13px}
 .simD-panel .alpha-sim-viz{margin:0;padding:var(--space-xs);flex:1}
+.simD-oer{font-size:11px;font-weight:700;color:var(--bio-label,var(--muted));margin:0}
 .simD-status{font-size:12px;font-weight:600;margin:0;padding:var(--space-xs);border-radius:6px}
 .simD-good{background:#e8f6ee;color:#12692f}
 .simD-bad{background:#fdeaea;color:#8f2020}
@@ -69,7 +85,7 @@
   .alpha-sim-controls label{flex:1 1 100%}
 }
 @media(prefers-reduced-motion:reduce){
-  .simC-node{transition:none}
+  .simC-node,.simC-tl-seg{transition:none}
   .alpha-sim svg *{animation:none!important}
   .alpha-sim,.alpha-sim-viz,.alpha-sim-body,.simD-grid{gap:var(--space-md)}
 }

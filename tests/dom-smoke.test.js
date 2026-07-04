@@ -77,6 +77,17 @@ test("biology tab has five alpha simulation modules", () => {
   assert.match(html, /Educational schematic/);
 });
 
+test("biology tab decay chain has proportional timeline bar", () => {
+  assert.match(html, /id="simC-timeline"/);
+});
+
+test("biology tab has shared sim design classes in css", () => {
+  const css = readFileSync(path.join(root, "css/alpha-sims.css"), "utf8");
+  assert.match(css, /--bio-bg|var\(--bio-bg/);
+  assert.match(css, /\.sim-legend/);
+  assert.match(css, /\.scale-bar/);
+});
+
 test("biology tab has D0 radiosensitivity table and dosimetry modeling", () => {
   assert.match(html, /id="bio-d0-radiosensitivity"/);
   assert.match(html, /id="bio-d0-table"/);

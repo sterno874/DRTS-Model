@@ -9,6 +9,10 @@
     --content-max:1180px; --section-gap:var(--space-xl);
     --page-pad:var(--space-lg); --panel-pad:var(--space-lg);
     --radius:12px; --radius-sm:8px;
+    --bio-bg:#fbfcfe; --bio-accent:#2f6fed; --bio-label:#4f5866;
+    --sim-grid:#e8ecf2; --sim-tissue:#e8f6ee; --sim-tumor:#fdeaea;
+    --sim-alpha:#d64545; --sim-beta:#d98a00; --sim-gamma:#2f6fed;
+    --surface-soft:#fbfcfe; --surface-accent:#eef3fe;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
