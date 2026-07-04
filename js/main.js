@@ -44,8 +44,8 @@ import { buildBands, renderBands } from "./ui/bands.js";
 import { initAlphaSims } from "./ui/alpha-sims.js";
 import {
   DEFAULT_TICKER,
-  formatPrice,
-  formatChangePct,
+  QUOTE_LABEL,
+  formatApproxPrice,
   buildQuoteMeta,
   startLiveQuotePoll
 } from "./ui/market-quote.js";
@@ -261,22 +261,21 @@ function updateHeaderStrip() {
   const h = computeHeaderStrip(state, lastMcResult?.pSuccess, liveQuote?.ok ? liveQuote : null);
   const refNote =
     h.refSource === "live"
-      ? `Live $${h.refPrice} · mkt cap $${h.mktCap}M${h.marketCapEstimated ? " (implied from model shares)" : ""}`
+      ? `Delayed ~$${h.refPrice} · mkt cap ~$${h.mktCap}M${h.marketCapEstimated ? " (implied from model shares)" : ""}`
       : `Illustrative ref $${h.refPrice} (slider) · not a live quote`;
   const upsideTitle =
     `Model equity $${h.equity}M (EV+cash) vs mkt cap $${h.mktCap}M. ${h.riskAdj ? "Risk-adjusted" : "Gross"} equity $/sh. ${refNote}. Not investment advice.`;
   let liveBlock = "";
   if (liveQuote?.loading) {
     liveBlock =
-      `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Live quote <span class="tag f">market</span></span><span class="best-est-val best-est-val--loading">…</span><span class="best-est-sub">fetching…</span></span>`;
+      `<span class="best-est-sep">·</span><span class="best-est-item market-live"><span class="best-est-label">${QUOTE_LABEL} <span class="tag f">market</span></span><span class="best-est-val best-est-val--loading">…</span><span class="best-est-sub">fetching…</span></span>`;
   } else if (liveQuote?.ok) {
-    const ch = formatChangePct(liveQuote.changePct);
     const meta = buildQuoteMeta(liveQuote);
     liveBlock =
-      `<span class="best-est-sep">·</span><span class="best-est-item" title="${meta}"><span class="best-est-label">Live quote <span class="tag f">market</span></span><span class="best-est-val">${formatPrice(liveQuote.price, liveQuote.currency)}${ch ? ` (${ch})` : ""}</span>${meta ? `<span class="best-est-sub">${meta}</span>` : ""}</span>`;
+      `<span class="best-est-sep">·</span><span class="best-est-item market-live" title="${meta}"><span class="best-est-label">${QUOTE_LABEL} <span class="tag f">market</span></span><span class="best-est-val">${formatApproxPrice(liveQuote.price, liveQuote.currency)}</span>${meta ? `<span class="best-est-sub">${meta}</span>` : ""}</span>`;
   } else if (liveQuote && !liveQuote.ok) {
     liveBlock =
-      `<span class="best-est-sep">·</span><span class="best-est-item"><span class="best-est-label">Live quote <span class="tag f">market</span></span><span class="best-est-val best-est-val--error">—</span><span class="best-est-sub">unavailable</span></span>`;
+      `<span class="best-est-sep">·</span><span class="best-est-item market-live"><span class="best-est-label">${QUOTE_LABEL} <span class="tag f">market</span></span><span class="best-est-val best-est-val--error">—</span><span class="best-est-sub">unavailable</span></span>`;
   }
   strip.innerHTML =
     `<span class="best-est-item best-est-item--scenario"><span class="best-est-label">Scenario</span><span class="best-est-val best-est-val--scenario">${SHARE_PRESETS[state.activeRestartPreset]?.label || h.preset}</span></span>` +

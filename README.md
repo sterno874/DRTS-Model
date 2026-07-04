@@ -38,16 +38,16 @@ Append `?embed=1` to hide chrome for iframe embeds.
 
 Zero-config static site — same layout as [SLS-Model](https://github.com/sterno874/SLS-Model). Import [sterno874/DRTS-Model](https://github.com/sterno874/DRTS-Model) at [vercel.com/new](https://vercel.com/new); Vercel serves `index.html` from the repo root and deploys `api/quote.js` as `/api/quote`. Assign the domain `drts-model.vercel.app` in **Project → Settings → Domains**. Enable **Web Analytics** in the Vercel project settings → **Analytics** tab (required for visitor counts to flow; the static `/_vercel/insights/script.js` snippet in `index.html` only works when hosted on Vercel). No build step or `package.json` dependencies required for deploy (`vercel.json` sets `cleanUrls` only) — this is not a Next.js app, so `@vercel/analytics/next` does not apply.
 
-### Live stock quote (header strip)
+### Delayed stock quote (header strip)
 
-The header strip shows **live $DRTS price**, **market cap**, and switches **vs-ref** to **vs live** when a quote is available. DRTS (NASDAQ ADS) resolves correctly on both Finnhub and Yahoo.
+The header strip shows **approx $DRTS price**, **approx market cap**, and switches **vs-ref** to **vs live** when a quote is available.
 
-| Source | When used | Price | Market cap | Rate limits |
-|--------|-----------|-------|------------|-------------|
-| **Finnhub** | `FINNHUB_API_KEY` in Vercel env | ✅ | ✅ | Free: 60 calls/min |
-| **Yahoo Finance v8 chart** | Fallback (no key) | ✅ | Implied (`price × model shares`) | Undocumented; throttle ~2 req/s |
+| Source | When used | Price | Market cap |
+|--------|-----------|-------|------------|
+| **Yahoo quoteSummary** | Primary (server-side) | ✅ | ✅ |
+| **Yahoo v8 chart** | Fallback | ✅ | Implied (`price × model shares`) |
 
-Add `FINNHUB_API_KEY` under Vercel **Settings → Environment Variables** and redeploy. Without it, Yahoo fallback works server-side; implied cap uses valuation **FD shares** slider (default 88M).
+No API keys required. Header labeled **Approx · delayed**. Implied cap uses valuation **FD shares** slider (default 88M) when Yahoo omits market cap.
 
 Quotes poll every 5 minutes, async — page load is not blocked. If the API fails, the strip shows `—` / `unavailable` and **vs-ref** falls back to the illustrative ref slider ($13 default).
 
@@ -79,7 +79,7 @@ DRTS-Model/
 - Public SAP-aligned ORR/DOR success rules when disclosed
 - Full DOR time-to-event (KM) module
 - IMPACT/REGAIN Bayesian monitoring stubs
-- ~~Live stock price / market cap overlay (optional)~~ — **done** (see Deploy → Live stock quote)
+- ~~Live stock price / market cap overlay (optional)~~ — **done** (see Deploy → Delayed stock quote)
 - Dilution / burn-rate scenario tab
 - Vercel deploy + stale-data badge automation
 
