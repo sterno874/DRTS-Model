@@ -88,6 +88,15 @@ test("biology tab has D0 radiosensitivity table and dosimetry modeling", () => {
   assert.match(html, /Kim &amp; Sung/);
   assert.match(html, /Korotinsky/);
   assert.match(html, /Heger/);
+  // D0 table primary-study PubMed links (via JRPR refs)
+  const d0Block = html.slice(html.indexOf('id="bio-d0-table"'), html.indexOf('id="bio-dosimetry-modeling"'));
+  for (const pmid of ["18059026", "19480976", "23225432", "22077335", "22153808", "36237307"]) {
+    assert.match(d0Block, new RegExp(`pubmed\\.ncbi\\.nlm\\.nih\\.gov/${pmid}/`));
+  }
+  assert.match(d0Block, /Cooks 2012<\/a>/);
+  assert.match(d0Block, /Lazarov 2012<\/a>/);
+  assert.match(d0Block, /Horev-Drori 2012<\/a>/);
+  assert.match(d0Block, /Nishri 2022<\/a>/);
   // Accuracy guardrails
   assert.match(html, /independent/);
   assert.match(html, /Emerging \/ theoretical|emerging\/theoretical/i);
