@@ -35,12 +35,28 @@
       <button type="button" id="btnPrint">🖨 Print report</button>
     </div>
   </div>
-  <div class="tabnav">
-    <button class="tabbtn active" data-tab="restart">1 · ReSTART (cSCC pivotal)</button>
-    <button class="tabbtn" data-tab="pipeline">2 · Pipeline &amp; catalysts</button>
-    <button class="tabbtn" data-tab="value">3 · Valuation</button>
-    <button class="tabbtn" data-tab="explain">4 · Explain (ELI5 → PhD)</button>
-    <button class="tabbtn" data-tab="biology">5 · The Biology</button>
+  <div class="hdr-nav-mobile embed-hide no-print">
+    <button type="button" id="navToggle" class="nav-toggle" aria-expanded="false" aria-controls="mobileNavPanel" aria-label="Open navigation menu">
+      <span class="nav-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <span class="hdr-active-tab" id="hdrActiveTab">ReSTART</span>
+  </div>
+  <div id="mobileNavBackdrop" class="mobile-nav-backdrop embed-hide no-print" hidden aria-hidden="true"></div>
+  <div id="mobileNavPanel" class="mobile-nav-panel embed-hide no-print" hidden>
+    <nav aria-label="Tab navigation">
+      <button type="button" class="mobile-nav-item active" data-tab="restart" aria-current="page">1 · ReSTART (cSCC pivotal)</button>
+      <button type="button" class="mobile-nav-item" data-tab="pipeline">2 · Pipeline &amp; catalysts</button>
+      <button type="button" class="mobile-nav-item" data-tab="value">3 · Valuation</button>
+      <button type="button" class="mobile-nav-item" data-tab="explain">4 · Explain (ELI5 → PhD)</button>
+      <button type="button" class="mobile-nav-item" data-tab="biology">5 · The Biology</button>
+    </nav>
+  </div>
+  <div class="tabnav" role="tablist" aria-label="Tab navigation">
+    <button class="tabbtn active" data-tab="restart" role="tab" aria-selected="true">1 · ReSTART (cSCC pivotal)</button>
+    <button class="tabbtn" data-tab="pipeline" role="tab" aria-selected="false">2 · Pipeline &amp; catalysts</button>
+    <button class="tabbtn" data-tab="value" role="tab" aria-selected="false">3 · Valuation</button>
+    <button class="tabbtn" data-tab="explain" role="tab" aria-selected="false">4 · Explain (ELI5 → PhD)</button>
+    <button class="tabbtn" data-tab="biology" role="tab" aria-selected="false">5 · The Biology</button>
   </div>
 </header>
 
@@ -598,14 +614,6 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<nav id="bottomNav" class="bottom-nav no-print embed-hide" aria-label="Tab navigation">
-  <button type="button" data-tab="restart" class="active" aria-current="page"><span class="bn-ico">📊</span>ReSTART</button>
-  <button type="button" data-tab="pipeline"><span class="bn-ico">🧪</span>Pipeline</button>
-  <button type="button" data-tab="value"><span class="bn-ico">💰</span>Value</button>
-  <button type="button" data-tab="explain"><span class="bn-ico">📖</span>Explain</button>
-  <button type="button" data-tab="biology"><span class="bn-ico">🧬</span>Biology</button>
-</nav>
 
 <footer class="embed-hide">
   <div class="footer-inner">

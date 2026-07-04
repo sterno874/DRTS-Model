@@ -27,10 +27,17 @@ test("tab buttons match VALID_TABS", () => {
   assert.deepEqual(tabs, VALID_TABS);
 });
 
-test("bottom nav exposes all tabs", () => {
-  const nav = matchAll(/<nav id="bottomNav"[\s\S]*?<\/nav>/g, html)[0][0];
+test("mobile nav panel exposes all tabs", () => {
+  const nav = matchAll(/<div id="mobileNavPanel"[\s\S]*?<\/div>/g, html)[0][0];
   const navTabs = nav.match(/data-tab="([^"]+)"/g).map((s) => s.slice(10, -1));
   assert.deepEqual(navTabs, VALID_TABS);
+});
+
+test("hamburger nav toggle is accessible", () => {
+  assert.match(html, /id="navToggle"/);
+  assert.match(html, /aria-expanded="false"/);
+  assert.match(html, /aria-controls="mobileNavPanel"/);
+  assert.match(js, /function initMobileNav\(/);
 });
 
 test("six explain levels", () => {

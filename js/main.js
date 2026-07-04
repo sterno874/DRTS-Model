@@ -649,6 +649,85 @@ function applyValPreset(name) {
   updateNow(true);
 }
 
+const TAB_SHORT_LABELS = {
+  restart: "ReSTART",
+  pipeline: "Pipeline",
+  value: "Valuation",
+  explain: "Explain",
+  biology: "Biology"
+};
+
+function closeMobileNav() {
+  const panel = $("mobileNavPanel");
+  const toggle = $("navToggle");
+  const backdrop = $("mobileNavBackdrop");
+  if (!panel) return;
+  panel.classList.remove("is-open");
+  panel.hidden = true;
+  if (toggle) {
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open navigation menu");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-open");
+    backdrop.hidden = true;
+  }
+  document.body.classList.remove("nav-open");
+}
+
+function openMobileNav() {
+  const panel = $("mobileNavPanel");
+  const toggle = $("navToggle");
+  const backdrop = $("mobileNavBackdrop");
+  if (!panel || !toggle) return;
+  panel.hidden = false;
+  requestAnimationFrame(() => panel.classList.add("is-open"));
+  toggle.setAttribute("aria-expanded", "true");
+  toggle.setAttribute("aria-label", "Close navigation menu");
+  if (backdrop) {
+    backdrop.hidden = false;
+    backdrop.classList.add("is-open");
+  }
+  document.body.classList.add("nav-open");
+}
+
+function syncMobileNav(t) {
+  document.querySelectorAll(".mobile-nav-item").forEach((x) => {
+    const on = x.dataset.tab === t;
+    x.classList.toggle("active", on);
+    x.setAttribute("aria-current", on ? "page" : "false");
+  });
+  const lbl = $("hdrActiveTab");
+  if (lbl && TAB_SHORT_LABELS[t]) lbl.textContent = TAB_SHORT_LABELS[t];
+}
+
+function initMobileNav() {
+  const panel = $("mobileNavPanel");
+  const toggle = $("navToggle");
+  const backdrop = $("mobileNavBackdrop");
+  if (!panel || !toggle) return;
+  toggle.onclick = () => {
+    if (panel.classList.contains("is-open")) closeMobileNav();
+    else openMobileNav();
+  };
+  if (backdrop) backdrop.onclick = closeMobileNav;
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMobileNav();
+  });
+  document.addEventListener("click", (e) => {
+    if (!panel.classList.contains("is-open")) return;
+    const target = e.target;
+    if (!panel.contains(target) && !toggle.contains(target)) closeMobileNav();
+  });
+  panel.querySelectorAll(".mobile-nav-item").forEach((btn) => {
+    btn.onclick = () => {
+      switchTab(btn.dataset.tab);
+      closeMobileNav();
+      if (!restoringState) window.scrollTo(0, 0);
+    };
+  });
+}
+
 function switchTab(t, fromRestore = false) {
   if (!VALID_TABS.includes(t)) return;
   activeTab = t;
@@ -657,11 +736,8 @@ function switchTab(t, fromRestore = false) {
     x.classList.toggle("active", on);
     x.setAttribute("aria-selected", on ? "true" : "false");
   });
-  document.querySelectorAll("#bottomNav button").forEach((x) => {
-    const on = x.dataset.tab === t;
-    x.classList.toggle("active", on);
-    x.setAttribute("aria-current", on ? "page" : "false");
-  });
+  syncMobileNav(t);
+  closeMobileNav();
   VALID_TABS.forEach((id) => {
     const el = $("tab-" + id);
     if (el) el.hidden = id !== t;
@@ -778,12 +854,7 @@ function init() {
       if (!restoringState) window.scrollTo(0, 0);
     };
   });
-  document.querySelectorAll("#bottomNav button").forEach((b) => {
-    b.onclick = () => {
-      switchTab(b.dataset.tab);
-      if (!restoringState) window.scrollTo(0, 0);
-    };
-  });
+  initMobileNav();
   document.querySelectorAll(".lvlb").forEach((b) => (b.onclick = () => showLevel(b.dataset.lvl)));
   document.querySelectorAll("[data-preset]").forEach((b) => (b.onclick = () => applyRestartPreset(b.dataset.preset)));
   document.querySelectorAll("[data-val-preset]").forEach((b) => (b.onclick = () => applyValPreset(b.dataset.valPreset)));
