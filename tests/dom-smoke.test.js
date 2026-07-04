@@ -70,6 +70,38 @@ test("biology tab has five alpha simulation modules", () => {
   assert.match(html, /Educational schematic/);
 });
 
+test("biology tab has D0 radiosensitivity table and dosimetry modeling", () => {
+  assert.match(html, /id="bio-d0-radiosensitivity"/);
+  assert.match(html, /id="bio-d0-table"/);
+  assert.match(html, /id="bio-dosimetry-modeling"/);
+  assert.match(html, /Radiosensitivity across tumor types/);
+  assert.match(html, /Dosimetry modeling/);
+  // D0 table cell lines from JRPR review
+  for (const line of ["FaDu", "LL2", "SQ2", "PC3", "Panc02", "U87", "NCI-H520"]) {
+    assert.match(html, new RegExp(line));
+  }
+  assert.match(html, /lower D₀ = more radiosensitive/);
+  // Primary sources
+  assert.match(html, /jrpr\.org\/journal\/view\.php\?number=1171/);
+  assert.match(html, /pubmed\.ncbi\.nlm\.nih\.gov\/36464914/);
+  assert.match(html, /10\.1088\/1361-6560\/ae5d7e/);
+  assert.match(html, /Kim &amp; Sung/);
+  assert.match(html, /Korotinsky/);
+  assert.match(html, /Heger/);
+  // Accuracy guardrails
+  assert.match(html, /independent/);
+  assert.match(html, /Emerging \/ theoretical|emerging\/theoretical/i);
+  assert.doesNotMatch(html, /JRPR proves clinical efficacy/i);
+});
+
+test("explain levels cite newer dosimetry sources", () => {
+  assert.match(js, /36464914/);
+  assert.match(js, /ae5d7e/);
+  assert.match(js, /jrpr\.org/);
+  assert.match(js, /bio-d0-radiosensitivity/);
+  assert.match(js, /bio-dosimetry-modeling/);
+});
+
 test("explain levels link to biology simulations", () => {
   assert.match(js, /alpha-sim-penetration/);
   assert.match(js, /alpha-sim-bragg/);

@@ -336,7 +336,7 @@ No single Reddit power-user with multi-year verified track record identified —
 38. [IMPACT IDE supplement PR (Apr 23, 2026)](https://www.alphatau.com/single-post/alpha-tau-announces-fda-approval-of-ide-supplement-to-expand-alpha-dart-impact-trial-to-patients-wi)  
 39. [REGAIN IDE approval PR (Apr 2, 2025)](https://www.alphatau.com/single-post/alpha-tau-receives-fda-approval-to-initiate-a-trial-for-patients-with-recurrent-glioblastoma)  
 40. [HekaBio Japan Shonin partner PR](https://www.heka.bio/post/hekabio-and-alpha-tau-medical-obtain-approval-in-japan-for-solid-tumor-treatment-alpha-dart)  
-41. [PubMed 20463379 — Arazi 2010 alpha dosimetry](https://pubmed.ncbi.nlm.nih.gov/20463379/)  
+41. [PubMed 20463379 — Arazi 2010 alpha dosimetry](https://pubmed.ncbi.nlm.nih.gov/20463379/) — foundational diffusion-leakage / CSDA range (peer-reviewed modeling; Arazi group / Alpha Tau–affiliated program)  
 42. [PubMed 26388465 — Kelson & Keisari 2015 DaRT review](https://pubmed.ncbi.nlm.nih.gov/26388465/)  
 43. [PubMed 39398444 — EUS-guided pancreatic DaRT preliminary](https://pubmed.ncbi.nlm.nih.gov/39398444/)  
 44. [PubMed 36237307 — DaRT + TMZ/BEV GBM xenografts](https://pubmed.ncbi.nlm.nih.gov/36237307/)  
@@ -344,7 +344,23 @@ No single Reddit power-user with multi-year verified track record identified —
 46. [Google Patents US11969485B2 — controlled Ra-224 release](https://patents.google.com/patent/US11969485B2/en)  
 47. [Alpha DaRT technology page](https://alphatau.com/alpha-dart-technology/)  
 48. [IAEA alpha therapy review (Pub1616)](https://www-pub.iaea.org/MTCD/Publications/PDF/Pub1616_web.pdf)  
+49. [PubMed 36464914 — Heger et al. Med Phys 2023 Part I single-seed alpha dose modeling](https://pubmed.ncbi.nlm.nih.gov/36464914/) — Heger G, Roy A, Dumančić M, Arazi L. *Med Phys.* 2023;50(3):1793–1811. doi:10.1002/mp.16145. Extends DL model to realistic seed geometries (1D/2D); Alpha TAU–funded; peer-reviewed modeling (not tumor-type radiosensitivity).  
+50. [Korotinsky & Arazi Phys Med Biol 2026 — microdosimetry Part I (nucleus size distributions)](https://iopscience.iop.org/article/10.1088/1361-6560/ae5d7e) — Korotinsky Y, Arazi L. *Phys. Med. Biol.* 2026;71(9):095030. doi:10.1088/1361-6560/ae5d7e. Online 13 May 2026. Links macroscopic α dose to survival/TCP under broad nucleus-radius distributions; does not revise ~40–70 μm α track range. Peer-reviewed modeling (Arazi group).  
+51. [Kim & Sung JRPR 2024 — independent DaRT review (dosimetry to biological effectiveness)](https://www.jrpr.org/journal/view.php?number=1171) — Kim S, Sung W. *J. Radiat. Prot. Res.* 2024;49(3):102–113. Independent review (Catholic University of Korea; not Alpha Tau). Compiles DL/FEM/MC dosimetry literature, in vitro D₀ table across tumor cell lines, early clinical cohorts; notes rudimentary ~10 Gy planning, generally tolerable local toxicities, and emerging immune/abscopal themes. Does **not** prove registrational efficacy.  
+
+### Biology / dosimetry notes (accuracy)
+
+| Source | Affiliation | What it updates vs Arazi 2010 | Tag |
+| --- | --- | --- | --- |
+| Arazi 2010 (PMID 20463379) | Arazi / DaRT program | Baseline DL + CSDA ranges | peer-reviewed modeling |
+| Heger et al. 2023 (PMID 36464914) | Ben-Gurion; Alpha TAU–funded | Realistic seed 1D/2D dose; planning lookup tables | peer-reviewed modeling |
+| Korotinsky & Arazi 2026 | Ben-Gurion / Arazi | Microdosimetry: nucleus-size distributions → survival/TCP | peer-reviewed modeling |
+| Kim & Sung JRPR 2024 | Independent (Korea) | Outside synthesis; D₀ heterogeneity; planning/toxicity caveats | peer-reviewed review |
+
+- Individual α penetration remains ~40–70 μm (CSDA); mm-scale kill zone is daughter diffusion — do not invent new physics numbers without paper support.  
+- In vitro D₀: lower = more radiosensitive; not a clinical ORR forecast.  
+- REGAIN n=3 = feasibility only. Abscopal / immuno-combo = emerging/theoretical unless pivotal proof.  
 
 ---
 
-*Last updated: 3 Jul 2026 — Phase 5 primary-source expansion (+17 SEC/FDA/PubMed/patent links). Claims tagged in-app on Valuation (community + bear) and Pipeline (threads) tabs.*
+*Last updated: 4 Jul 2026 — Biology/dosimetry primary sources (Heger 2023, Korotinsky & Arazi 2026, Kim & Sung JRPR 2024) + Q1 2026 cash-burn vs GAAP P&L clarity. Claims tagged in-app on Valuation, Pipeline, and Biology tabs.*
