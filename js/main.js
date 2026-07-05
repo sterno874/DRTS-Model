@@ -1101,10 +1101,17 @@ function init() {
       if (el.type === "range" || el.type === "number") el.addEventListener("input", scheduleUpdate);
     });
   });
-  const risk = $("v_riskadj");
-  if (risk) risk.addEventListener("change", scheduleUpdate);
-  const linkSkin = $("v_linkSkinPs");
-  if (linkSkin) linkSkin.addEventListener("change", scheduleUpdate);
+  for (const id of [
+    "v_riskadj",
+    "v_linkSkinPs",
+    "v_linkNonSkinPs",
+    "v_inverseMode",
+    "rdtBranchDilution",
+    "rdtLinkFdaToTopline"
+  ]) {
+    const el = $(id);
+    if (el) el.addEventListener("change", scheduleUpdate);
+  }
 
   const btnShare = $("btnShare");
   if (btnShare) {

@@ -8,6 +8,11 @@ test("peakSalesM converts $K price to $M peak", () => {
   assert.equal(peakSalesM({ patients: 1000, penetration: 0.1, price: 10, years: 1 }), 1);
 });
 
+test("peakSalesM golden cSCC base row (12000 × 15% × $85K)", () => {
+  const peak = peakSalesM({ patients: 12000, penetration: 0.15, price: 85, years: 1 });
+  assert.ok(Math.abs(peak - 153) < 0.01, `expected 153M/yr, got ${peak}`);
+});
+
 test("base preset EV is order $500M–$5B not trillions", () => {
   const v = computeFullValuation(DEFAULT_STATE.val);
   assert.ok(v.ev >= 500 && v.ev <= 5000, `EV ${v.ev}M outside $500M–$5B band`);

@@ -29,7 +29,7 @@ export const MUTATION_TARGETS = [
     description: "Drop peak sales multiplication",
     apply: (src) =>
       src.replace(
-        "return (patients * penetration * years * price) / 1000;",
+        "return (patients * penetration * (years ?? 1) * price) / 1000;",
         "return patients + penetration;"
       )
   },

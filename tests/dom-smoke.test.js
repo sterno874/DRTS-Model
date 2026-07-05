@@ -258,6 +258,20 @@ test("main.js uses p-def preset highlights and sync", () => {
   assert.match(js, /immediateMc/);
 });
 
+test("main.js wires state checkboxes to scheduleUpdate", () => {
+  for (const id of [
+    "v_riskadj",
+    "v_linkSkinPs",
+    "v_linkNonSkinPs",
+    "v_inverseMode",
+    "rdtBranchDilution",
+    "rdtLinkFdaToTopline"
+  ]) {
+    assert.match(js, new RegExp(`"${id}"`));
+  }
+  assert.match(js, /addEventListener\("change", scheduleUpdate\)/);
+});
+
 test("references and limitations sections", () => {
   assert.match(html, /References · ReSTART/);
   assert.match(html, /References · Valuation/);
