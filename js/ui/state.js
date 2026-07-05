@@ -109,6 +109,20 @@ export const DEFAULT_STATE = {
   ui: { explainLvl: "eli5", showHeaderStrip: true }
 };
 
+/** Ordinary shares anchor (M) — F-3 / 20-F default denominator. */
+export const REF_SHARES_M = 88;
+
+/** UX subtitle when share slider differs from anchor — EV unchanged, $/sh scales ÷ shares. */
+export function formatShareDilutionSubtitle(sharesM, refSharesM = REF_SHARES_M, refLabel = "88M base") {
+  if (!Number.isFinite(sharesM) || !Number.isFinite(refSharesM) || refSharesM <= 0) return "";
+  if (Math.abs(sharesM - refSharesM) < 0.05) return "";
+  const sharePct = (sharesM / refSharesM - 1) * 100;
+  const perShPct = (refSharesM / sharesM - 1) * 100;
+  const shareSign = sharePct >= 0 ? "+" : "−";
+  const psSign = perShPct >= 0 ? "+" : "−";
+  return `${shareSign}${Math.abs(sharePct).toFixed(0)}% vs ${refLabel} · ${psSign}${Math.abs(perShPct).toFixed(0)}% $/sh · EV unchanged`;
+}
+
 /** ReSTART scenario presets — stress tests, not predictions. */
 export const SHARE_PRESETS = {
   base: {

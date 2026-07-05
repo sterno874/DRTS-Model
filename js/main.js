@@ -38,7 +38,9 @@ import {
   resolveLinkedSkinPs,
   resolveTrialPs,
   paramsFromPreset,
-  inferActivePresets
+  inferActivePresets,
+  formatShareDilutionSubtitle,
+  REF_SHARES_M
 } from "./ui/state.js";
 import { buildBands, renderBands } from "./ui/bands.js";
 import { initAlphaSims } from "./ui/alpha-sims.js";
@@ -287,8 +289,19 @@ function updateHeaderStrip() {
     `<span class="best-est-sep">·</span><span class="best-est-item" title="${upsideTitle}"><span class="best-est-label">${h.vsRefLabel}</span><span class="best-est-val">${h.upsideLabel}</span></span>`;
 }
 
+let lastQuoteSharesM = null;
+
+function refreshLiveQuotePollIfSharesChanged(sharesM) {
+  const s = Number.isFinite(sharesM) && sharesM > 0 ? sharesM : state.val.v_shares;
+  if (!Number.isFinite(s) || s <= 0 || lastQuoteSharesM === s) return;
+  lastQuoteSharesM = s;
+  initLiveQuote();
+}
+
 function initLiveQuote() {
   if (parseEmbedMode() || typeof fetch === "undefined") return;
+  const sharesM = state.val.v_shares;
+  lastQuoteSharesM = sharesM;
   if (stopQuotePoll) stopQuotePoll();
   stopQuotePoll = startLiveQuotePoll(
     DEFAULT_TICKER,
@@ -296,7 +309,7 @@ function initLiveQuote() {
       liveQuote = q;
       updateHeaderStrip();
     },
-    { sharesM: state.val.v_shares }
+    { sharesM }
   );
 }
 
@@ -384,6 +397,7 @@ function applyDilutionStress(sharesM) {
   document.querySelectorAll("[data-dilution-stress]").forEach((b) => {
     b.classList.toggle("p-def", Number(b.dataset.dilutionStress) === sharesM);
   });
+  refreshLiveQuotePollIfSharesChanged(sharesM);
   scheduleUpdate();
 }
 
@@ -580,6 +594,17 @@ function updateValUI() {
   const riskAdj = !!state.val.v_riskadj;
   if ($("vEv")) $("vEv").textContent = "$" + m.ev.toFixed(0) + "M";
   if ($("vPsh")) $("vPsh").textContent = "$" + m.perSh.toFixed(2) + (riskAdj ? " risk-adj" : " gross");
+  const pshDil = $("vPshDil");
+  if (pshDil) {
+    const dilNote = formatShareDilutionSubtitle(state.val.v_shares);
+    if (dilNote) {
+      pshDil.textContent = dilNote;
+      pshDil.hidden = false;
+    } else {
+      pshDil.textContent = "";
+      pshDil.hidden = true;
+    }
+  }
   if ($("vPeak")) $("vPeak").textContent = "$" + m.totalPeak.toFixed(0) + "M/yr" + (riskAdj ? " risk-adj" : " gross");
   const burn = state.val.v_burnQuarterly ?? 6.5;
   const runway = computeRunwayMonths(state.val.v_cash, burn);
@@ -613,6 +638,7 @@ function updateNow(forceAll = false) {
   if (riskEl) state.val.v_riskadj = riskEl.checked;
   const linkEl = $("v_linkSkinPs");
   if (linkEl) state.val.v_linkSkinPs = linkEl.checked;
+  refreshLiveQuotePollIfSharesChanged(state.val.v_shares);
   updateRestartUI(forceAll || activeTab === "restart");
   if (forceAll || activeTab === "pipeline" || tabsDirty.pipeline) updatePipelineUI();
   if (forceAll || activeTab === "value" || tabsDirty.value) updateValUI();

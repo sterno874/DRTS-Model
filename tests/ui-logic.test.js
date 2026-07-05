@@ -6,7 +6,9 @@ import {
   resolveTrialPs,
   valuationInputsForState,
   DEFAULT_STATE,
-  VAL_PRESETS
+  VAL_PRESETS,
+  formatShareDilutionSubtitle,
+  REF_SHARES_M
 } from "../js/ui/state.js";
 import { computeFullValuation } from "../js/math/valuation.js";
 import { computeRestartMetrics, mcRestartORR } from "../js/math/restart.js";
@@ -126,4 +128,24 @@ test("dilution stress raises share count and lowers $/sh", () => {
   const h = computeHeaderStrip(stress, BASE_MC.pSuccess);
   assert.ok(parseFloat(h.perSh) < parseFloat(base.perSh));
   assert.ok(Math.abs(parseFloat(h.perSh) - 6.78) < 0.1);
+  const baseVal = computeFullValuation(DEFAULT_STATE.val);
+  const stressVal = computeFullValuation(stress.val);
+  assert.ok(Math.abs(stressVal.ev - baseVal.ev) < 0.01, "EV must not change with share count");
+});
+
+test("88M vs 100M vs 110M share presets scale $/sh inversely", () => {
+  const base = computeFullValuation(DEFAULT_STATE.val);
+  const at100 = computeFullValuation({ ...DEFAULT_STATE.val, v_shares: 100 });
+  const at110 = computeFullValuation({ ...DEFAULT_STATE.val, v_shares: 110 });
+  assert.ok(at100.perSh < base.perSh);
+  assert.ok(at110.perSh < at100.perSh);
+  assert.ok(Math.abs(at100.ev - base.ev) < 0.01);
+  assert.ok(Math.abs(at110.ev - base.ev) < 0.01);
+  assert.equal(REF_SHARES_M, 88);
+});
+
+test("formatShareDilutionSubtitle highlights delta vs 88M base", () => {
+  assert.equal(formatShareDilutionSubtitle(88), "");
+  assert.match(formatShareDilutionSubtitle(110), /110M|88M/);
+  assert.match(formatShareDilutionSubtitle(110), /EV unchanged/);
 });
