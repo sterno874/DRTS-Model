@@ -32,10 +32,10 @@ export const COMPARABLES = [
  * @param {number} patients — eligible patients per year (absolute count)
  * @param {number} penetration — share treated (decimal, e.g. 0.15)
  * @param {number} price — procedure price in $K
- * @param {number} years — avg years on therapy (treatment-duration intensity)
+ * @param {number} years — procedure-intensity multiplier (default 1 = one-time procedure peak)
  */
 export function peakSalesM({ patients, penetration, price, years }) {
-  return (patients * penetration * years * price) / 1000;
+  return (patients * penetration * (years ?? 1) * price) / 1000;
 }
 
 /**
@@ -47,6 +47,32 @@ export function peakSalesM({ patients, penetration, price, years }) {
 export function blendNonSkinPs(basePs, skinPs, link) {
   const f = Math.max(0, Math.min(1, link ?? 0));
   return basePs * (1 - f) + skinPs * f;
+}
+
+/** Delivery / seed-placement feasibility weight per non-skin site (0–1). */
+export const DELIVERY_SITE_WEIGHT = {
+  gbm: 0.85,
+  panc: 0.8,
+  prostate: 0.45,
+  japan: 0.35
+};
+
+/**
+ * Non-skin P(s) after mechanism correlation + delivery/site risk dials.
+ * mechanismCorr (0–1): biology transfer toward skin P(s).
+ * deliveryRisk (0–1): anatomy / seed-placement penalty × site weight.
+ * Legacy link toggle uses max(linkFrac, mechanismCorr) when on.
+ */
+export function applyNonSkinPlatformPs(basePs, skinPs, opts) {
+  const mechanism = Math.max(0, Math.min(1, opts.mechanismCorr ?? 0));
+  const linkFrac = Math.max(0, Math.min(1, opts.linkFrac ?? 0));
+  const linkOn = !!opts.linkNonSkin;
+  const blend = linkOn ? Math.max(linkFrac, mechanism) : mechanism;
+  let ps = blend > 0 ? blendNonSkinPs(basePs, skinPs, blend) : basePs;
+  const delivery = Math.max(0, Math.min(1, opts.deliveryRisk ?? 0));
+  const siteW = Math.max(0, Math.min(1, opts.siteWeight ?? 0.5));
+  ps *= 1 - delivery * siteW;
+  return Math.max(0, Math.min(1, ps));
 }
 
 /**
@@ -69,6 +95,8 @@ export function computeFullValuation(val) {
   const skinPsResolved = risk ? (val.v_skinPs ?? 0.55) : 1;
   const linkNonSkin = !!val.v_linkNonSkinPs;
   const linkFrac = Math.max(0, Math.min(1, val.v_nonSkinSkinLink ?? 0.5));
+  const mechanismCorr = Math.max(0, Math.min(1, val.v_mechanismCorr ?? 0));
+  const deliveryRisk = Math.max(0, Math.min(1, val.v_deliveryRisk ?? 0));
   const platformHaircut = val.v_platformCorrHaircut ?? 0;
 
   const indications = [
@@ -78,7 +106,7 @@ export function computeFullValuation(val) {
       patients: val.v_skinPts,
       penetration: val.v_skinPen,
       price: val.v_skinPrice,
-      years: val.v_skinYears ?? 5,
+      years: val.v_skinYears ?? 1,
       pSuccess: risk ? val.v_skinPs : 1
     },
     {
@@ -87,7 +115,7 @@ export function computeFullValuation(val) {
       patients: val.v_gbmPts,
       penetration: val.v_gbmPen,
       price: val.v_gbmPrice,
-      years: val.v_gbmYears ?? 4,
+      years: val.v_gbmYears ?? 1,
       pSuccess: risk ? val.v_gbmPs : 1
     },
     {
@@ -96,7 +124,7 @@ export function computeFullValuation(val) {
       patients: val.v_pancPts,
       penetration: val.v_pancPen,
       price: val.v_pancPrice,
-      years: val.v_pancYears ?? 6,
+      years: val.v_pancYears ?? 1,
       pSuccess: risk ? val.v_pancPs : 1
     },
     {
@@ -105,7 +133,7 @@ export function computeFullValuation(val) {
       patients: val.v_prostatePts ?? 15000,
       penetration: val.v_prostatePen ?? 0.06,
       price: val.v_prostatePrice ?? 80,
-      years: val.v_prostateYears ?? 5,
+      years: val.v_prostateYears ?? 1,
       pSuccess: risk ? (val.v_prostatePs ?? 0.2) : 1,
       supplyShare: 0.6
     },
@@ -122,8 +150,14 @@ export function computeFullValuation(val) {
 
   const rows = indications.map((ind) => {
     let pSuccess = ind.pSuccess;
-    if (risk && linkNonSkin && ind.id !== "skin") {
-      pSuccess = blendNonSkinPs(ind.pSuccess, skinPsResolved, linkFrac);
+    if (risk && ind.id !== "skin") {
+      pSuccess = applyNonSkinPlatformPs(ind.pSuccess, skinPsResolved, {
+        mechanismCorr,
+        deliveryRisk,
+        linkNonSkin,
+        linkFrac,
+        siteWeight: DELIVERY_SITE_WEIGHT[ind.id] ?? 0.5
+      });
     }
     let peak = peakSalesM(ind);
     if (ind.supplyShare) peak *= ind.supplyShare;

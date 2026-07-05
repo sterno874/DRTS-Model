@@ -60,7 +60,11 @@ export const DEFAULT_STATE = {
     /** Commercial ramp branch weights (% conditional on approval path). */
     dtCommFast: 25,
     dtCommBase: 50,
-    dtCommSlow: 25
+    dtCommSlow: 25,
+    /** Auto per-branch share stress on decision tree (88M approve vs 100M/110M fail). */
+    dtBranchDilution: true,
+    /** 🔬 Link FDA accept/reject weights to MC topline pass rate. */
+    dtLinkFdaToTopline: false
   },
   pipeline: {
     impactEnroll: 40,
@@ -117,6 +121,10 @@ export const DEFAULT_STATE = {
     v_approvalHaircut: 0.75,
     /** 0–30% EV reduction on non-skin indication rows (platform correlation). */
     v_platformCorrHaircut: 0,
+    /** 0–1 mechanism biology transfer toward skin P(s) on non-skin rows. */
+    v_mechanismCorr: 0,
+    /** 0–1 delivery / seed-placement site risk multiplier on non-skin P(s). */
+    v_deliveryRisk: 0,
     /** When true, GBM/panc/prostate/japan P(s) blend toward skin P(s). */
     v_linkNonSkinPs: false,
     /** Fraction (0–1) of non-skin P(s) pulled toward skin outcome when link is on. */

@@ -222,7 +222,11 @@ test("prior bands on ReSTART and valuation sliders", () => {
   assert.match(html, /id="band-vv_skinPts"/);
   assert.match(html, /id="band-rdtAcceptModular"/);
   assert.match(html, /id="band-vv_platformCorrHaircut"/);
-  assert.match(html, /id="band-vv_pancPrice"/);
+  assert.match(html, /id="band-vv_mechanismCorr"/);
+  assert.match(html, /id="band-vv_deliveryRisk"/);
+  assert.match(html, /id="rdtBranchDilution"/);
+  assert.match(html, /id="rdtLinkFdaToTopline"/);
+  assert.match(html, /Procedure economics/);
   assert.match(html, /class="bandkey"/);
   assert.match(html, /class="source-line"/);
 });

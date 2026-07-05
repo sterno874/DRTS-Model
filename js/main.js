@@ -80,7 +80,7 @@ const TWO_ENGINES = `<h4>Two engines (identifiability)</h4>
 <p><span class="tag m">Model</span> This app deliberately splits uncertainty into <b>two engines</b> — like identifiability framing on other trial explorers: you cannot read one headline number backward into every risk layer.</p>
 <ul>
 <li><b>MC engine</b> — binomial ORR/DOR uncertainty at n=88. Draws true ORR from a Beta prior, simulates co-primary pass/fail under educational gates. Answers: “How noisy is a single-arm rate at this enrollment?” MC trial P(success) is <em>not</em> PMA approval certainty.</li>
-<li><b>Decision tree engine</b> — regulatory + commercial cascade after top-line: pass/fail → FDA modular PMA / defer / reject → commercial ramp (fast/base/slow). MC feeds <b>topline pass rate only</b>; FDA branch sliders and ramp weights are separate assumptions with primary-source tags.</li>
+<li><b>Decision tree engine</b> — regulatory + commercial cascade after top-line: pass/fail → FDA modular PMA / defer / reject → commercial ramp (fast/base/slow). MC feeds <b>topline pass rate only</b>; FDA branch sliders and ramp weights are separate assumptions with primary-source tags. Optional <b>branch dilution</b> applies 88M shares on accept paths vs 100M fail/defer and 110M reject (<a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm" target="_blank" rel="noopener">F-3/ATM</a>). 🔬 <b>Link FDA to topline</b> nudges P(accept) up and P(reject) down when MC pass is high.</li>
 </ul>
 <p><span class="tag u">Honesty</span> High MC pass (~96%) plus a 75% PMA haircut still leaves FDA and commercial ramp as independent sliders. Weighted tree $/sh and sum-of-parts valuation $/sh answer different questions — compare both, do not merge into one opaque headline.</p>`;
 
@@ -161,7 +161,7 @@ const EXPL = {
 <p><span class="tag f">Fact</span> REGAIN (rGBM) Breakthrough Device + <a href="https://www.fda.gov/medical-devices/total-product-life-cycle-advisory-program-tap" target="_blank" rel="noopener">FDA TAP</a> pilot (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-acceptance-into-fda-s-total-product-life-cycle-advisory-program-to-accelerate-ma" target="_blank" rel="noopener">Oct 2024 PR</a>); feasibility enrollment n≤10. Interim n=3: 100% local disease control, 67% CR per RANO — <a href="https://alphatau.com/alpha-tau-receives-fda-clearance-to-complete-enrollment-in-regain-recurrent-glioblastoma-trial-and-add-two-u-s-clinical-sites-early-interim-results-showed-100-local-disease-control/" target="_blank" rel="noopener">Jun 2026 PR</a>. Does not establish OS benefit or registrational success; posterior intervals on the Pipeline tab stay wide by design.</p>
 <p><span class="tag f">Fact</span> IMPACT pancreatic US pilot targets n=40 (<a href="https://www.alphatau.com/single-post/alpha-tau-announces-fda-approval-of-ide-supplement-to-expand-alpha-dart-impact-trial-to-patients-wi" target="_blank" rel="noopener">IDE supplement Apr 2026</a>) — no US response counts disclosed; pooled ASCO 2026 pancreatic OS data is a separate design and must not be mixed into IMPACT priors. Japan Shonin (Feb 2026) is the first ex-Israel approval; PMS and reimbursement timing remain commercial risks.</p>
 <h4>Valuation limits &amp; dilution</h4>
-<p><span class="tag m">Model</span> Valuation: peak ($M/yr) = patients/yr × pen × years × price ($K) ÷ 1,000; risk-adj EV = Σ (peak × EV multiple × P(success)) + platform. Cash default ~$80.2M (Q1 2026); ~88.0M ordinary shares per <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm" target="_blank" rel="noopener">SEC F-3</a> / <a href="https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321" target="_blank" rel="noopener">20-F FY2025</a>. Tolmar: 60% net sales — <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026064461/ea0293331-6k_alpha.htm" target="_blank" rel="noopener">SEC 6-K</a>. Indication P(success) defaults keep GBM/pancreas low relative to skin.</p>
+<p><span class="tag m">Model</span> Valuation: peak ($M/yr) = patients/yr × pen × price ($K/procedure) — procedure-years fixed at 1 (one-time device economics, not drug years-on-therapy). Risk-adj EV = Σ (peak × EV multiple × P(success)) + platform; the multiple is a <b>terminal value proxy</b> (~3–6× device M&amp;A), not a DCF of recurring procedure revenue. Non-skin P(s): P′ = blend(slider, skin, max(λ, mechanism)) × (1 − delivery × siteWeight); optional EV haircut % supplements the dials. Cash default ~$80.2M (Q1 2026); ~88.0M ordinary shares per <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm" target="_blank" rel="noopener">SEC F-3</a> / <a href="https://www.sec.gov/cgi-bin/viewer?accession_number=0001213900-26-025174&action=view&cik=1871321" target="_blank" rel="noopener">20-F FY2025</a>. Tolmar: 60% net sales — <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026064461/ea0293331-6k_alpha.htm" target="_blank" rel="noopener">SEC 6-K</a>.</p>
 <p><span class="tag f">Fact</span> Q1 2026 net loss $22.9M includes <b>$9.6M non-cash warrant liability remeasurement</b> (DRTSW mark-to-market) — inflates GAAP EPS/net loss without cash outflow. GAAP operating loss $13.3M is OpEx, not cash burn. Runway math uses cash burn (default $6.5M/qtr from CFO commentary ~$5–6M+/qtr, ~$25M/yr) — <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K Ex. 99.1</a> · <a href="https://youtu.be/Jyryv-152hc" target="_blank" rel="noopener">CFO interview</a> (company-reported, not an audited cash-flow statement).</p>
 <p><span class="tag f">Fact</span> F-3 shelf up to $300M + $100M ATM (Apr 2026) adds dilution flexibility — not the same as imminent issuance (<a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026048160/ea0285710-f3_alpha.htm" target="_blank" rel="noopener">SEC F-3</a>). Per-share scenarios should be stress-tested against higher share counts; the model does not auto-dilute on shelf capacity.</p>
 <p><span class="tag c">Community</span> r/DRTS_Stock themes cross-checked in Valuation DD table — REGAIN local control often overstated as GBM cure; model keeps GBM P(success) low by default.</p>
@@ -207,6 +207,10 @@ function initFactsAsOf() {
 function renderDecisionTreeUI() {
   const trialPs = resolveTrialPs(state.restart, lastMcResult?.pSuccess);
   const valInputs = valuationInputsForState(state, lastMcResult?.pSuccess);
+  const branchDilEl = $("rdtBranchDilution");
+  const linkFdaEl = $("rdtLinkFdaToTopline");
+  if (branchDilEl) state.restart.dtBranchDilution = branchDilEl.checked;
+  if (linkFdaEl) state.restart.dtLinkFdaToTopline = linkFdaEl.checked;
   const tree = computeDecisionTree({
     toplinePassRate: trialPs,
     val: valInputs,
@@ -215,14 +219,20 @@ function renderDecisionTreeUI() {
     pRejectPct: state.restart.dtReject,
     pCommFastPct: state.restart.dtCommFast,
     pCommBasePct: state.restart.dtCommBase,
-    pCommSlowPct: state.restart.dtCommSlow
+    pCommSlowPct: state.restart.dtCommSlow,
+    branchDilution: state.restart.dtBranchDilution !== false,
+    linkFdaToTopline: !!state.restart.dtLinkFdaToTopline
   });
 
   if ($("dtToplinePass")) {
     $("dtToplinePass").textContent = (tree.toplinePass * 100).toFixed(1) + "% (MC co-primary)";
   }
   if ($("dtWeightedEv")) $("dtWeightedEv").textContent = "$" + tree.weightedEv.toFixed(0) + "M";
-  if ($("dtWeightedPsh")) $("dtWeightedPsh").textContent = "$" + tree.weightedPerSh.toFixed(2);
+  if ($("dtWeightedPsh")) {
+    $("dtWeightedPsh").textContent =
+      "$" + tree.weightedPerSh.toFixed(2) +
+      (tree.branchDilution ? " (branch-diluted)" : "");
+  }
 
   const tbody = $("dtPathsBody");
   if (tbody) {
@@ -230,10 +240,10 @@ function renderDecisionTreeUI() {
       tree.paths
         .map(
           (p) =>
-            `<tr><td>${p.label}</td><td>${(p.prob * 100).toFixed(1)}%</td><td>$${p.ev.toFixed(0)}M</td><td>$${p.perSh.toFixed(2)}</td></tr>`
+            `<tr><td>${p.label}</td><td>${(p.prob * 100).toFixed(1)}%</td><td>${p.sharesM.toFixed(0)}M</td><td>$${p.ev.toFixed(0)}M</td><td>$${p.perSh.toFixed(2)}</td></tr>`
         )
         .join("") +
-      `<tr class="dt-weighted-row"><td><b>Weighted scenario</b></td><td>${(tree.probSum * 100).toFixed(0)}%</td><td><b>$${tree.weightedEv.toFixed(0)}M</b></td><td><b>$${tree.weightedPerSh.toFixed(2)}</b></td></tr>`;
+      `<tr class="dt-weighted-row"><td><b>Weighted scenario</b></td><td>${(tree.probSum * 100).toFixed(0)}%</td><td>${tree.branchDilution ? "88–110" : tree.baseShares.toFixed(0) + "M"}</td><td><b>$${tree.weightedEv.toFixed(0)}M</b></td><td><b>$${tree.weightedPerSh.toFixed(2)}</b></td></tr>`;
   }
 
   return tree;
@@ -275,7 +285,9 @@ function renderPilotPanels() {
     pRejectPct: state.restart.dtReject,
     pCommFastPct: state.restart.dtCommFast,
     pCommBasePct: state.restart.dtCommBase,
-    pCommSlowPct: state.restart.dtCommSlow
+    pCommSlowPct: state.restart.dtCommSlow,
+    branchDilution: state.restart.dtBranchDilution !== false,
+    linkFdaToTopline: !!state.restart.dtLinkFdaToTopline
   });
   host.innerHTML +=
     `<div class="pilot-card card decision-tree-card"><h2>Regulatory decision tree <span class="tag m">summary</span></h2>` +
@@ -747,10 +759,13 @@ function updateValUI() {
   if (tbody) {
     tbody.innerHTML =
       m.rows
-        .map(
-          (row) =>
-            `<tr><td>${row.label}</td><td>$${row.peak.toFixed(0)}M</td><td>${(row.pSuccess * 100).toFixed(0)}%</td><td>$${row.evContrib.toFixed(0)}M</td></tr>`
-        )
+        .map((row) => {
+          const peakLabel =
+            row.id === "skin"
+              ? `$${row.peak.toFixed(0)}M <small>(procedure peak)</small>`
+              : `$${row.peak.toFixed(0)}M`;
+          return `<tr><td>${row.label}</td><td>${peakLabel}</td><td>${(row.pSuccess * 100).toFixed(0)}%</td><td>$${row.evContrib.toFixed(0)}M</td></tr>`;
+        })
         .join("") +
       (m.platformImmune > 0
         ? `<tr><td>Platform (base)</td><td>—</td><td>—</td><td>$${m.platformBase.toFixed(0)}M</td></tr>` +

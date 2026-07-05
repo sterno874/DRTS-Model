@@ -145,6 +145,29 @@ test("non-skin link pulls GBM P(s) toward skin", () => {
   assert.ok(Math.abs(gbm.pSuccess - 0.8) < 0.01);
 });
 
+test("mechanism correlation blends non-skin P(s) without link toggle", () => {
+  const v = computeFullValuation({
+    ...DEFAULT_STATE.val,
+    v_mechanismCorr: 0.5,
+    v_skinPs: 0.6,
+    v_gbmPs: 0.2
+  });
+  const gbm = v.rows.find((r) => r.id === "gbm");
+  assert.ok(gbm.pSuccess > 0.2 && gbm.pSuccess < 0.6);
+});
+
+test("delivery risk reduces non-skin P(s)", () => {
+  const base = computeFullValuation({ ...DEFAULT_STATE.val, v_gbmPs: 0.4 });
+  const risk = computeFullValuation({
+    ...DEFAULT_STATE.val,
+    v_gbmPs: 0.4,
+    v_deliveryRisk: 0.5
+  });
+  const gbmBase = base.rows.find((r) => r.id === "gbm");
+  const gbmRisk = risk.rows.find((r) => r.id === "gbm");
+  assert.ok(gbmRisk.pSuccess < gbmBase.pSuccess);
+});
+
 test("immune preset adds platformImmune bucket", () => {
   const { label: _lb, ...immune } = VAL_PRESETS.immune;
   const v = computeFullValuation({ ...DEFAULT_STATE.val, ...immune });

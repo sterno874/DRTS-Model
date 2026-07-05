@@ -5,7 +5,12 @@ import {
   normalizeBranchWeights,
   valuationForLeaf,
   FDA_SOURCES,
-  COMMERCIAL_PEN_MULT
+  COMMERCIAL_PEN_MULT,
+  branchSharesM,
+  applyCorrelatedBranchPriors,
+  BRANCH_SHARES_BASE_M,
+  BRANCH_SHARES_FAIL_M,
+  BRANCH_SHARES_REJECT_M
 } from "../js/math/decision-tree.js";
 import { DEFAULT_STATE } from "../js/ui/state.js";
 import { mcRestartORR } from "../js/math/restart.js";
@@ -24,6 +29,23 @@ test("normalizeBranchWeights sums to 1", () => {
   assert.ok(Math.abs(w.p0 - 0.65) < 1e-9);
 });
 
+test("branchSharesM maps fail/reject/accept paths", () => {
+  assert.equal(branchSharesM("topline_fail"), BRANCH_SHARES_FAIL_M);
+  assert.equal(branchSharesM("fda_reject"), BRANCH_SHARES_REJECT_M);
+  assert.equal(branchSharesM("defer_slow"), BRANCH_SHARES_FAIL_M);
+  assert.equal(branchSharesM("accept_fast"), BRANCH_SHARES_BASE_M);
+});
+
+test("correlated priors raise accept when topline pass is high", () => {
+  const fda = normalizeBranchWeights(65, 25, 10);
+  const comm = normalizeBranchWeights(25, 50, 25);
+  const low = applyCorrelatedBranchPriors(0.2, fda, comm, true);
+  const high = applyCorrelatedBranchPriors(0.95, fda, comm, true);
+  assert.ok(high.fda.p0 > low.fda.p0);
+  assert.ok(high.fda.p2 < low.fda.p2);
+  assert.ok(high.comm.p0 >= low.comm.p0);
+});
+
 test("FDA_SOURCES includes modular PMA and single-arm guidance", () => {
   assert.ok(FDA_SOURCES.some((s) => s.id === "modular_pma"));
   assert.ok(FDA_SOURCES.some((s) => s.id === "single_arm_bias"));
@@ -36,6 +58,19 @@ test("decision tree path probabilities sum to ~1", () => {
   });
   assert.ok(Math.abs(tree.probSum - 1) < 0.02);
   assert.ok(tree.paths.length >= 8);
+});
+
+test("branch dilution lowers fail path $/sh vs accept fast at same EV order", () => {
+  const tree = computeDecisionTree({
+    toplinePassRate: 0.95,
+    val: DEFAULT_STATE.val,
+    branchDilution: true
+  });
+  const fail = tree.paths.find((p) => p.id === "topline_fail");
+  const acceptFast = tree.paths.find((p) => p.id === "accept_fast");
+  assert.ok(fail && acceptFast);
+  assert.ok(fail.sharesM > acceptFast.sharesM);
+  assert.ok(acceptFast.perSh > fail.perSh || acceptFast.ev > fail.ev);
 });
 
 test("topline fail path has lower $/sh than accept fast path", () => {
@@ -73,7 +108,8 @@ test("weighted tree EV equals sum P(path) x EV(path)", () => {
 test("weighted tree $/sh equals probability-weighted path $/sh", () => {
   const tree = computeDecisionTree({
     toplinePassRate: 0.9,
-    val: DEFAULT_STATE.val
+    val: DEFAULT_STATE.val,
+    branchDilution: true
   });
   const manualPsh = tree.paths.reduce((s, p) => s + p.prob * p.perSh, 0);
   assert.ok(Math.abs(tree.weightedPerSh - manualPsh) < 0.05);

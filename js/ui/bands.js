@@ -355,7 +355,23 @@ export const VAL_BANDS = [
     max: 30,
     sig: { b1: [0, 12], b2: [0, 20], b3: [0, 30] },
     imp: [25, 30],
-    why: "Non-skin EV correlation haircut — skin approval does not fully transfer to GBM/panc/Japan."
+    why: "Non-skin EV correlation haircut — supplements mechanism + delivery dials."
+  },
+  {
+    id: "vv_mechanismCorr",
+    min: 0,
+    max: 1,
+    sig: { b1: [0.1, 0.5], b2: [0, 0.75], b3: [0, 1] },
+    anchor: 0,
+    why: "Mechanism biology transfer toward skin P(s) on non-skin rows."
+  },
+  {
+    id: "vv_deliveryRisk",
+    min: 0,
+    max: 1,
+    sig: { b1: [0.1, 0.45], b2: [0, 0.65], b3: [0, 1] },
+    anchor: 0,
+    why: "Delivery / seed-placement site risk on non-skin P(s)."
   },
   {
     id: "vv_nonSkinSkinLink",
