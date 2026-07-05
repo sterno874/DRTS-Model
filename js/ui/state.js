@@ -33,6 +33,7 @@ export const DEFAULT_STATE = {
   tab: "restart",
   activeRestartPreset: "base",
   activeValPreset: "base",
+  activeDtPreset: "base",
   embed: false,
   restart: {
     n: 88,
@@ -185,6 +186,36 @@ export const SHARE_PRESETS = {
     dorMonths: 4,
     pSuccess: 20,
     label: "Stress — at ORR threshold"
+  },
+  /** PD-1 benchmark ORR anchor (cemiplimab 47% mCSCC) + conservative DOR gate. */
+  anchor: {
+    orrPct: 47,
+    benchOrrPct: 30,
+    dorMonths: 6,
+    dorDurablePct: 75,
+    dorMinFracPct: 55,
+    pSuccess: 55,
+    label: "Observed / anchor — PD-1 benchmark ORR"
+  },
+  /** Optimistic commercial read vs benchmark — not a forecast. */
+  commercial: {
+    orrPct: 68,
+    benchOrrPct: 28,
+    dorMonths: 8,
+    dorDurablePct: 88,
+    dorMinFracPct: 45,
+    pSuccess: 85,
+    label: "Commercial bull — optimistic ORR/DOR"
+  },
+  /** Skeptic / miss topline stress — below historical bench. */
+  critique: {
+    orrPct: 32,
+    benchOrrPct: 32,
+    dorMonths: 4,
+    dorDurablePct: 60,
+    dorMinFracPct: 60,
+    pSuccess: 12,
+    label: "Critique / bear — miss topline stress"
   }
 };
 
@@ -249,6 +280,86 @@ export const VAL_PRESETS = {
     v_platform: 3,
     v_platformImmune: 2,
     label: "🔬 Immune upside (JRPR emerging)"
+  },
+  /** Pre-PMA: low approval P(s), F-3/ATM dilution stress at 110M shares. */
+  prePma: {
+    v_skinPs: 0.25,
+    v_skinPen: 0.1,
+    v_gbmPs: 0.1,
+    v_pancPs: 0.06,
+    v_prostatePs: 0.08,
+    v_japanPs: 0.2,
+    v_mult: 3,
+    v_platform: 0,
+    v_platformImmune: 0,
+    v_shares: 110,
+    v_approvalHaircut: 0.55,
+    label: "Pre-PMA — low P(s) · 110M dilution"
+  },
+  /** Modular PMA base — linked skin P(s) + tree-aligned defaults. */
+  modularBase: {
+    v_skinPen: 0.15,
+    v_skinPs: 0.55,
+    v_gbmPs: 0.25,
+    v_pancPs: 0.15,
+    v_prostatePen: 0.06,
+    v_prostatePs: 0.2,
+    v_japanPen: 0.08,
+    v_japanPs: 0.5,
+    v_mult: 4,
+    v_platform: 3,
+    v_platformImmune: 0,
+    v_linkSkinPs: true,
+    v_approvalHaircut: 0.75,
+    label: "Modular PMA base — linked MC + tree"
+  },
+  /** 🔬 Platform optionality — immune bucket + mechanism correlation dial. */
+  platformOptionality: {
+    v_skinPen: 0.18,
+    v_skinPs: 0.6,
+    v_gbmPs: 0.3,
+    v_pancPs: 0.18,
+    v_prostatePen: 0.07,
+    v_prostatePs: 0.25,
+    v_japanPen: 0.1,
+    v_japanPs: 0.55,
+    v_mult: 5,
+    v_platform: 5,
+    v_platformImmune: 2,
+    v_mechanismCorr: 0.35,
+    v_platformCorrHaircut: 10,
+    label: "🔬 Platform optionality — immune + correlation"
+  }
+};
+
+/** Decision-tree quick presets — FDA + commercial branch weights (%). */
+export const DT_PRESETS = {
+  skeptical: {
+    dtAcceptModular: 35,
+    dtDeferData: 40,
+    dtReject: 25,
+    dtCommFast: 15,
+    dtCommBase: 45,
+    dtCommSlow: 40,
+    label: "Skeptical FDA — high reject/defer"
+  },
+  base: {
+    dtAcceptModular: 65,
+    dtDeferData: 25,
+    dtReject: 10,
+    dtCommFast: 25,
+    dtCommBase: 50,
+    dtCommSlow: 25,
+    label: "Base case — current defaults"
+  },
+  optimistic: {
+    dtAcceptModular: 80,
+    dtDeferData: 15,
+    dtReject: 5,
+    dtCommFast: 45,
+    dtCommBase: 40,
+    dtCommSlow: 15,
+    label: "Optimistic path — fast accept + ramp"
   }
 };
 
@@ -326,6 +437,9 @@ export function buildShareHash(state) {
   if (state.activeValPreset && state.activeValPreset !== DEFAULT_STATE.activeValPreset) {
     payload.vp = state.activeValPreset;
   }
+  if (state.activeDtPreset && state.activeDtPreset !== DEFAULT_STATE.activeDtPreset) {
+    payload.dp = state.activeDtPreset;
+  }
   if (state.ui.explainLvl !== "eli5") payload.ui = { explainLvl: state.ui.explainLvl };
   if (!Object.keys(payload.r).length) delete payload.r;
   if (!Object.keys(payload.val).length) delete payload.val;
@@ -348,6 +462,7 @@ export function decodeShareHash(hash) {
     if (p.tab) s.tab = p.tab;
     if (p.rp) s.activeRestartPreset = p.rp;
     if (p.vp) s.activeValPreset = p.vp;
+    if (p.dp) s.activeDtPreset = p.dp;
     if (p.r) Object.assign(s.restart, p.r);
     if (p.val) {
       Object.assign(s.val, p.val);
@@ -402,6 +517,25 @@ export function paramsFromValPreset(name) {
   if (!q) return null;
   const { label, ...rest } = q;
   return { ...DEFAULT_STATE.val, ...rest };
+}
+
+/** Decision-tree branch weights for a named quick preset. */
+export function paramsFromDtPreset(name) {
+  const q = DT_PRESETS[name];
+  if (!q) return null;
+  const { label, ...rest } = q;
+  return rest;
+}
+
+/** Whether current decision-tree sliders match a named preset. */
+export function dtPresetMatches(name, restart) {
+  const p = paramsFromDtPreset(name);
+  if (!p) return false;
+  const r = restart ?? DEFAULT_STATE.restart;
+  for (const [k, expected] of Object.entries(p)) {
+    if (Math.abs((r[k] ?? 0) - expected) > 0.011) return false;
+  }
+  return true;
 }
 
 /** Whether current ReSTART sliders still match a named preset (ORR-focused keys). */

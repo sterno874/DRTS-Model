@@ -38,13 +38,17 @@ import {
   computeHeaderStrip,
   resolveLinkedSkinPs,
   resolveTrialPs,
+  valuationInputsForState,
   paramsFromPreset,
   paramsFromValPreset,
   restartPresetMatches,
   valPresetMatches,
   inferActivePresets,
   formatShareDilutionSubtitle,
-  REF_SHARES_M
+  REF_SHARES_M,
+  DT_PRESETS,
+  paramsFromDtPreset,
+  dtPresetMatches
 } from "./ui/state.js";
 import { buildBands, renderBands } from "./ui/bands.js";
 import { initAlphaSims } from "./ui/alpha-sims.js";
@@ -305,6 +309,7 @@ function highlightPresets(selector, attr, activeId) {
 function refreshPresetHighlights() {
   highlightPresets("button[data-preset]", "preset", state.activeRestartPreset);
   highlightPresets("button[data-val-preset]", "valPreset", state.activeValPreset);
+  highlightPresets("button[data-dt-preset]", "dtPreset", state.activeDtPreset);
 }
 
 /** Clear sticky preset highlight once sliders diverge from the named scenario. */
@@ -314,6 +319,9 @@ function syncPresetMarkers() {
   }
   if (state.activeValPreset && !valPresetMatches(state.activeValPreset, state.val)) {
     state.activeValPreset = null;
+  }
+  if (state.activeDtPreset && !dtPresetMatches(state.activeDtPreset, state.restart)) {
+    state.activeDtPreset = null;
   }
   refreshPresetHighlights();
 }
@@ -864,6 +872,16 @@ function applyValPreset(name) {
   updateNow(true, true);
 }
 
+function applyDtPreset(name) {
+  const p = paramsFromDtPreset(name);
+  if (!p) return;
+  Object.assign(state.restart, p);
+  state.activeDtPreset = name;
+  writeSliders("r", state.restart);
+  refreshPresetHighlights();
+  updateNow(true, true);
+}
+
 const TAB_SHORT_LABELS = {
   restart: "ReSTART",
   pipeline: "Pipeline",
@@ -1073,6 +1091,7 @@ function init() {
   document.querySelectorAll(".lvlb").forEach((b) => (b.onclick = () => showLevel(b.dataset.lvl)));
   document.querySelectorAll("[data-preset]").forEach((b) => (b.onclick = () => applyRestartPreset(b.dataset.preset)));
   document.querySelectorAll("[data-val-preset]").forEach((b) => (b.onclick = () => applyValPreset(b.dataset.valPreset)));
+  document.querySelectorAll("[data-dt-preset]").forEach((b) => (b.onclick = () => applyDtPreset(b.dataset.dtPreset)));
   document.querySelectorAll("[data-dilution-stress]").forEach((b) => {
     b.onclick = () => applyDilutionStress(Number(b.dataset.dilutionStress));
   });

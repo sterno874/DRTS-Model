@@ -17,6 +17,7 @@ const files = [
   "bands.test.js",
   "alpha-sims.test.js",
   "dom-smoke.test.js",
+  "init-smoke.test.js",
   "market-quote.test.js",
   "decision-tree.test.js"
 ].map((f) => path.join(dir, f));

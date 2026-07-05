@@ -195,6 +195,25 @@ test("five restart presets including stress", () => {
   const presets = matchAll(/data-preset="([^"]+)"/g, html).map((m) => m[1]);
   assert.ok(presets.includes("stress"));
   assert.ok(presets.includes("best"));
+  assert.ok(presets.includes("anchor"));
+  assert.ok(presets.includes("commercial"));
+  assert.ok(presets.includes("critique"));
+});
+
+test("valuation and decision-tree preset buttons present", () => {
+  const valPresets = matchAll(/data-val-preset="([^"]+)"/g, html).map((m) => m[1]);
+  assert.ok(valPresets.includes("prePma"));
+  assert.ok(valPresets.includes("modularBase"));
+  assert.ok(valPresets.includes("platformOptionality"));
+  const dtPresets = matchAll(/data-dt-preset="([^"]+)"/g, html).map((m) => m[1]);
+  assert.deepEqual(dtPresets.sort(), ["base", "optimistic", "skeptical"]);
+});
+
+test("main.js wires decision-tree presets and valuationInputsForState", () => {
+  assert.match(js, /valuationInputsForState/);
+  assert.match(js, /data-dt-preset/);
+  assert.match(js, /applyDtPreset/);
+  assert.match(js, /refreshPresetHighlights/);
 });
 
 test("valuation has community DD and bear case tables", () => {
