@@ -147,28 +147,34 @@
       <input type="hidden" id="rmcSims" value="1500"/>
       <input type="hidden" id="rreadoutYear" value="2026"/>
     </div>
+  </div>
+  <div class="decision-tree-section page-inner">
     <div class="card decision-tree-card">
       <h2>Regulatory decision tree <span class="tag m">FDA + commercial</span></h2>
       <p class="field-note">MC feeds <b>topline pass rate</b> only (ORR+DOR co-primary). FDA/PMA branches and commercial ramp are separate sliders — not derived from MC. Per-path share stress (88M approve · 100M fail/defer · 110M reject) applies when branch dilution is on. Output: EV + equity $/sh by path + weighted scenario.</p>
-      <label class="inline-check"><input type="checkbox" id="rdtBranchDilution" checked/> Auto branch dilution (F-3/ATM share stress by path)</label>
-      <label class="inline-check lab-mode-check"><input type="checkbox" id="rdtLinkFdaToTopline"/> 🔬 Link FDA to topline strength</label>
-      <div class="presets presets-compact">
+      <div class="decision-tree-options">
+        <label class="inline-check"><input type="checkbox" id="rdtBranchDilution" checked/> Auto branch dilution (F-3/ATM share stress by path)</label>
+        <label class="inline-check lab-mode-check"><input type="checkbox" id="rdtLinkFdaToTopline"/> 🔬 Link FDA to topline strength</label>
+      </div>
+      <div class="presets decision-tree-presets">
         <button type="button" class="p p-def" data-dt-preset="base">Base case<span class="p-sub">Current FDA + ramp defaults</span></button>
         <button type="button" class="p" data-dt-preset="skeptical">Skeptical FDA<span class="p-sub">High reject/defer</span></button>
         <button type="button" class="p" data-dt-preset="optimistic">Optimistic path<span class="p-sub">Fast accept + ramp</span></button>
       </div>
-      <div class="ctrl"><label>P(accept modular PMA) % <span id="rdtAcceptModularVal">65</span></label><input type="range" id="rdtAcceptModular" min="5" max="90" step="1" value="65"/><div class="bands" id="band-rdtAcceptModular"></div><small class="source-line"><span class="tag f">Verified</span> Modular PMA path — <a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">FDA modular PMA</a> · module 1 submitted Jan 2026</small></div>
-      <div class="ctrl"><label>P(defer · more data) % <span id="rdtDeferDataVal">25</span></label><input type="range" id="rdtDeferData" min="0" max="60" step="1" value="25"/><div class="bands" id="band-rdtDeferData"></div><small class="source-line"><span class="tag u">Assumption</span> Clock-stop / additional module requests — not FDA clock.</small></div>
-      <div class="ctrl"><label>P(reject) % <span id="rdtRejectVal">10</span></label><input type="range" id="rdtReject" min="0" max="40" step="1" value="10"/><div class="bands" id="band-rdtReject"></div><small class="source-line"><span class="tag f">Verified</span> Single-arm historical-control bias — <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices" target="_blank" rel="noopener">FDA pivotal device design guidance</a></small></div>
-      <div class="ctrl"><label>Commercial · fast ramp % <span id="rdtCommFastVal">25</span></label><input type="range" id="rdtCommFast" min="5" max="60" step="1" value="25"/><div class="bands" id="band-rdtCommFast"></div><small class="source-line"><span class="tag a">Assumption</span> Fast = 1.4× base pen · base = slider · slow = 0.6×</small></div>
-      <div class="ctrl"><label>Commercial · base ramp % <span id="rdtCommBaseVal">50</span></label><input type="range" id="rdtCommBase" min="10" max="70" step="1" value="50"/><div class="bands" id="band-rdtCommBase"></div><small class="source-line"><span class="tag m">Model</span> Base ramp branch — 1.0× valuation pen slider.</small></div>
-      <div class="ctrl"><label>Commercial · slow ramp % <span id="rdtCommSlowVal">25</span></label><input type="range" id="rdtCommSlow" min="5" max="60" step="1" value="25"/><div class="bands" id="band-rdtCommSlow"></div><small class="source-line"><span class="tag a">Assumption</span> Slow = 0.6× base pen in tree leaves.</small></div>
+      <div class="decision-tree-sliders">
+        <div class="ctrl"><label>P(accept modular PMA) % <span id="rdtAcceptModularVal">65</span></label><input type="range" id="rdtAcceptModular" min="5" max="90" step="1" value="65"/><div class="bands" id="band-rdtAcceptModular"></div><small class="source-line"><span class="tag f">Verified</span> Modular PMA path — <a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">FDA modular PMA</a> · module 1 submitted Jan 2026</small></div>
+        <div class="ctrl"><label>P(defer · more data) % <span id="rdtDeferDataVal">25</span></label><input type="range" id="rdtDeferData" min="0" max="60" step="1" value="25"/><div class="bands" id="band-rdtDeferData"></div><small class="source-line"><span class="tag u">Assumption</span> Clock-stop / additional module requests — not FDA clock.</small></div>
+        <div class="ctrl"><label>P(reject) % <span id="rdtRejectVal">10</span></label><input type="range" id="rdtReject" min="0" max="40" step="1" value="10"/><div class="bands" id="band-rdtReject"></div><small class="source-line"><span class="tag f">Verified</span> Single-arm historical-control bias — <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices" target="_blank" rel="noopener">FDA pivotal device design guidance</a></small></div>
+        <div class="ctrl"><label>Commercial · fast ramp % <span id="rdtCommFastVal">25</span></label><input type="range" id="rdtCommFast" min="5" max="60" step="1" value="25"/><div class="bands" id="band-rdtCommFast"></div><small class="source-line"><span class="tag a">Assumption</span> Fast = 1.4× base pen · base = slider · slow = 0.6×</small></div>
+        <div class="ctrl"><label>Commercial · base ramp % <span id="rdtCommBaseVal">50</span></label><input type="range" id="rdtCommBase" min="10" max="70" step="1" value="50"/><div class="bands" id="band-rdtCommBase"></div><small class="source-line"><span class="tag m">Model</span> Base ramp branch — 1.0× valuation pen slider.</small></div>
+        <div class="ctrl"><label>Commercial · slow ramp % <span id="rdtCommSlowVal">25</span></label><input type="range" id="rdtCommSlow" min="5" max="60" step="1" value="25"/><div class="bands" id="band-rdtCommSlow"></div><small class="source-line"><span class="tag a">Assumption</span> Slow = 0.6× base pen in tree leaves.</small></div>
+      </div>
       <div class="outgrid decision-tree-out">
         <div><div class="ok">MC topline pass (input)</div><div class="ov" id="dtToplinePass">—</div></div>
         <div><div class="ok">Weighted tree EV</div><div class="ov" id="dtWeightedEv">—</div></div>
         <div><div class="ok">Weighted equity $/sh</div><div class="ov" id="dtWeightedPsh">—</div></div>
       </div>
-      <div class="table-wrap"><table class="valtbl"><thead><tr><th>Path</th><th>P</th><th>Shares (M)</th><th>EV $M</th><th>Equity $/sh</th></tr></thead><tbody id="dtPathsBody"></tbody></table></div>
+      <div class="table-wrap decision-tree-path-table"><table class="valtbl"><thead><tr><th>Path</th><th>P</th><th>Shares (M)</th><th>EV $M</th><th>Equity $/sh</th></tr></thead><tbody id="dtPathsBody"></tbody></table></div>
     </div>
   </div>
   <div class="regal-limitations page-inner">
