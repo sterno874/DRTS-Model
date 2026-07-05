@@ -122,3 +122,32 @@ test("golden commercial bull numbers", () => {
 test("COMPARABLES includes Tolmar deal", () => {
   assert.ok(COMPARABLES.some((c) => c.name.includes("Tolmar")));
 });
+
+test("platform correlation haircut reduces non-skin EV", () => {
+  const base = computeFullValuation(DEFAULT_STATE.val);
+  const hair = computeFullValuation({ ...DEFAULT_STATE.val, v_platformCorrHaircut: 20 });
+  assert.ok(hair.ev < base.ev);
+  const skinBase = base.rows.find((r) => r.id === "skin");
+  const skinHair = hair.rows.find((r) => r.id === "skin");
+  assert.ok(Math.abs(skinBase.evContrib - skinHair.evContrib) < 0.01);
+});
+
+test("non-skin link pulls GBM P(s) toward skin", () => {
+  const s = {
+    ...DEFAULT_STATE.val,
+    v_linkNonSkinPs: true,
+    v_nonSkinSkinLink: 1,
+    v_skinPs: 0.8,
+    v_gbmPs: 0.25
+  };
+  const v = computeFullValuation(s);
+  const gbm = v.rows.find((r) => r.id === "gbm");
+  assert.ok(Math.abs(gbm.pSuccess - 0.8) < 0.01);
+});
+
+test("immune preset adds platformImmune bucket", () => {
+  const { label: _lb, ...immune } = VAL_PRESETS.immune;
+  const v = computeFullValuation({ ...DEFAULT_STATE.val, ...immune });
+  assert.equal(v.platformImmune, 2);
+  assert.ok(v.ev > computeFullValuation(DEFAULT_STATE.val).ev);
+});

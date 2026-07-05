@@ -144,6 +144,22 @@
       <input type="hidden" id="rmcSims" value="1500"/>
       <input type="hidden" id="rreadoutYear" value="2026"/>
     </div>
+    <div class="card decision-tree-card">
+      <h2>Regulatory decision tree <span class="tag m">FDA + commercial</span></h2>
+      <p class="field-note">MC feeds <b>topline pass rate</b> only (ORR+DOR co-primary). FDA/PMA branches and commercial ramp are separate sliders — not derived from MC. Output: $/sh by path + weighted scenario EV.</p>
+      <div class="ctrl"><label>P(accept modular PMA) % <span id="rdtAcceptModularVal">65</span></label><input type="range" id="rdtAcceptModular" min="5" max="90" step="1" value="65"/><small class="source-line"><span class="tag f">Verified</span> Modular PMA path — <a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">FDA modular PMA</a> · module 1 submitted Jan 2026</small></div>
+      <div class="ctrl"><label>P(defer · more data) % <span id="rdtDeferDataVal">25</span></label><input type="range" id="rdtDeferData" min="0" max="60" step="1" value="25"/><small class="source-line"><span class="tag u">Assumption</span> Clock-stop / additional module requests — not FDA clock.</small></div>
+      <div class="ctrl"><label>P(reject) % <span id="rdtRejectVal">10</span></label><input type="range" id="rdtReject" min="0" max="40" step="1" value="10"/><small class="source-line"><span class="tag f">Verified</span> Single-arm historical-control bias — <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices" target="_blank" rel="noopener">FDA pivotal device design guidance</a></small></div>
+      <div class="ctrl"><label>Commercial · fast ramp % <span id="rdtCommFastVal">25</span></label><input type="range" id="rdtCommFast" min="5" max="60" step="1" value="25"/><small class="source-line"><span class="tag a">Assumption</span> Fast = 1.4× base pen · base = slider · slow = 0.6×</small></div>
+      <div class="ctrl"><label>Commercial · base ramp % <span id="rdtCommBaseVal">50</span></label><input type="range" id="rdtCommBase" min="10" max="70" step="1" value="50"/></div>
+      <div class="ctrl"><label>Commercial · slow ramp % <span id="rdtCommSlowVal">25</span></label><input type="range" id="rdtCommSlow" min="5" max="60" step="1" value="25"/></div>
+      <div class="outgrid decision-tree-out">
+        <div><div class="ok">MC topline pass (input)</div><div class="ov" id="dtToplinePass">—</div></div>
+        <div><div class="ok">Weighted tree EV</div><div class="ov" id="dtWeightedEv">—</div></div>
+        <div><div class="ok">Weighted equity $/sh</div><div class="ov" id="dtWeightedPsh">—</div></div>
+      </div>
+      <div class="table-wrap"><table class="valtbl"><thead><tr><th>Path</th><th>P</th><th>EV $M</th><th>Equity $/sh</th></tr></thead><tbody id="dtPathsBody"></tbody></table></div>
+    </div>
   </div>
   <div class="regal-limitations page-inner">
     <b>Limitations:</b> Single-arm ORR inference vs historical p₀ — not a randomized HR. Deterministic DOR is pass/fail sensitivity; MC uses per-responder durability prior (not KM). MC trial P(success | assumptions) is educational co-primary success under model gates — not PMA approval certainty. PMA timeline + clock-stop band is heuristic. Does not model FDA advisory panel or Cemiplimab SoC erosion.
@@ -231,6 +247,9 @@
     <b>Valuation model.</b> Per-indication peak ($M/yr) = patients/yr × pen × years × price ($K) ÷ 1,000. EV contribution = peak × mult × P(s). Indications: skin, GBM, pancreas, prostate (60% Tolmar supply share), Japan H&amp;N (Shonin). Risk-adj equity $/sh = (EV + cash − debt stub) / ordinary shares (M) — default ~88.0M per F-3/20-F; header $/sh uses <code>v_shares</code>. Header “vs-ref” compares model equity (EV+cash) to shares × illustrative ref price (assumption, not live). Linked skin P(s) = ReSTART trial co-primary × PMA approval haircut (default 75%) — MC alone is educational trial-gate success, not approval certainty. Dilution stress presets (100M / 110M) stress-test F-3/ATM capacity. Commercial bull (ops) caps platform optionality at $8M (not $B). Runway = cash ÷ quarterly <em>cash burn</em> (CFO interview, not audited CFS). Not a DCF — educational sum-of-parts only.
   </div>
   <div class="facts page-inner">
+    <div class="corr-banner" id="valCorrBanner" role="note">
+      <b>Platform correlation:</b> Skin approval ≠ full de-risk of GBM, pancreas, or prostate. Each indication keeps separate biology, endpoints, and registrational paths — use the correlation controls below.
+    </div>
     <h2>Q1 2026 P&amp;L vs cash burn <span class="tag f">as of May 2026</span></h2>
     <div class="factgrid">
       <div class="fact" data-as-of="2026-05-18"><b>Net loss</b> $22.9M ($0.26/sh)<br/><span class="cite"><a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a></span> · <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K Ex. 99.1</a></div>
@@ -251,11 +270,26 @@
         <button type="button" class="p p-def" data-val-preset="base">Base</button>
         <button type="button" class="p" data-val-preset="bull">Commercial bull (ops)<span class="p-sub">Higher pen + P(s); platform ≤$8M</span></button>
         <button type="button" class="p" data-val-preset="bear">Bear</button>
+        <button type="button" class="p" data-val-preset="immune">🔬 Immune upside<span class="p-sub">JRPR emerging only · +$2M bucket</span></button>
       </div>
       <label class="inline-check"><input type="checkbox" id="v_riskadj" checked/> Risk-adjust by P(success)</label>
       <label class="inline-check"><input type="checkbox" id="v_linkSkinPs" checked/> Link skin P(s) to ReSTART trial × PMA haircut</label>
+      <label class="inline-check"><input type="checkbox" id="v_linkNonSkinPs"/> Link non-skin P(s) partially to skin outcome</label>
+      <label class="inline-check lab-mode-check"><input type="checkbox" id="v_inverseMode"/> 🔬 Inverse mode (implied pen / P(s) from mkt cap)</label>
       <p id="skinPsLinkNote" class="field-note skin-ps-link-note"></p>
       <p class="field-note"><span class="tag m">Model</span> Single-arm ORR+DOR gates are educational; PMA is not ~96% certain when MC trial P(success) is high — historical-control and FDA review risk remain. Linked path: trial P(success | assumptions) × PMA approval haircut → model approval P(s) used in EV.</p>
+      <div class="ctrl-group"><h3>Platform correlation</h3>
+        <div class="ctrl"><label>Non-skin EV haircut % <span id="vv_platformCorrHaircutVal">0</span></label><input type="range" id="vv_platformCorrHaircut" min="0" max="30" step="1" value="0"/><small class="source-line"><span class="tag a">Assumption</span> 0–30% reduction on GBM/panc/prostate/Japan EV rows — skin approval does not fully transfer.</small></div>
+        <div class="ctrl"><label>Non-skin ← skin link strength <span id="vv_nonSkinSkinLinkVal">0.50</span></label><input type="range" id="vv_nonSkinSkinLink" min="0" max="1" step="0.05" value="0.50"/><small class="source-line"><span class="tag m">Model</span> When link toggle is on: each non-skin P(s) = (1−λ)×slider + λ×skin P(s). Independent biology still dominates at low λ.</small></div>
+      </div>
+      <div class="ctrl-group inverse-panel" id="inversePanel" hidden><h3>🔬 Inverse mode</h3>
+        <p class="field-note" id="inverseNote">Uses live quote mkt cap when available; else shares × illustrative ref price. Backs out implied skin penetration or P(commercial) holding other sliders fixed — identifiability check, not a price target.</p>
+        <div class="outgrid">
+          <div><div class="ok">Target equity (mkt cap)</div><div class="ov" id="invTargetCap" style="font-size:14px">—</div></div>
+          <div><div class="ok">Implied skin pen</div><div class="ov" id="invImpliedPen" style="font-size:14px">—</div></div>
+          <div><div class="ok">Implied skin P(commercial)</div><div class="ov" id="invImpliedPs" style="font-size:14px">—</div></div>
+        </div>
+      </div>
       <div class="ctrl-group"><h3>Skin cSCC (ReSTART)</h3>
         <div class="ctrl"><label>Eligible patients/yr <span id="vv_skinPtsVal">12000</span></label><input type="range" id="vv_skinPts" min="2000" max="25000" step="500" value="12000"/><div class="bands" id="band-vv_skinPts"></div><small class="source-line"><span class="tag a">Estimate</span> US recurrent/locally advanced cSCC addressable (~12K/yr default). <a href="https://seer.cancer.gov/statfacts/html/skin.html" target="_blank" rel="noopener">SEER skin cancer</a></small></div>
         <div class="ctrl"><label>Penetration <span id="vv_skinPenVal">0.15</span></label><input type="range" id="vv_skinPen" min="0.02" max="0.4" step="0.01" value="0.15"/><div class="bands" id="band-vv_skinPen"></div><small class="source-line"><span class="tag a">Assumption</span> Intratumoral device share vs PD-1 SoC (cemiplimab/pembrolizumab).</small></div>
@@ -303,6 +337,7 @@
       <div class="ctrl"><label>Quarterly cash burn ($M) <span id="vv_burnQuarterlyVal">6.5</span></label><input type="range" id="vv_burnQuarterly" min="4" max="20" step="0.1" value="6.5"/><div class="bands" id="band-vv_burnQuarterly"></div><small class="source-line"><span class="tag c">company-reported interview, not audited CFS</span> ◆ Default $6.5M/qtr — CFO interview cash burn ~$5–6M+/qtr (~$25M/yr), ramping with trials. <a href="https://youtu.be/Jyryv-152hc" target="_blank" rel="noopener">CFO interview</a>. GAAP op loss Q1 $13.3M and net loss $22.9M (incl. $9.6M non-cash warrants) are <em>not</em> cash burn — <a href="https://www.alphatau.com/single-post/alpha-tau-announces-first-quarter-2026-financial-results-and-provides-corporate-update" target="_blank" rel="noopener">Q1 2026 PR</a> · <a href="https://www.sec.gov/Archives/edgar/data/1871321/000121390026058424/ea029058401ex99-1.htm" target="_blank" rel="noopener">SEC 6-K Ex. 99.1</a>.</small></div>
       <div class="ctrl"><label>EV multiple <span id="vv_multVal">4</span></label><input type="range" id="vv_mult" min="2" max="8" step="0.5" value="4"/><div class="bands" id="band-vv_mult"></div><small class="source-line"><span class="tag a">Convention</span> Device/oncology M&amp;A ~3–6× peak sales (see comparables table).</small></div>
       <div class="ctrl"><label>Platform optionality ($M, not $B) <span id="vv_platformVal">3</span></label><input type="range" id="vv_platform" min="0" max="20" step="0.5" value="3"/><div class="bands" id="band-vv_platform"></div><small class="source-line"><span class="tag a">Assumption</span> Residual platform optionality in <b>$M</b> (not $B — do not confuse with SLS-scale platform). Commercial bull (ops) defaults to $8M max so platform does not dominate ops. Japan H&amp;N is a separate contribution line above. <a href="https://www.alphatau.com/alpha-dart-radiotherapy" target="_blank" rel="noopener">Technology page</a></small></div>
+      <div class="ctrl"><label>🔬 Immune / abscopal upside ($M) <span id="vv_platformImmuneVal">0</span></label><input type="range" id="vv_platformImmune" min="0" max="5" step="0.5" value="0"/><div class="bands" id="band-vv_platformImmune"></div><small class="source-line"><span class="tag u">Emerging</span> Separate bucket — JRPR 2024 cites abscopal / immuno-combo as <em>theoretical</em>, not pivotal proof (<a href="https://www.jrpr.org/journal/view.php?number=1171" target="_blank" rel="noopener">Kim &amp; Sung</a>). Like ASTS-style optionality, not ops revenue.</small></div>
       <input type="hidden" id="vv_skinYears" value="1"/><input type="hidden" id="vv_gbmYears" value="1"/><input type="hidden" id="vv_pancYears" value="1"/><input type="hidden" id="vv_prostateYears" value="1"/><input type="hidden" id="vv_japanYears" value="1"/>
     </div>
     <div class="card">

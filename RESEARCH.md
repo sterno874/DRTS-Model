@@ -366,7 +366,8 @@ Prior default `v_shares = 42` labeled “FD ADS” understated the ordinary-shar
 - Individual α penetration remains ~40–70 μm (CSDA); mm-scale kill zone is daughter diffusion — do not invent new physics numbers without paper support.  
 - In vitro D₀: lower = more radiosensitive; not a clinical ORR forecast.  
 - REGAIN n=3 = feasibility only. Abscopal / immuno-combo = emerging/theoretical unless pivotal proof.  
+- **Model limitation (Jul 2026):** Skin ReSTART approval does not fully de-risk GBM/pancreas/prostate — Valuation tab applies optional platform correlation haircut and partial non-skin P(s) link; decision tree separates MC topline pass from FDA/commercial branches.
 
 ---
 
-*Last updated: 4 Jul 2026 — Biology/dosimetry primary sources (Heger 2023, Korotinsky & Arazi 2026, Kim & Sung JRPR 2024) + Q1 2026 cash-burn vs GAAP P&L clarity. Claims tagged in-app on Valuation, Pipeline, and Biology tabs.*
+*Last updated: 4 Jul 2026 — Decision tree (MC vs FDA/commercial), platform correlation controls, Biology/dosimetry primary sources (Heger 2023, Korotinsky & Arazi 2026, Kim & Sung JRPR 2024) + Q1 2026 cash-burn vs GAAP P&L clarity. Claims tagged in-app on Valuation, Pipeline, and Biology tabs.*

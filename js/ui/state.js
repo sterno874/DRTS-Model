@@ -52,7 +52,15 @@ export const DEFAULT_STATE = {
     pmaModulesTotal: 3,
     /** Expected FDA clock-stops in modular PMA heuristic. */
     pmaClockStops: 1,
-    mcSims: 1500
+    mcSims: 1500,
+    /** Decision tree — FDA/PMA branch weights (% conditional on topline pass). */
+    dtAcceptModular: 65,
+    dtDeferData: 25,
+    dtReject: 10,
+    /** Commercial ramp branch weights (% conditional on approval path). */
+    dtCommFast: 25,
+    dtCommBase: 50,
+    dtCommSlow: 25
   },
   pipeline: {
     impactEnroll: 40,
@@ -88,6 +96,8 @@ export const DEFAULT_STATE = {
     v_japanYears: 1,
     v_japanPs: 0.5,
     v_platform: 3,
+    /** 🔬 Emerging immuno/abscopal optionality ($M) — JRPR cites theoretical only. */
+    v_platformImmune: 0,
     v_mult: 4,
     v_shares: 88,
     v_cash: 80.2,
@@ -104,7 +114,15 @@ export const DEFAULT_STATE = {
      * P(PMA approval | trial co-primary success) — haircut applied when link is on.
      * MC alone is educational trial-gate success, not approval certainty.
      */
-    v_approvalHaircut: 0.75
+    v_approvalHaircut: 0.75,
+    /** 0–30% EV reduction on non-skin indication rows (platform correlation). */
+    v_platformCorrHaircut: 0,
+    /** When true, GBM/panc/prostate/japan P(s) blend toward skin P(s). */
+    v_linkNonSkinPs: false,
+    /** Fraction (0–1) of non-skin P(s) pulled toward skin outcome when link is on. */
+    v_nonSkinSkinLink: 0.5,
+    /** 🔬 Inverse mode: back-solve pen / P(s) from live or ref market cap. */
+    v_inverseMode: false
   },
   ui: { explainLvl: "eli5", showHeaderStrip: true }
 };
@@ -204,7 +222,25 @@ export const VAL_PRESETS = {
     v_japanPs: 0.25,
     v_mult: 3,
     v_platform: 0,
+    v_platformImmune: 0,
     label: "Bear"
+  },
+  /**
+   * 🔬 Platform / immune upside — separate bucket; JRPR abscopal themes emerging only.
+   */
+  immune: {
+    v_skinPen: 0.15,
+    v_skinPs: 0.55,
+    v_gbmPs: 0.25,
+    v_pancPs: 0.15,
+    v_prostatePen: 0.06,
+    v_prostatePs: 0.2,
+    v_japanPen: 0.08,
+    v_japanPs: 0.5,
+    v_mult: 4,
+    v_platform: 3,
+    v_platformImmune: 2,
+    label: "🔬 Immune upside (JRPR emerging)"
   }
 };
 

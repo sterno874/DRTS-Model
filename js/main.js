@@ -22,7 +22,8 @@ import {
   BEAR_CASE,
   COMMUNITY_THREADS
 } from "./math/pipeline.js";
-import { COMPARABLES, computeRunwayMonths } from "./math/valuation.js";
+import { COMPARABLES, computeRunwayMonths, impliedSkinPenForEquity, impliedSkinPsForEquity } from "./math/valuation.js";
+import { computeDecisionTree } from "./math/decision-tree.js";
 import { computeRegainPanel, computeImpactPanel, REGAIN_INTERIM, IMPACT_PILOT } from "./math/pilot.js";
 import {
   VALID_TABS,
@@ -71,6 +72,14 @@ function debounce(fn, ms) {
     t = setTimeout(() => fn.apply(this, args), ms);
   };
 }
+
+const TWO_ENGINES = `<h4>Two engines (identifiability)</h4>
+<p><span class="tag m">Model</span> This app deliberately splits uncertainty into <b>two engines</b> — like identifiability framing on other trial explorers: you cannot read one headline number backward into every risk layer.</p>
+<ul>
+<li><b>MC engine</b> — binomial ORR/DOR uncertainty at n=88. Draws true ORR from a Beta prior, simulates co-primary pass/fail under educational gates. Answers: “How noisy is a single-arm rate at this enrollment?” MC trial P(success) is <em>not</em> PMA approval certainty.</li>
+<li><b>Decision tree engine</b> — regulatory + commercial cascade after top-line: pass/fail → FDA modular PMA / defer / reject → commercial ramp (fast/base/slow). MC feeds <b>topline pass rate only</b>; FDA branch sliders and ramp weights are separate assumptions with primary-source tags.</li>
+</ul>
+<p><span class="tag u">Honesty</span> High MC pass (~96%) plus a 75% PMA haircut still leaves FDA and commercial ramp as independent sliders. Weighted tree $/sh and sum-of-parts valuation $/sh answer different questions — compare both, do not merge into one opaque headline.</p>`;
 
 const EXPL = {
   eli5: `<h3>What is Alpha Tau (DRTS)?</h3>
@@ -192,6 +201,41 @@ function initFactsAsOf() {
   });
 }
 
+function renderDecisionTreeUI() {
+  const trialPs = resolveTrialPs(state.restart, lastMcResult?.pSuccess);
+  const valInputs = valuationInputsForState(state, lastMcResult?.pSuccess);
+  const tree = computeDecisionTree({
+    toplinePassRate: trialPs,
+    val: valInputs,
+    pAcceptModularPct: state.restart.dtAcceptModular,
+    pDeferDataPct: state.restart.dtDeferData,
+    pRejectPct: state.restart.dtReject,
+    pCommFastPct: state.restart.dtCommFast,
+    pCommBasePct: state.restart.dtCommBase,
+    pCommSlowPct: state.restart.dtCommSlow
+  });
+
+  if ($("dtToplinePass")) {
+    $("dtToplinePass").textContent = (tree.toplinePass * 100).toFixed(1) + "% (MC co-primary)";
+  }
+  if ($("dtWeightedEv")) $("dtWeightedEv").textContent = "$" + tree.weightedEv.toFixed(0) + "M";
+  if ($("dtWeightedPsh")) $("dtWeightedPsh").textContent = "$" + tree.weightedPerSh.toFixed(2);
+
+  const tbody = $("dtPathsBody");
+  if (tbody) {
+    tbody.innerHTML =
+      tree.paths
+        .map(
+          (p) =>
+            `<tr><td>${p.label}</td><td>${(p.prob * 100).toFixed(1)}%</td><td>$${p.ev.toFixed(0)}M</td><td>$${p.perSh.toFixed(2)}</td></tr>`
+        )
+        .join("") +
+      `<tr class="dt-weighted-row"><td><b>Weighted scenario</b></td><td>${(tree.probSum * 100).toFixed(0)}%</td><td><b>$${tree.weightedEv.toFixed(0)}M</b></td><td><b>$${tree.weightedPerSh.toFixed(2)}</b></td></tr>`;
+  }
+
+  return tree;
+}
+
 function renderPilotPanels() {
   const host = $("pilotPanels");
   if (!host) return;
@@ -219,6 +263,22 @@ function renderPilotPanels() {
     `<div class="pilot-stat"><b>Wide prior band</b> ${impact.priorLo.toFixed(0)}–${impact.priorHi.toFixed(0)}% (no US data)</div>` +
     `<div class="pilot-stat"><b>Registrational P(s) cap</b> ≤${(impact.maxRegistrationalPs * 100).toFixed(0)}% · display-only, cannot drive high P(s)</div>` +
     `<p class="field-note">${impact.note} · <a href="${IMPACT_PILOT.pooledSource}" target="_blank" rel="noopener">ASCO 2026 pooled pancreatic</a> is separate design.</p></div>`;
+
+  const tree = computeDecisionTree({
+    toplinePassRate: resolveTrialPs(state.restart, lastMcResult?.pSuccess),
+    val: valuationInputsForState(state, lastMcResult?.pSuccess),
+    pAcceptModularPct: state.restart.dtAcceptModular,
+    pDeferDataPct: state.restart.dtDeferData,
+    pRejectPct: state.restart.dtReject,
+    pCommFastPct: state.restart.dtCommFast,
+    pCommBasePct: state.restart.dtCommBase,
+    pCommSlowPct: state.restart.dtCommSlow
+  });
+  host.innerHTML +=
+    `<div class="pilot-card card decision-tree-card"><h2>Regulatory decision tree <span class="tag m">summary</span></h2>` +
+    `<div class="pilot-stat"><b>MC topline pass</b> ${(tree.toplinePass * 100).toFixed(1)}% · weighted tree $/sh $${tree.weightedPerSh.toFixed(2)}</div>` +
+    `<div class="pilot-stat"><b>Best path</b> ${tree.paths.reduce((a, b) => (b.perSh > a.perSh ? b : a)).label} · $${tree.paths.reduce((a, b) => (b.perSh > a.perSh ? b : a)).perSh.toFixed(2)}/sh</div>` +
+    `<p class="field-note">Full tree + sliders on <button type="button" class="methodlink" onclick="document.querySelector('.tabbtn[data-tab=restart]').click()">ReSTART tab</button>. FDA sources: <a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">modular PMA</a> · <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices" target="_blank" rel="noopener">single-arm bias guidance</a>.</p></div>`;
 }
 
 function toast(msg) {
@@ -421,6 +481,7 @@ function runMcSimulation() {
   if ($("rMcOrrOnly")) $("rMcOrrOnly").textContent = (lastMcResult.pOrrOnly * 100).toFixed(1) + "%";
   applyLinkedSkinPs();
   updateSkinPsLinkUI();
+  renderDecisionTreeUI();
   if (activeTab === "value" || tabsDirty.value) updateValUI();
   updateHeaderStrip();
 }
@@ -457,6 +518,7 @@ function updateRestartUI(includeMc = true) {
   if (!includeMc) {
     applyLinkedSkinPs();
     updateSkinPsLinkUI();
+    renderDecisionTreeUI();
     return;
   }
   // Always run MC when restart inputs change (not only on ReSTART tab): linked skin P(s)
@@ -584,6 +646,35 @@ function updatePipelineUI() {
   }
 }
 
+function updateInverseUI(targetEquityM) {
+  const panel = $("inversePanel");
+  const on = !!state.val.v_inverseMode;
+  if (panel) panel.hidden = !on;
+  if (!on || !Number.isFinite(targetEquityM) || targetEquityM <= 0) return;
+
+  if ($("invTargetCap")) {
+    $("invTargetCap").textContent = `$${targetEquityM.toFixed(0)}M equity`;
+  }
+  const valForInverse = valuationInputsForState(state, lastMcResult?.pSuccess);
+  const pen = impliedSkinPenForEquity(valForInverse, targetEquityM);
+  const ps = impliedSkinPsForEquity(valForInverse, targetEquityM);
+  if ($("invImpliedPen")) {
+    $("invImpliedPen").textContent = pen.feasible
+      ? `${pen.impliedPenPct.toFixed(1)}%`
+      : pen.note;
+    $("invImpliedPen").className = "ov" + (pen.feasible ? "" : " inverse-infeasible");
+  }
+  if ($("invImpliedPs")) {
+    $("invImpliedPs").textContent = ps.feasible
+      ? `${ps.impliedPsPct.toFixed(0)}%`
+      : ps.note;
+  }
+  const note = $("inverseNote");
+  if (note && pen.feasible && ps.feasible) {
+    note.textContent = `🔬 ${pen.note}. Alt: ${ps.note}. Holding non-skin rows + platform fixed — identifiability check only.`;
+  }
+}
+
 function updateValUI() {
   applyLinkedSkinPs();
   updateSkinPsLinkUI();
@@ -592,6 +683,20 @@ function updateValUI() {
   });
   const m = computeValuationMetrics(state.val);
   const riskAdj = !!state.val.v_riskadj;
+  const refPrice =
+    liveQuote?.ok && liveQuote.price != null ? liveQuote.price : state.val.v_refPrice ?? 13;
+  const targetEquityM =
+    liveQuote?.ok && liveQuote.marketCapM != null && liveQuote.marketCapM > 0
+      ? liveQuote.marketCapM
+      : state.val.v_shares * refPrice;
+  updateInverseUI(targetEquityM);
+
+  const linkNonSkinEl = $("v_linkNonSkinPs");
+  if (linkNonSkinEl) state.val.v_linkNonSkinPs = linkNonSkinEl.checked;
+  const invEl = $("v_inverseMode");
+  if (invEl) state.val.v_inverseMode = invEl.checked;
+  const linkSlider = $("vv_nonSkinSkinLink");
+  if (linkSlider) linkSlider.disabled = !state.val.v_linkNonSkinPs;
   if ($("vEv")) $("vEv").textContent = "$" + m.ev.toFixed(0) + "M";
   if ($("vPsh")) $("vPsh").textContent = "$" + m.perSh.toFixed(2) + (riskAdj ? " risk-adj" : " gross");
   const pshDil = $("vPshDil");
@@ -622,7 +727,10 @@ function updateValUI() {
             `<tr><td>${row.label}</td><td>$${row.peak.toFixed(0)}M</td><td>${(row.pSuccess * 100).toFixed(0)}%</td><td>$${row.evContrib.toFixed(0)}M</td></tr>`
         )
         .join("") +
-      `<tr><td>Platform option</td><td>—</td><td>—</td><td>$${m.platform.toFixed(0)}M</td></tr>`;
+      (m.platformImmune > 0
+        ? `<tr><td>Platform (base)</td><td>—</td><td>—</td><td>$${m.platformBase.toFixed(0)}M</td></tr>` +
+          `<tr><td>🔬 Immune upside</td><td>—</td><td>—</td><td>$${m.platformImmune.toFixed(0)}M</td></tr>`
+        : `<tr><td>Platform option</td><td>—</td><td>—</td><td>$${m.platform.toFixed(0)}M</td></tr>`);
   }
 }
 
@@ -638,6 +746,10 @@ function updateNow(forceAll = false) {
   if (riskEl) state.val.v_riskadj = riskEl.checked;
   const linkEl = $("v_linkSkinPs");
   if (linkEl) state.val.v_linkSkinPs = linkEl.checked;
+  const linkNonSkinEl = $("v_linkNonSkinPs");
+  if (linkNonSkinEl) state.val.v_linkNonSkinPs = linkNonSkinEl.checked;
+  const invEl = $("v_inverseMode");
+  if (invEl) state.val.v_inverseMode = invEl.checked;
   refreshLiveQuotePollIfSharesChanged(state.val.v_shares);
   updateRestartUI(forceAll || activeTab === "restart");
   if (forceAll || activeTab === "pipeline" || tabsDirty.pipeline) updatePipelineUI();
@@ -676,6 +788,8 @@ function applyState(s) {
   writeSliders("p", state.pipeline);
   if ($("v_riskadj")) $("v_riskadj").checked = state.val.v_riskadj;
   if ($("v_linkSkinPs")) $("v_linkSkinPs").checked = state.val.v_linkSkinPs;
+  if ($("v_linkNonSkinPs")) $("v_linkNonSkinPs").checked = state.val.v_linkNonSkinPs;
+  if ($("v_inverseMode")) $("v_inverseMode").checked = state.val.v_inverseMode;
   curLvl = state.ui.explainLvl || "eli5";
   updateNow(true);
   showLevel(curLvl);
@@ -824,7 +938,7 @@ function showLevel(l) {
   state.ui.explainLvl = l;
   document.querySelectorAll(".lvlb").forEach((b) => b.classList.toggle("active", b.dataset.lvl === l));
   const body = $("explbody");
-  if (body) body.innerHTML = EXPL[l] || "";
+  if (body) body.innerHTML = TWO_ENGINES + (EXPL[l] || "");
   if (!restoringState) updateHashQuiet();
 }
 

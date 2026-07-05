@@ -6,7 +6,8 @@ export const MUTATION_TEST_FILES = [
   "share.test.js",
   "runway.test.js",
   "ui-logic.test.js",
-  "pilot.test.js"
+  "pilot.test.js",
+  "decision-tree.test.js"
 ];
 
 export const MUTATION_TARGETS = [
