@@ -61,6 +61,48 @@ test("commercial fast ramp raises skin EV vs slow on accept path", () => {
   assert.ok(fast.ev > slow.ev);
 });
 
+test("weighted tree EV equals sum P(path) x EV(path)", () => {
+  const tree = computeDecisionTree({
+    toplinePassRate: MC.pSuccess,
+    val: DEFAULT_STATE.val
+  });
+  const manualEv = tree.paths.reduce((s, p) => s + p.prob * p.ev, 0);
+  assert.ok(Math.abs(tree.weightedEv - manualEv) < 0.05);
+});
+
+test("weighted tree $/sh equals probability-weighted path $/sh", () => {
+  const tree = computeDecisionTree({
+    toplinePassRate: 0.9,
+    val: DEFAULT_STATE.val
+  });
+  const manualPsh = tree.paths.reduce((s, p) => s + p.prob * p.perSh, 0);
+  assert.ok(Math.abs(tree.weightedPerSh - manualPsh) < 0.05);
+});
+
+test("path probabilities sum to exactly 1", () => {
+  const tree = computeDecisionTree({
+    toplinePassRate: MC.pSuccess,
+    val: DEFAULT_STATE.val,
+    pAcceptModularPct: 65,
+    pDeferDataPct: 25,
+    pRejectPct: 10,
+    pCommFastPct: 25,
+    pCommBasePct: 50,
+    pCommSlowPct: 25
+  });
+  assert.ok(Math.abs(tree.probSum - 1) < 1e-9);
+});
+
+test("MC topline pass feeds tree root", () => {
+  const tree = computeDecisionTree({
+    toplinePassRate: MC.pSuccess,
+    val: DEFAULT_STATE.val
+  });
+  assert.ok(Math.abs(tree.toplinePass - MC.pSuccess) < 1e-9);
+  const fail = tree.paths.find((p) => p.id === "topline_fail");
+  assert.ok(Math.abs(fail.prob - (1 - MC.pSuccess)) < 1e-9);
+});
+
 test("weighted tree EV is between min and max path EV", () => {
   const tree = computeDecisionTree({
     toplinePassRate: 0.9,

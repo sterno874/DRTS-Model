@@ -39,6 +39,9 @@ import {
   resolveLinkedSkinPs,
   resolveTrialPs,
   paramsFromPreset,
+  paramsFromValPreset,
+  restartPresetMatches,
+  valPresetMatches,
   inferActivePresets,
   formatShareDilutionSubtitle,
   REF_SHARES_M
@@ -281,6 +284,28 @@ function renderPilotPanels() {
     `<p class="field-note">Full tree + sliders on <button type="button" class="methodlink" onclick="document.querySelector('.tabbtn[data-tab=restart]').click()">ReSTART tab</button>. FDA sources: <a href="https://www.fda.gov/medical-devices/premarket-submissions/modular-premarket-approval-program" target="_blank" rel="noopener">modular PMA</a> · <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/design-considerations-pivotal-clinical-investigations-medical-devices" target="_blank" rel="noopener">single-arm bias guidance</a>.</p></div>`;
 }
 
+function highlightPresets(selector, attr, activeId) {
+  document.querySelectorAll(selector).forEach((b) => {
+    b.classList.toggle("p-def", !!activeId && b.dataset[attr] === activeId);
+  });
+}
+
+function refreshPresetHighlights() {
+  highlightPresets("button[data-preset]", "preset", state.activeRestartPreset);
+  highlightPresets("button[data-val-preset]", "valPreset", state.activeValPreset);
+}
+
+/** Clear sticky preset highlight once sliders diverge from the named scenario. */
+function syncPresetMarkers() {
+  if (state.activeRestartPreset && !restartPresetMatches(state.activeRestartPreset, state.restart)) {
+    state.activeRestartPreset = null;
+  }
+  if (state.activeValPreset && !valPresetMatches(state.activeValPreset, state.val)) {
+    state.activeValPreset = null;
+  }
+  refreshPresetHighlights();
+}
+
 function toast(msg) {
   const t = $("toast");
   if (!t) return;
@@ -488,7 +513,7 @@ function runMcSimulation() {
 
 const scheduleMcUpdate = debounce(runMcSimulation, 120);
 
-function updateRestartUI(includeMc = true) {
+function updateRestartUI(includeMc = true, immediateMc = false) {
   const r = state.restart;
   const m = computeRestartMetrics(r);
   if ($("rResp")) $("rResp").textContent = m.responders + " / " + m.n;
@@ -523,7 +548,7 @@ function updateRestartUI(includeMc = true) {
   }
   // Always run MC when restart inputs change (not only on ReSTART tab): linked skin P(s)
   // and the header strip depend on co-primary MC P(success).
-  if (restoringState) runMcSimulation();
+  if (restoringState || immediateMc) runMcSimulation();
   else scheduleMcUpdate();
 }
 
@@ -738,7 +763,7 @@ function updateBands() {
   renderBands($, (id) => $(id)?.value);
 }
 
-function updateNow(forceAll = false) {
+function updateNow(forceAll = false, immediateMc = false) {
   readSliders("r", Object.keys(state.restart), state.restart);
   readSliders("v", Object.keys(state.val), state.val);
   readSliders("p", Object.keys(state.pipeline), state.pipeline);
@@ -750,8 +775,9 @@ function updateNow(forceAll = false) {
   if (linkNonSkinEl) state.val.v_linkNonSkinPs = linkNonSkinEl.checked;
   const invEl = $("v_inverseMode");
   if (invEl) state.val.v_inverseMode = invEl.checked;
+  if (!restoringState && !immediateMc) syncPresetMarkers();
   refreshLiveQuotePollIfSharesChanged(state.val.v_shares);
-  updateRestartUI(forceAll || activeTab === "restart");
+  updateRestartUI(forceAll || activeTab === "restart", immediateMc);
   if (forceAll || activeTab === "pipeline" || tabsDirty.pipeline) updatePipelineUI();
   if (forceAll || activeTab === "value" || tabsDirty.value) updateValUI();
   updateSkinPsLinkUI();
@@ -794,38 +820,33 @@ function applyState(s) {
   updateNow(true);
   showLevel(curLvl);
   if (s.tab) switchTab(s.tab, true);
-  document.querySelectorAll("[data-preset]").forEach((b) => {
-    b.classList.toggle("p-def", b.dataset.preset === state.activeRestartPreset);
-  });
-  document.querySelectorAll("[data-val-preset]").forEach((b) => {
-    b.classList.toggle("p-def", b.dataset.valPreset === state.activeValPreset);
-  });
+  refreshPresetHighlights();
   restoringState = false;
 }
 
 function applyRestartPreset(name) {
   const p = paramsFromPreset(name);
   if (!p) return;
+  lastMcResult = null;
   Object.assign(state.restart, p);
   state.activeRestartPreset = name;
   writeSliders("r", state.restart);
-  document.querySelectorAll("[data-preset]").forEach((b) => {
-    b.classList.toggle("p-def", b.dataset.preset === name);
-  });
-  updateNow(true);
+  refreshPresetHighlights();
+  updateNow(true, true);
 }
 
 function applyValPreset(name) {
-  const q = VAL_PRESETS[name];
-  if (!q) return;
-  const { label: _lb, ...rest } = q;
-  Object.assign(state.val, rest);
+  const p = paramsFromValPreset(name);
+  if (!p) return;
+  Object.assign(state.val, p);
   state.activeValPreset = name;
   writeSliders("v", state.val);
-  document.querySelectorAll("[data-val-preset]").forEach((b) => {
-    b.classList.toggle("p-def", b.dataset.valPreset === name);
-  });
-  updateNow(true);
+  if ($("v_riskadj")) $("v_riskadj").checked = state.val.v_riskadj;
+  if ($("v_linkSkinPs")) $("v_linkSkinPs").checked = state.val.v_linkSkinPs;
+  if ($("v_linkNonSkinPs")) $("v_linkNonSkinPs").checked = state.val.v_linkNonSkinPs;
+  if ($("v_inverseMode")) $("v_inverseMode").checked = state.val.v_inverseMode;
+  refreshPresetHighlights();
+  updateNow(true, true);
 }
 
 const TAB_SHORT_LABELS = {
@@ -1073,7 +1094,6 @@ function init() {
     applyRestartPreset("base");
     switchTab("restart", true);
     showLevel("eli5");
-    runMcSimulation();
   }
   initAlphaSims();
   initLiveQuote();

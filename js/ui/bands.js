@@ -85,6 +85,58 @@ export const RESTART_BANDS = [
   }
 ];
 
+/** Regulatory decision tree sliders (element ids r + dt*). */
+export const DECISION_TREE_BANDS = [
+  {
+    id: "rdtAcceptModular",
+    min: 5,
+    max: 90,
+    sig: { b1: [50, 75], b2: [35, 85], b3: [5, 90] },
+    anchor: 65,
+    why: "P(FDA accept modular PMA | topline pass) — module 1 submitted Jan 2026; Breakthrough Device path."
+  },
+  {
+    id: "rdtDeferData",
+    min: 0,
+    max: 60,
+    sig: { b1: [15, 35], b2: [8, 45], b3: [0, 60] },
+    why: "P(clock-stop / defer more data) — modular PMA Q-subs; not FDA clock."
+  },
+  {
+    id: "rdtReject",
+    min: 0,
+    max: 40,
+    sig: { b1: [5, 18], b2: [2, 25], b3: [0, 40] },
+    imp: [30, 40],
+    why: "P(FDA reject | topline pass) — single-arm historical-control bias per FDA device guidance."
+  },
+  {
+    id: "rdtCommFast",
+    min: 5,
+    max: 60,
+    sig: { b1: [15, 35], b2: [10, 45], b3: [5, 60] },
+    why: "Commercial fast-ramp branch weight — 1.4× base pen multiplier in tree."
+  },
+  {
+    id: "rdtCommBase",
+    min: 10,
+    max: 70,
+    sig: { b1: [35, 55], b2: [25, 60], b3: [10, 70] },
+    anchor: 50,
+    why: "Commercial base-ramp branch weight — matches valuation pen slider."
+  },
+  {
+    id: "rdtCommSlow",
+    min: 5,
+    max: 60,
+    sig: { b1: [15, 35], b2: [10, 45], b3: [5, 60] },
+    why: "Commercial slow-ramp branch weight — 0.6× base pen multiplier in tree."
+  }
+];
+
+/** ReSTART + decision tree sliders — alias for extenders. */
+export const CFG_RESTART = [...RESTART_BANDS, ...DECISION_TREE_BANDS];
+
 /** Valuation sliders — epidemiology, pricing, and P(success) priors. */
 export const VAL_BANDS = [
   {
@@ -169,6 +221,13 @@ export const VAL_BANDS = [
     max: 0.15,
     sig: { b1: [0.03, 0.08], b2: [0.02, 0.12], b3: [0.01, 0.15] },
     why: "Panc penetration — early feasibility; pooled ASCO OS is separate design."
+  },
+  {
+    id: "vv_pancPrice",
+    min: 40,
+    max: 150,
+    sig: { b1: [70, 110], b2: [55, 130], b3: [40, 150] },
+    why: "Panc procedure pricing assumption — IMPACT pilot only."
   },
   {
     id: "vv_pancPs",
@@ -281,10 +340,37 @@ export const VAL_BANDS = [
     sig: { b1: [1, 6], b2: [0, 10], b3: [0, 20] },
     imp: [14, 20],
     why: "Platform optionality ($M, not $B) — residual optionality; Japan H&N is a separate indication line."
+  },
+  {
+    id: "vv_platformImmune",
+    min: 0,
+    max: 5,
+    sig: { b1: [0, 2], b2: [0, 3], b3: [0, 5] },
+    imp: [4, 5],
+    why: "🔬 Immune / abscopal upside ($M) — JRPR 2024 emerging only; not pivotal proof."
+  },
+  {
+    id: "vv_platformCorrHaircut",
+    min: 0,
+    max: 30,
+    sig: { b1: [0, 12], b2: [0, 20], b3: [0, 30] },
+    imp: [25, 30],
+    why: "Non-skin EV correlation haircut — skin approval does not fully transfer to GBM/panc/Japan."
+  },
+  {
+    id: "vv_nonSkinSkinLink",
+    min: 0,
+    max: 1,
+    sig: { b1: [0.25, 0.65], b2: [0.1, 0.85], b3: [0, 1] },
+    anchor: 0.5,
+    why: "Non-skin P(s) blend toward skin when link toggle is on — λ fraction in model."
   }
 ];
 
-export const ALL_BANDS = [...RESTART_BANDS, ...VAL_BANDS];
+/** Valuation sliders — alias for extenders. */
+export const CFG_VAL = VAL_BANDS;
+
+export const ALL_BANDS = [...CFG_RESTART, ...CFG_VAL];
 
 export function buildBands(getEl) {
   ALL_BANDS.forEach((c) => {

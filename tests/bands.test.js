@@ -5,7 +5,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   RESTART_BANDS,
+  DECISION_TREE_BANDS,
+  CFG_RESTART,
   VAL_BANDS,
+  CFG_VAL,
   ALL_BANDS,
   pctB,
   bandCoversRange
@@ -38,6 +41,18 @@ test("ReSTART band ids match HTML slider ids", () => {
     assert.match(html, new RegExp(`id="${c.id}"`), `missing slider ${c.id}`);
     assert.match(html, new RegExp(`id="band-${c.id}"`), `missing band host band-${c.id}`);
   }
+});
+
+test("decision tree band ids match HTML slider ids", () => {
+  for (const c of DECISION_TREE_BANDS) {
+    assert.match(html, new RegExp(`id="${c.id}"`), `missing slider ${c.id}`);
+    assert.match(html, new RegExp(`id="band-${c.id}"`), `missing band host band-${c.id}`);
+  }
+});
+
+test("CFG_RESTART includes core ReSTART and decision tree sliders", () => {
+  assert.equal(CFG_RESTART.length, RESTART_BANDS.length + DECISION_TREE_BANDS.length);
+  assert.ok(CFG_VAL.length >= VAL_BANDS.length);
 });
 
 test("valuation band ids match HTML slider ids", () => {

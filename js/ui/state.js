@@ -388,6 +388,39 @@ export function paramsFromPreset(name) {
   return { ...DEFAULT_STATE.restart, ...rest };
 }
 
+/** Full valuation state for a named preset (resets unstated fields to defaults). */
+export function paramsFromValPreset(name) {
+  const q = VAL_PRESETS[name];
+  if (!q) return null;
+  const { label, ...rest } = q;
+  return { ...DEFAULT_STATE.val, ...rest };
+}
+
+/** Whether current ReSTART sliders still match a named preset (ORR-focused keys). */
+export function restartPresetMatches(name, restart) {
+  const p = paramsFromPreset(name);
+  if (!p) return false;
+  const r = restart ?? DEFAULT_STATE.restart;
+  return (
+    Math.abs(r.orrPct - p.orrPct) < 0.01 &&
+    Math.abs(r.benchOrrPct - p.benchOrrPct) < 0.01 &&
+    Math.abs(r.dorMonths - p.dorMonths) < 0.01 &&
+    Math.abs(r.pSuccess - p.pSuccess) < 0.01
+  );
+}
+
+/** Whether current valuation sliders still match a named preset. */
+export function valPresetMatches(name, val) {
+  const q = VAL_PRESETS[name];
+  if (!q) return false;
+  const v = val ?? DEFAULT_STATE.val;
+  const { label, ...keys } = q;
+  for (const [k, expected] of Object.entries(keys)) {
+    if (Math.abs((v[k] ?? 0) - expected) > 0.011) return false;
+  }
+  return true;
+}
+
 /** Round probability to nearest 0.05 for slider alignment. */
 function roundPs05(p) {
   return Math.round(p * 20) / 20;

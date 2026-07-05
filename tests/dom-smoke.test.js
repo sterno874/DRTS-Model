@@ -220,8 +220,19 @@ test("prior bands on ReSTART and valuation sliders", () => {
   assert.match(html, /id="band-rorrPct"/);
   assert.match(html, /id="band-rbenchOrrPct"/);
   assert.match(html, /id="band-vv_skinPts"/);
+  assert.match(html, /id="band-rdtAcceptModular"/);
+  assert.match(html, /id="band-vv_platformCorrHaircut"/);
+  assert.match(html, /id="band-vv_pancPrice"/);
   assert.match(html, /class="bandkey"/);
   assert.match(html, /class="source-line"/);
+});
+
+test("main.js uses p-def preset highlights and sync", () => {
+  assert.match(js, /refreshPresetHighlights/);
+  assert.match(js, /syncPresetMarkers/);
+  assert.match(js, /button\[data-preset\]/);
+  assert.match(js, /paramsFromValPreset/);
+  assert.match(js, /immediateMc/);
 });
 
 test("references and limitations sections", () => {
